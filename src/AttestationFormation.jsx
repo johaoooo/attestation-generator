@@ -157,7 +157,7 @@ const FONTS_OPTIONS = [
   { label: "Monospace (Police Chiffrée)", value: "monospace" },
 ];
 
-export default function AttestationFormation() {
+export default function AttestationFormation({ onBack }) {
   const [data, setData] = useState({ ...DEFAULT_DATA });
 
   const [activeTheme, setActiveTheme] = useState(THEMES[0]);
@@ -168,6 +168,10 @@ export default function AttestationFormation() {
   
   // Responsive Zoom scale
   const [zoomScale, setZoomScale] = useState(0.8);
+
+  // Sidebar Resize and Collapse States
+  const [sidebarWidth, setSidebarWidth] = useState(440);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Save Toast Feedback
   const [showSaveToast, setShowSaveToast] = useState(false);
@@ -922,13 +926,14 @@ export default function AttestationFormation() {
         .btn-save-content:hover { background: #059669; transform: translateY(-1px); }
 
         /* CERTIFICATE CONTAINER & RESPONSIVE ZOOM */
+        .preview-area { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; min-width: 0; }
         .cert-scroll {
           width: 100%;
-          overflow: auto;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
-          padding-bottom: 20px;
+          min-width: 0;
+          max-width: 100%;
+          overflow-x: auto;
+          overflow-y: auto;
+          text-align: center;
           background: #E2E8F0;
           border-radius: 14px;
           padding: 30px 20px;
@@ -936,6 +941,9 @@ export default function AttestationFormation() {
         }
 
         .cert-scale-wrapper {
+          display: inline-block;
+          text-align: left;
+          margin: 0 auto;
           transform: scale(${zoomScale});
           transform-origin: top center;
           transition: transform 0.2s ease;
@@ -1361,38 +1369,66 @@ export default function AttestationFormation() {
         </div>
       )}
 
-      <div className="container">
+      <div className="container" style={{ gridTemplateColumns: isSidebarCollapsed ? "50px 1fr" : `${sidebarWidth}px 1fr`, transition: "grid-template-columns 0.25s ease" }}>
         {/* ================= EDITING SIDEBAR ================= */}
-        <aside className="editor-panel">
-          <div className="editor-header">
-            <h1>
-              <IconAward color="#D4AF37" />
-              Attestation de Participation
-            </h1>
-            <p>ONG ESPOIR ET NATURE & Maison AFI COLLECTION</p>
-          </div>
+        <aside className="editor-panel" style={{ width: "100%", overflow: "hidden" }}>
+          {isSidebarCollapsed ? (
+            <div style={{ padding: "12px 6px", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
+              <button
+                type="button"
+                onClick={() => setIsSidebarCollapsed(false)}
+                className="btn btn-primary"
+                style={{ padding: "10px 8px", fontSize: "14px" }}
+                title="Déplier et afficher le menu d'édition"
+              >
+                ▶
+              </button>
+              <div style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", fontSize: "11px", fontWeight: "700", color: "#64748B", letterSpacing: "0.1em" }}>
+                MENU ÉDITION
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="editor-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <h1>
+                    <IconAward color="#D4AF37" />
+                    Attestation de Formation
+                  </h1>
+                  <p>ONG ESPOIR ET NATURE & Maison AFI COLLECTION</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsSidebarCollapsed(true)}
+                  className="btn btn-secondary"
+                  style={{ padding: "4px 8px", fontSize: "11px" }}
+                  title="Réduire le menu pour agrandir le document"
+                >
+                  ◀ Masquer
+                </button>
+              </div>
 
           <div className="tabs">
             <button className={`tab-btn ${activeTab === "content" ? "active" : ""}`} onClick={() => setActiveTab("content")}>
-              📝 Contenu
+              <IconText /> Contenu
             </button>
             <button className={`tab-btn ${activeTab === "style" ? "active" : ""}`} onClick={() => setActiveTab("style")}>
-              📐 Format & Thèmes
+              <IconSliders /> Format & Thèmes
             </button>
             <button className={`tab-btn ${activeTab === "logos" ? "active" : ""}`} onClick={() => setActiveTab("logos")}>
-              🖼️ Logos & Fond
+              <IconImage /> Logos & Fond
             </button>
             <button className={`tab-btn ${activeTab === "signature" ? "active" : ""}`} onClick={() => setActiveTab("signature")}>
-              ✒️ Signataires & Cachet
+              <IconPen /> Signataires & Cachet
             </button>
             <button className={`tab-btn ${activeTab === "border" ? "active" : ""}`} onClick={() => setActiveTab("border")}>
-              🖼️ Bordures
+              <IconBorder /> Bordures
             </button>
             <button className={`tab-btn ${activeTab === "typography" ? "active" : ""}`} onClick={() => setActiveTab("typography")}>
-              🔤 Polices
+              <IconFont /> Polices
             </button>
             <button className={`tab-btn ${activeTab === "bulk" ? "active" : ""}`} onClick={() => setActiveTab("bulk")}>
-              👥 Masse
+              <IconUsers /> Masse
             </button>
           </div>
 
@@ -1476,6 +1512,20 @@ export default function AttestationFormation() {
                     >
                       ⬛ Carré (1:1)
                     </button>
+                  </div>
+                </div>
+
+                <div className="presets-box">
+                  <label style={{ color: "#2563EB" }}>📐 Largeur du Menu Latéral ({sidebarWidth}px)</label>
+                  <div className="input-group" style={{ marginTop: "4px" }}>
+                    <input
+                      type="range"
+                      min="260"
+                      max="600"
+                      step="10"
+                      value={sidebarWidth}
+                      onChange={(e) => setSidebarWidth(parseInt(e.target.value))}
+                    />
                   </div>
                 </div>
 
@@ -2098,11 +2148,25 @@ export default function AttestationFormation() {
               </>
             )}
           </div>
+            </>
+          )}
         </aside>
 
         {/* ================= PREVIEW AREA ================= */}
         <main className="preview-area">
           <div className="action-bar">
+            {/* COLLAPSED RE-OPEN BUTTON */}
+            {isSidebarCollapsed && (
+              <button
+                type="button"
+                onClick={() => setIsSidebarCollapsed(false)}
+                className="btn btn-primary"
+                style={{ fontSize: "11.5px", padding: "6px 12px" }}
+              >
+                ▶ Ouvrir le menu d'édition
+              </button>
+            )}
+
             {/* ORIENTATION TOGGLE (PAYSAGE / PORTRAIT) */}
             <div className="format-selector-bar">
               <button
@@ -2374,6 +2438,84 @@ export default function AttestationFormation() {
 }
 
 // ================= INLINE SVG ICONS =================
+
+function IconText() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" x2="8" y1="13" y2="13" />
+      <line x1="16" x2="8" y1="17" y2="17" />
+    </svg>
+  );
+}
+
+function IconSliders() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" x2="4" y1="21" y2="14" />
+      <line x1="4" x2="4" y1="10" y2="3" />
+      <line x1="12" x2="12" y1="21" y2="12" />
+      <line x1="12" x2="12" y1="8" y2="3" />
+      <line x1="20" x2="20" y1="21" y2="16" />
+      <line x1="20" x2="20" y1="12" y2="3" />
+      <line x1="2" x2="6" y1="14" y2="14" />
+      <line x1="10" x2="14" y1="8" y2="8" />
+      <line x1="18" x2="22" y1="16" y2="16" />
+    </svg>
+  );
+}
+
+function IconImage() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+      <circle cx="9" cy="9" r="2" />
+      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+    </svg>
+  );
+}
+
+function IconPen() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m12 19 7-7 3 3-7 7-3-3z" />
+      <path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+      <path d="m2 2 7.586 7.586" />
+    </svg>
+  );
+}
+
+function IconBorder() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="18" height="18" x="3" y="3" rx="2" />
+      <path d="M3 9h18" />
+      <path d="M9 21V9" />
+    </svg>
+  );
+}
+
+function IconFont() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="4 7 4 4 20 4 20 7" />
+      <line x1="9" x2="15" y1="20" y2="20" />
+      <line x1="12" x2="12" y1="4" y2="20" />
+    </svg>
+  );
+}
+
+function IconUsers() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
 
 function IconPrinter() {
   return (
