@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDFModule, { jsPDF as jsPDFNamed } from "jspdf";
 import {

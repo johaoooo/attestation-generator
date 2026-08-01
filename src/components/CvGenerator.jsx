@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { Download, ArrowLeft, UserCheck, Plus, Trash2, RefreshCw, Mail, Phone, MapPin, CheckCircle2, Sparkles, Layers } from "./Icons.jsx";
