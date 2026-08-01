@@ -252,6 +252,8 @@ export default function AttestationFormation({ onBack }) {
   const canvasRef = useRef(null);
   const certRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
 
   // Signatures
   const [sig1Img, setSig1Img] = useState(null);
