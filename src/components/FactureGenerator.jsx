@@ -387,9 +387,8 @@ export default function FactureGenerator({ onBack }) {
 
                     <div className="presets-box">
                       <div className="flex items-center justify-between" style={{ marginBottom: "8px" }}>
-                        <label style={{ margin: 0 }}>📊 Articles & Services ({data.items.length})</label>
+                        <label style={{ margin: 0 }}>Articles & Services ({data.items.length})</label>
                         <button type="button" onClick={addItem} className="btn btn-secondary" style={{ padding: "4px 8px", fontSize: "11px" }}>
-                          <Plus className="w-3.5 h-3.5" />
                           <span>Ajouter</span>
                         </button>
                       </div>
@@ -400,10 +399,10 @@ export default function FactureGenerator({ onBack }) {
                             <button
                               type="button"
                               onClick={() => removeItem(it.id)}
-                              style={{ position: "absolute", top: "6px", right: "6px", border: "none", background: "none", color: "#EF4444", cursor: "pointer" }}
+                              style={{ position: "absolute", top: "6px", right: "6px", border: "none", background: "none", color: "#EF4444", cursor: "pointer", fontSize: "14px" }}
                               title="Supprimer la ligne"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              ✕
                             </button>
 
                             <div className="input-group" style={{ marginBottom: "6px" }}>
@@ -685,14 +684,12 @@ export default function FactureGenerator({ onBack }) {
             <div className="btn-group">
               {onBack && (
                 <button type="button" className="btn btn-secondary" onClick={onBack}>
-                  <ArrowLeft className="w-4 h-4" />
                   <span>Accueil</span>
                 </button>
               )}
 
               <button type="button" className="btn btn-pdf" onClick={handleExportPDF} disabled={isDownloadingPDF}>
-                <Download className="w-4 h-4" />
-                <span>{isDownloadingPDF ? "⏳ PDF..." : "Télécharger PDF"}</span>
+                <span>{isDownloadingPDF ? "PDF..." : "Télécharger PDF"}</span>
               </button>
             </div>
           </div>
@@ -861,7 +858,7 @@ export default function FactureGenerator({ onBack }) {
         <div className="mobile-quick-sheet no-print">
           <div className="quick-sheet-header">
             <span className="quick-sheet-title">
-              ✏️ Éditer {selectedElement === "client" ? "le Client" : selectedElement === "emetteur" ? "l'Émetteur" : selectedElement === "signataire" ? "le Signataire" : "la Facture"}
+              Éditer {selectedElement === "client" ? "le Client" : selectedElement === "emetteur" ? "l'Émetteur" : selectedElement === "signataire" ? "le Signataire" : "la Facture"}
             </span>
             <button className="quick-sheet-close" onClick={() => setSelectedElement(null)}>✕</button>
           </div>
@@ -918,7 +915,7 @@ export default function FactureGenerator({ onBack }) {
                 style={{ flex: 1, padding: "10px" }}
                 onClick={() => setSelectedElement(null)}
               >
-                ✓ Appliquer
+                Appliquer
               </button>
             </div>
           </div>
@@ -931,7 +928,6 @@ export default function FactureGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => { setMobileView("editor"); setSelectedElement(null); }}
         >
-          <span>✏️</span>
           <span>Saisie</span>
         </button>
 
@@ -939,7 +935,6 @@ export default function FactureGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "preview" && !dragMode ? "active" : ""}`}
           onClick={() => { setMobileView("preview"); setDragMode(false); }}
         >
-          <span>👁️</span>
           <span>Aperçu</span>
         </button>
 
@@ -947,8 +942,7 @@ export default function FactureGenerator({ onBack }) {
           className={`mobile-bottom-btn ${dragMode ? "active" : ""}`}
           onClick={() => { setMobileView("preview"); setDragMode(!dragMode); }}
         >
-          <span>🤏</span>
-          <span>{dragMode ? "Posé ✓" : "Déplacer"}</span>
+          <span>{dragMode ? "Posé" : "Déplacer"}</span>
         </button>
 
         <button 
@@ -958,7 +952,6 @@ export default function FactureGenerator({ onBack }) {
             setActiveTheme(THEMES[nextIdx]);
           }}
         >
-          <span>🎨</span>
           <span>Thème</span>
         </button>
 
@@ -966,7 +959,6 @@ export default function FactureGenerator({ onBack }) {
           className="mobile-bottom-btn"
           onClick={handleExportPDF}
         >
-          <span>📄</span>
           <span>Export PDF</span>
         </button>
       </div>

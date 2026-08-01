@@ -216,22 +216,6 @@ html, body, #root {
   margin: 0 auto 40px;
 }
 
-.hub-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  background: #EFF6FF;
-  border: 1px solid #BFDBFE;
-  color: #2563EB;
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 14px;
-}
-
 .hub-hero h1 {
   font-size: 32px;
   font-weight: 800;

@@ -240,14 +240,14 @@ export default function CvGenerator({ onBack }) {
           className={`mobile-view-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => setMobileView("editor")}
         >
-          ✏️ Formulaire d'Édition
+          Formulaire d'Édition
         </button>
         <button 
           type="button"
           className={`mobile-view-btn ${mobileView === "preview" ? "active" : ""}`}
           onClick={() => setMobileView("preview")}
         >
-          👁️ Aperçu ({Math.round(zoomScale * 100)}%)
+          Aperçu ({Math.round(zoomScale * 100)}%)
         </button>
       </div>
 
@@ -256,7 +256,6 @@ export default function CvGenerator({ onBack }) {
         <div className={`editor-panel no-print ${isMobile && mobileView === "preview" ? "mobile-hide-editor" : ""}`}>
           <div className="editor-header">
             <h1>
-              <UserCheck className="w-5 h-5 text-blue-600" />
               <span>Générateur de CV Professionnel</span>
             </h1>
             <p>Modèles métiers, 3 dispositions & personnalisation</p>
@@ -267,25 +266,19 @@ export default function CvGenerator({ onBack }) {
               onClick={() => setActiveTab("presets")}
               className={`tab-btn ${activeTab === "presets" ? "active" : ""}`}
             >
-              ⭐ Modèles
-            </button>
-            <button
-              onClick={() => setActiveTab("layout")}
-              className={`tab-btn ${activeTab === "layout" ? "active" : ""}`}
-            >
-              📐 Disposition
+              Modèles
             </button>
             <button
               onClick={() => setActiveTab("content")}
               className={`tab-btn ${activeTab === "content" ? "active" : ""}`}
             >
-              👤 Profil
+              Profil & Expériences
             </button>
             <button
               onClick={() => setActiveTab("style")}
               className={`tab-btn ${activeTab === "style" ? "active" : ""}`}
             >
-              🎨 Thème
+              Style & Design
             </button>
           </div>
 
@@ -353,16 +346,16 @@ export default function CvGenerator({ onBack }) {
 
                 <div className="presets-box">
                   <div className="flex items-center justify-between" style={{ marginBottom: "6px" }}>
-                    <label style={{ margin: 0 }}>💼 Expériences Professionnelles</label>
+                    <label style={{ margin: 0 }}>Expériences Professionnelles</label>
                     <button onClick={addExperience} className="btn btn-secondary" style={{ padding: "3px 8px", fontSize: "11px" }}>
-                      <Plus className="w-3.5 h-3.5" />
+                      Ajouter
                     </button>
                   </div>
 
                   {experiences.map((exp) => (
                     <div key={exp.id} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: "8px", padding: "8px", marginBottom: "8px", position: "relative" }}>
-                      <button onClick={() => removeExperience(exp.id)} style={{ position: "absolute", top: "6px", right: "6px", border: "none", background: "none", color: "#EF4444", cursor: "pointer" }}>
-                        <Trash2 className="w-3.5 h-3.5" />
+                      <button onClick={() => removeExperience(exp.id)} style={{ position: "absolute", top: "6px", right: "6px", border: "none", background: "none", color: "#EF4444", cursor: "pointer", fontSize: "14px" }}>
+                        ✕
                       </button>
                       <div className="input-group" style={{ marginBottom: "4px" }}>
                         <input type="text" value={exp.role} onChange={(e) => updateExperience(exp.id, "role", e.target.value)} placeholder="Poste" style={{ fontWeight: "700" }} />
@@ -377,14 +370,14 @@ export default function CvGenerator({ onBack }) {
                 </div>
 
                 <div className="presets-box">
-                  <label>⚡ Compétences Clés</label>
+                  <label>Compétences Clés</label>
                   <div className="flex gap-2" style={{ marginBottom: "8px" }}>
                     <input type="text" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addSkill()} placeholder="Nouvelle compétence..." style={{ flex: 1 }} />
                     <button onClick={addSkill} className="btn btn-secondary" style={{ padding: "6px 10px", fontSize: "11px" }}>Ajouter</button>
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {skills.map((skill) => (
-                      <span key={skill} className="chip active flex items-center gap-1">
+                      <span key={skill} className="px-2 py-1 rounded bg-slate-100 text-slate-800 text-xs flex items-center gap-1">
                         {skill}
                         <button onClick={() => removeSkill(skill)} style={{ border: "none", background: "none", color: "#EF4444", cursor: "pointer", fontWeight: "bold" }}>×</button>
                       </span>
@@ -432,12 +425,13 @@ export default function CvGenerator({ onBack }) {
         <div className={`preview-area ${isMobile && mobileView === "editor" ? "mobile-hide-preview" : ""}`}>
           {/* Zoom Bar */}
           <div className="zoom-bar no-print">
-            <button onClick={onBack} className="btn btn-secondary">
-              <ArrowLeft className="w-4 h-4" />
-              <span>Accueil</span>
-            </button>
+            {onBack && (
+              <button onClick={onBack} className="btn btn-secondary">
+                <span>Accueil</span>
+              </button>
+            )}
             <div style={{ height: "16px", width: "1px", background: "#E2E8F0" }}></div>
-            <label>🔍 Zoom :</label>
+            <label>Zoom :</label>
             <input
               type="range"
               min="0.5"
@@ -451,8 +445,7 @@ export default function CvGenerator({ onBack }) {
             </span>
             <div style={{ height: "16px", width: "1px", background: "#E2E8F0" }}></div>
             <button onClick={exportPDF} disabled={isExporting} className="btn btn-primary">
-              {isExporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              <span>Exporter en PDF</span>
+              <span>{isExporting ? "PDF..." : "Exporter en PDF"}</span>
             </button>
           </div>
 
@@ -480,9 +473,9 @@ export default function CvGenerator({ onBack }) {
                       <p className="text-xs font-medium tracking-wide text-center opacity-80 mb-6">{personal.title}</p>
                       
                       <div className="space-y-3 text-xs opacity-90 border-t border-white/10 pt-4 mb-6">
-                        <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 shrink-0" /><span>{personal.email}</span></div>
-                        <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 shrink-0" /><span>{personal.phone}</span></div>
-                        <div className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 shrink-0" /><span>{personal.location}</span></div>
+                        <div><span>{personal.email}</span></div>
+                        <div><span>{personal.phone}</span></div>
+                        <div><span>{personal.location}</span></div>
                       </div>
 
                       <div className="border-t border-white/10 pt-4">
@@ -556,9 +549,9 @@ export default function CvGenerator({ onBack }) {
                       <h1 className="text-2xl font-extrabold tracking-tight uppercase">{personal.name}</h1>
                       <p className="text-sm font-medium tracking-wide opacity-90 mb-3">{personal.title}</p>
                       <div className="flex flex-wrap items-center gap-4 text-xs opacity-80">
-                        <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5" />{personal.email}</span>
-                        <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" />{personal.phone}</span>
-                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{personal.location}</span>
+                        <span>{personal.email}</span>
+                        <span>{personal.phone}</span>
+                        <span>{personal.location}</span>
                       </div>
                     </div>
                   </div>
@@ -652,7 +645,6 @@ export default function CvGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => setMobileView("editor")}
         >
-          <span>✏️</span>
           <span>Saisie</span>
         </button>
 
@@ -660,7 +652,6 @@ export default function CvGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "preview" ? "active" : ""}`}
           onClick={() => setMobileView("preview")}
         >
-          <span>👁️</span>
           <span>Aperçu</span>
         </button>
 
@@ -671,7 +662,6 @@ export default function CvGenerator({ onBack }) {
             setActiveTheme(CV_THEMES[nextIdx]);
           }}
         >
-          <span>🎨</span>
           <span>Thème</span>
         </button>
 
@@ -679,7 +669,6 @@ export default function CvGenerator({ onBack }) {
           className="mobile-bottom-btn"
           onClick={exportPDF}
         >
-          <span>📄</span>
           <span>Export PDF</span>
         </button>
       </div>

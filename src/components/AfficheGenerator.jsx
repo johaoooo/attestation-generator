@@ -10,46 +10,46 @@ const DEFAULT_AFFICHE_DATA = {
   surTitre: "RÉPUBLIQUE DU BÉNIN — MAIRIE DE PORTO-NOVO",
   titre: "4ÈME ÉDITION DE LA FOIRE INTERNATIONALE DE MADINGO-KAYES / POINTE-NOIRE",
   sousTitre: "Valorisation du Patrimoine Culturel & Artisanal de Porto-Novo",
-  dateLieu: "📍 Du 10 au 14 Août à Madingo-Kayes | Du 15 au 31 Août 2026 à Pointe-Noire",
+  dateLieu: "Du 10 au 14 Août à Madingo-Kayes | Du 15 au 31 Août 2026 à Pointe-Noire",
   organisateur: "Organisé sous la haute bienveillance de la Mairie de Porto-Novo et de la Coordination FIMA/PN",
-  badgePromo: "✨ ENTRÉE LIBRE & GRATUITE",
+  badgePromo: "ENTRÉE LIBRE & GRATUITE",
   programme: "• Expositions d'artisanat d'art & Macramé d'excellence\n• Ateliers vivants de Teinture de pagne traditionnelle\n• Rencontres B2B & Réseautage d'artisans internationaux\n• Soirées culturelles, danses & gastronomie du Bénin",
-  contact: "📞 Renseignements & Inscriptions : +229 01 97 00 00 00 | ✉️ contact@fima-pn.bj | 🌐 www.fima-pn.bj",
+  contact: "Renseignements & Inscriptions : +229 01 97 00 00 00 | contact@fima-pn.bj | www.fima-pn.bj",
   signataireTitre: "La Coordonnatrice Internationale",
   signataireNom: "TOSSA Afiavi Gbessito Honorine"
 };
 
 const AFFICHE_PRESETS = [
   {
-    name: "🏛️ Foire & Événement Culturel (Porto-Novo / Congo)",
+    name: "Foire & Événement Culturel (Porto-Novo / Congo)",
     data: { ...DEFAULT_AFFICHE_DATA }
   },
   {
-    name: "🎓 Formation Professionnelle Macramé & Teinture",
+    name: "Formation Professionnelle Macramé & Teinture",
     data: {
       surTitre: "ONG ESPOIR ET NATURE & MAISON AFI COLLECTION DU BÉNIN",
       titre: "GRAND ATELIER DE FORMATION EN MACRAMÉ & TEINTURE DE PAGNE",
       sousTitre: "Apprenez un métier d'avenir et obtenez votre attestation de fin de formation professionnelle",
-      dateLieu: "📍 Du 1er au 31 Août 2026 — Centre de Formation d'Houegbo",
+      dateLieu: "Du 1er au 31 Août 2026 — Centre de Formation d'Houegbo",
       organisateur: "Formation certifiante par Mme TOSSA Afiavi Gbessito Honorine",
-      badgePromo: "🔥 30 PLACES DISPONIBLES SEULEMENT",
+      badgePromo: "30 PLACES DISPONIBLES SEULEMENT",
       programme: "• Techniques avancées de tissage Macramé & création d'accessoires\n• Procédés traditionnels et modernes de Teinture de pagne\n• Attestation officielle délivrée à la fin du stage\n• Fourniture complète du kit d'apprentissage",
-      contact: "📞 Inscriptions ouvertes : +229 01 95 00 00 00 | ✉️ formation@aficollection.bj",
+      contact: "Inscriptions ouvertes : +229 01 95 00 00 00 | formation@aficollection.bj",
       signataireTitre: "La Directrice Générale",
       signataireNom: "TOSSA Afiavi Gbessito Honorine"
     }
   },
   {
-    name: "💼 Forum Business & Conférence Internationale",
+    name: "Forum Business & Conférence Internationale",
     data: {
       surTitre: "SOMMET DES LEADERS & ENTREPRENEURS D'AFRIQUE DE L'OUEST",
       titre: "FORUM INTERNATIONAL DU NUMÉRIQUE ET DE L'INNOVATION 2026",
       sousTitre: "Transformer les opportunités technologiques en croissance économique durable",
-      dateLieu: "📍 15 & 16 Septembre 2026 — Palais des Congrès de Cotonou",
+      dateLieu: "15 & 16 Septembre 2026 — Palais des Congrès de Cotonou",
       organisateur: "Sous le haut patronage des Acteurs de la Tech du Bénin",
-      badgePromo: "🚀 PASS CONFÉRENCE DISPONIBLE",
+      badgePromo: "PASS CONFÉRENCE DISPONIBLE",
       programme: "• Keynotes d'experts internationaux & Paneles de discussion\n• Atelier de prototypage & Génération de documents intelligents\n• Concours Pitch Startups & Réseautage VIP",
-      contact: "📞 Inscriptions & Pass : +229 01 90 00 00 00 | ✉️ summit@techbenin.bj",
+      contact: "Inscriptions & Pass : +229 01 90 00 00 00 | summit@techbenin.bj",
       signataireTitre: "Le Comité d'Organisation",
       signataireNom: "Tech Benin Solutions"
     }
@@ -280,8 +280,7 @@ export default function AfficheGenerator({ onBack }) {
             <>
               <div className="editor-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <h1 className="flex items-center gap-2">
-                    <ImageIcon className="w-5 h-5 text-blue-600" />
+                  <h1>
                     <span>Affiche & Poster Officiel</span>
                   </h1>
                   <p>Conception d'affiches d'événements, foires & conférences</p>
@@ -304,7 +303,6 @@ export default function AfficheGenerator({ onBack }) {
                   className={`tab-btn ${activeTab === "content" ? "active" : ""}`}
                   onClick={() => setActiveTab("content")}
                 >
-                  <FileText className="w-3.5 h-3.5" />
                   <span>1. Titre & Contenu</span>
                 </button>
                 <button
@@ -312,7 +310,6 @@ export default function AfficheGenerator({ onBack }) {
                   className={`tab-btn ${activeTab === "presets" ? "active" : ""}`}
                   onClick={() => setActiveTab("presets")}
                 >
-                  <Star className="w-3.5 h-3.5" />
                   <span>2. Modèles</span>
                 </button>
                 <button
@@ -320,7 +317,6 @@ export default function AfficheGenerator({ onBack }) {
                   className={`tab-btn ${activeTab === "style" ? "active" : ""}`}
                   onClick={() => setActiveTab("style")}
                 >
-                  <Palette className="w-3.5 h-3.5" />
                   <span>3. Style & Couleurs</span>
                 </button>
                 <button
@@ -570,14 +566,12 @@ export default function AfficheGenerator({ onBack }) {
             <div className="btn-group">
               {onBack && (
                 <button type="button" className="btn btn-secondary" onClick={onBack}>
-                  <ArrowLeft className="w-4 h-4" />
                   <span>Accueil</span>
                 </button>
               )}
 
               <button type="button" className="btn btn-pdf" onClick={handleExportPDF} disabled={isDownloadingPDF}>
-                <Download className="w-4 h-4" />
-                <span>{isDownloadingPDF ? "⏳ PDF..." : "Télécharger PDF"}</span>
+                <span>{isDownloadingPDF ? "PDF..." : "Télécharger PDF"}</span>
               </button>
             </div>
           </div>
@@ -700,7 +694,7 @@ export default function AfficheGenerator({ onBack }) {
         <div className="mobile-quick-sheet no-print">
           <div className="quick-sheet-header">
             <span className="quick-sheet-title">
-              ✏️ Éditer {selectedElement === "titre" ? "le Titre" : selectedElement === "dateLieu" ? "Date & Lieu" : "l'Affiche"}
+              Éditer {selectedElement === "titre" ? "le Titre" : selectedElement === "dateLieu" ? "Date & Lieu" : "l'Affiche"}
             </span>
             <button className="quick-sheet-close" onClick={() => setSelectedElement(null)}>✕</button>
           </div>
@@ -745,7 +739,7 @@ export default function AfficheGenerator({ onBack }) {
                 style={{ flex: 1, padding: "10px" }}
                 onClick={() => setSelectedElement(null)}
               >
-                ✓ Appliquer
+                Appliquer
               </button>
             </div>
           </div>
@@ -758,7 +752,6 @@ export default function AfficheGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => { setMobileView("editor"); setSelectedElement(null); }}
         >
-          <span>✏️</span>
           <span>Saisie</span>
         </button>
 
@@ -766,7 +759,6 @@ export default function AfficheGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "preview" && !dragMode ? "active" : ""}`}
           onClick={() => { setMobileView("preview"); setDragMode(false); }}
         >
-          <span>👁️</span>
           <span>Aperçu</span>
         </button>
 
@@ -774,8 +766,7 @@ export default function AfficheGenerator({ onBack }) {
           className={`mobile-bottom-btn ${dragMode ? "active" : ""}`}
           onClick={() => { setMobileView("preview"); setDragMode(!dragMode); }}
         >
-          <span>🤏</span>
-          <span>{dragMode ? "Posé ✓" : "Déplacer"}</span>
+          <span>{dragMode ? "Posé" : "Déplacer"}</span>
         </button>
 
         <button 
@@ -785,7 +776,6 @@ export default function AfficheGenerator({ onBack }) {
             setActiveTheme(AFFICHE_THEMES[nextIdx]);
           }}
         >
-          <span>🎨</span>
           <span>Thème</span>
         </button>
 
@@ -793,7 +783,6 @@ export default function AfficheGenerator({ onBack }) {
           className="mobile-bottom-btn"
           onClick={handleExportPDF}
         >
-          <span>📄</span>
           <span>Export PDF</span>
         </button>
       </div>

@@ -1406,15 +1406,13 @@ export default function AttestationFormation({ onBack }) {
 
       {showSaveToast && (
         <div className="toast-notification">
-          <IconCheck color="#FFFFFF" />
-          <span>Modifications enregistrées avec succès ! 💾</span>
+          <span>Modifications enregistrées avec succès !</span>
         </div>
       )}
 
       {celebrated && (
         <div className="celebrate-banner">
-          <IconSparkles />
-          <span>Félicitations pour cette belle réussite ! 🎉</span>
+          <span>Félicitations pour cette belle réussite !</span>
         </div>
       )}
 
@@ -1425,14 +1423,14 @@ export default function AttestationFormation({ onBack }) {
           className={`mobile-view-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => setMobileView("editor")}
         >
-          ✏️ Formulaire d'Édition
+          Formulaire d'Édition
         </button>
         <button 
           type="button"
           className={`mobile-view-btn ${mobileView === "preview" ? "active" : ""}`}
           onClick={() => setMobileView("preview")}
         >
-          👁️ Aperçu ({Math.round(zoomScale * 100)}%)
+          Aperçu ({Math.round(zoomScale * 100)}%)
         </button>
       </div>
 
@@ -1459,7 +1457,6 @@ export default function AttestationFormation({ onBack }) {
               <div className="editor-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
                   <h1>
-                    <IconAward color="#D4AF37" />
                     Attestation de Formation
                   </h1>
                   <p>ONG ESPOIR ET NATURE & Maison AFI COLLECTION</p>
@@ -1477,25 +1474,25 @@ export default function AttestationFormation({ onBack }) {
 
           <div className="tabs">
             <button className={`tab-btn ${activeTab === "content" ? "active" : ""}`} onClick={() => setActiveTab("content")}>
-              <IconText /> Contenu
+              Contenu
             </button>
             <button className={`tab-btn ${activeTab === "style" ? "active" : ""}`} onClick={() => setActiveTab("style")}>
-              <IconSliders /> Format & Thèmes
+              Format & Thèmes
             </button>
             <button className={`tab-btn ${activeTab === "logos" ? "active" : ""}`} onClick={() => setActiveTab("logos")}>
-              <IconImage /> Logos & Fond
+              Logos & Fond
             </button>
             <button className={`tab-btn ${activeTab === "signature" ? "active" : ""}`} onClick={() => setActiveTab("signature")}>
-              <IconPen /> Signataires & Cachet
+              Signataires & Cachet
             </button>
             <button className={`tab-btn ${activeTab === "border" ? "active" : ""}`} onClick={() => setActiveTab("border")}>
-              <IconBorder /> Bordures
+              Bordures
             </button>
             <button className={`tab-btn ${activeTab === "typography" ? "active" : ""}`} onClick={() => setActiveTab("typography")}>
-              <IconFont /> Polices
+              Polices
             </button>
             <button className={`tab-btn ${activeTab === "bulk" ? "active" : ""}`} onClick={() => setActiveTab("bulk")}>
-              <IconUsers /> Masse
+              Masse
             </button>
           </div>
 
@@ -2240,13 +2237,13 @@ export default function AttestationFormation({ onBack }) {
                 className={`format-bar-btn ${pageFormat === "landscape" ? "active" : ""}`}
                 onClick={() => setPageFormat("landscape")}
               >
-                📐 Paysage
+                Paysage
               </button>
               <button
                 className={`format-bar-btn ${pageFormat === "portrait" ? "active" : ""}`}
                 onClick={() => setPageFormat("portrait")}
               >
-                📱 Portrait
+                Portrait
               </button>
             </div>
 
@@ -2261,27 +2258,24 @@ export default function AttestationFormation({ onBack }) {
 
             <div className="btn-group">
               <button className="btn btn-secondary" onClick={handleCopyText}>
-                {copied ? <IconCheck color="#10B981" /> : <IconCopy />}
                 {copied ? "Copie !" : "Copier"}
               </button>
 
               {/* DIRECT PDF DOWNLOAD BUTTON */}
               <button className="btn btn-pdf" onClick={handleExportPDF} disabled={isDownloadingPDF}>
-                {isDownloadingPDF ? "⏳ PDF..." : "📄 Télécharger PDF"}
+                {isDownloadingPDF ? "PDF..." : "Télécharger PDF"}
               </button>
 
               {/* HD PNG DOWNLOAD BUTTON */}
               <button className="btn btn-download" onClick={handleExportPNG} disabled={isDownloading}>
-                {isDownloading ? "⏳ PNG..." : "📸 Image HD (PNG)"}
+                {isDownloading ? "PNG..." : "Image HD (PNG)"}
               </button>
 
               <button className="btn btn-celebrate" onClick={handleCelebrate}>
-                <IconSparkles />
                 Célébrer !
               </button>
 
               <button className="btn btn-primary" onClick={handlePrint}>
-                <IconPrinter />
                 Imprimer
               </button>
             </div>
@@ -2454,7 +2448,6 @@ export default function AttestationFormation({ onBack }) {
                         transform: `translate(${positions.sig1?.x || 0}px, ${positions.sig1?.y || 0}px)`
                       }}
                     >
-                      {dragMode && <span className="drag-indicator-badge">🖐 Glisser</span>}
                       <div className="signature-display" style={{ height: `${Math.max(sig1Size, 36)}px` }}>
                         {showSig1 ? (
                           customSignatureImg ? (
@@ -2485,7 +2478,6 @@ export default function AttestationFormation({ onBack }) {
                         transform: `translate(${positions.seal?.x || 0}px, ${positions.seal?.y || 0}px)`
                       }}
                     >
-                      {dragMode && <span className="drag-indicator-badge">🖐 Glisser</span>}
                       {customStampImg ? (
                         <img
                           src={customStampImg}
@@ -2515,7 +2507,6 @@ export default function AttestationFormation({ onBack }) {
                         transform: `translate(${positions.sig2?.x || 0}px, ${positions.sig2?.y || 0}px)`
                       }}
                     >
-                      {dragMode && <span className="drag-indicator-badge">🖐 Glisser</span>}
                       <div className="signature-display" style={{ height: `${Math.max(sig2Size, 36)}px` }}>
                         {showSig2 ? (
                           customSignatureImg2 ? (
@@ -2545,7 +2536,7 @@ export default function AttestationFormation({ onBack }) {
         <div className="mobile-quick-sheet no-print">
           <div className="quick-sheet-header">
             <span className="quick-sheet-title">
-              ✏️ Éditer {selectedElement === "destinataire" ? "le Bénéficiaire" : selectedElement === "title" ? "le Titre" : selectedElement === "datePlace" ? "Lieu & Date" : selectedElement === "signataire" ? "le Signataire" : "Sceau & Tampon"}
+              Éditer {selectedElement === "destinataire" ? "le Bénéficiaire" : selectedElement === "title" ? "le Titre" : selectedElement === "datePlace" ? "Lieu & Date" : selectedElement === "signataire" ? "le Signataire" : "Sceau & Tampon"}
             </span>
             <button className="quick-sheet-close" onClick={() => setSelectedElement(null)}>✕</button>
           </div>
@@ -2637,7 +2628,7 @@ export default function AttestationFormation({ onBack }) {
                 style={{ flex: 1, padding: "10px" }}
                 onClick={() => setSelectedElement(null)}
               >
-                ✓ Appliquer
+                Appliquer
               </button>
             </div>
           </div>
@@ -2650,7 +2641,6 @@ export default function AttestationFormation({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => { setMobileView("editor"); setSelectedElement(null); }}
         >
-          <span>✏️</span>
           <span>Saisie</span>
         </button>
 
@@ -2658,7 +2648,6 @@ export default function AttestationFormation({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "preview" && !dragMode ? "active" : ""}`}
           onClick={() => { setMobileView("preview"); setDragMode(false); }}
         >
-          <span>👁️</span>
           <span>Aperçu</span>
         </button>
 
@@ -2666,8 +2655,7 @@ export default function AttestationFormation({ onBack }) {
           className={`mobile-bottom-btn ${dragMode ? "active" : ""}`}
           onClick={() => { setMobileView("preview"); setDragMode(!dragMode); }}
         >
-          <span>🤏</span>
-          <span>{dragMode ? "Posé ✓" : "Déplacer"}</span>
+          <span>{dragMode ? "Posé" : "Déplacer"}</span>
         </button>
 
         <button 
@@ -2677,7 +2665,6 @@ export default function AttestationFormation({ onBack }) {
             setActiveTheme(THEMES[nextIdx]);
           }}
         >
-          <span>🎨</span>
           <span>Thème</span>
         </button>
 
@@ -2685,7 +2672,6 @@ export default function AttestationFormation({ onBack }) {
           className="mobile-bottom-btn"
           onClick={handleExportPDF}
         >
-          <span>📄</span>
           <span>Export PDF</span>
         </button>
       </div>

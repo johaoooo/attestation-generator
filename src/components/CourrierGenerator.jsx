@@ -341,8 +341,7 @@ export default function CourrierGenerator({ onBack }) {
             <>
               <div className="editor-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <h1 className="flex items-center gap-2">
-                    <Mail className="w-5 h-5 text-blue-600" />
+                  <h1>
                     <span>Courrier Officiel</span>
                   </h1>
                   <p>Rédaction & mise en page administrative</p>
@@ -905,7 +904,7 @@ export default function CourrierGenerator({ onBack }) {
         <div className="mobile-quick-sheet no-print">
           <div className="quick-sheet-header">
             <span className="quick-sheet-title">
-              ✏️ Éditer {selectedElement === "objet" ? "l'Objet" : selectedElement === "destinataire" ? "le Destinataire" : selectedElement === "signataire" ? "le Signataire" : "le Document"}
+              Éditer {selectedElement === "objet" ? "l'Objet" : selectedElement === "destinataire" ? "le Destinataire" : selectedElement === "signataire" ? "le Signataire" : "le Document"}
             </span>
             <button className="quick-sheet-close" onClick={() => setSelectedElement(null)}>✕</button>
           </div>
@@ -962,7 +961,7 @@ export default function CourrierGenerator({ onBack }) {
                 style={{ flex: 1, padding: "10px" }}
                 onClick={() => setSelectedElement(null)}
               >
-                ✓ Appliquer
+                Appliquer
               </button>
             </div>
           </div>
@@ -975,7 +974,6 @@ export default function CourrierGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => { setMobileView("editor"); setSelectedElement(null); }}
         >
-          <span>✏️</span>
           <span>Saisie</span>
         </button>
 
@@ -983,7 +981,6 @@ export default function CourrierGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "preview" && !dragMode ? "active" : ""}`}
           onClick={() => { setMobileView("preview"); setDragMode(false); }}
         >
-          <span>👁️</span>
           <span>Aperçu</span>
         </button>
 
@@ -991,8 +988,7 @@ export default function CourrierGenerator({ onBack }) {
           className={`mobile-bottom-btn ${dragMode ? "active" : ""}`}
           onClick={() => { setMobileView("preview"); setDragMode(!dragMode); }}
         >
-          <span>🤏</span>
-          <span>{dragMode ? "Posé ✓" : "Déplacer"}</span>
+          <span>{dragMode ? "Posé" : "Déplacer"}</span>
         </button>
 
         <button 
@@ -1002,7 +998,6 @@ export default function CourrierGenerator({ onBack }) {
             setActiveTheme(THEMES[nextIdx]);
           }}
         >
-          <span>🎨</span>
           <span>Thème</span>
         </button>
 
@@ -1010,7 +1005,6 @@ export default function CourrierGenerator({ onBack }) {
           className="mobile-bottom-btn"
           onClick={handleExportPDF}
         >
-          <span>📄</span>
           <span>Export PDF</span>
         </button>
       </div>

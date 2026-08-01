@@ -200,14 +200,14 @@ export default function RapportMemoireGenerator({ onBack }) {
           className={`mobile-view-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => setMobileView("editor")}
         >
-          ✏️ Formulaire d'Édition
+          Formulaire d'Édition
         </button>
         <button 
           type="button"
           className={`mobile-view-btn ${mobileView === "preview" ? "active" : ""}`}
           onClick={() => setMobileView("preview")}
         >
-          👁️ Aperçu ({Math.round(zoomScale * 100)}%)
+          Aperçu ({Math.round(zoomScale * 100)}%)
         </button>
       </div>
 
@@ -216,7 +216,6 @@ export default function RapportMemoireGenerator({ onBack }) {
         <div className={`editor-panel no-print ${isMobile && mobileView === "preview" ? "mobile-hide-editor" : ""}`}>
           <div className="editor-header">
             <h1>
-              <BookOpen className="w-5 h-5 text-blue-600" />
               <span>Générateur de Rapport & Mémoire</span>
             </h1>
             <p>Documents académiques multi-pages modifiables</p>
@@ -227,25 +226,25 @@ export default function RapportMemoireGenerator({ onBack }) {
               onClick={() => setActiveTab("presets")}
               className={`tab-btn ${activeTab === "presets" ? "active" : ""}`}
             >
-              ⭐ Modèles
+              Modèles
             </button>
             <button
               onClick={() => setActiveTab("garde")}
               className={`tab-btn ${activeTab === "garde" ? "active" : ""}`}
             >
-              🎓 Garde
+              Page de Garde
             </button>
             <button
               onClick={() => setActiveTab("chapitres")}
               className={`tab-btn ${activeTab === "chapitres" ? "active" : ""}`}
             >
-              📖 Chapitres
+              Chapitres
             </button>
             <button
               onClick={() => setActiveTab("style")}
               className={`tab-btn ${activeTab === "style" ? "active" : ""}`}
             >
-              🎨 Style
+              Thème & Ornements
             </button>
           </div>
 
@@ -317,16 +316,16 @@ export default function RapportMemoireGenerator({ onBack }) {
             {activeTab === "chapitres" && (
               <div className="presets-box">
                 <div className="flex items-center justify-between" style={{ marginBottom: "8px" }}>
-                  <label style={{ margin: 0 }}>📖 Chapitres du Document</label>
+                  <label style={{ margin: 0 }}>Chapitres du Document</label>
                   <button onClick={addChapter} className="btn btn-secondary" style={{ padding: "3px 8px", fontSize: "11px" }}>
-                    <Plus className="w-3.5 h-3.5" />
+                    <span>Ajouter</span>
                   </button>
                 </div>
 
                 {chapters.map((chap) => (
                   <div key={chap.id} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: "8px", padding: "8px", marginBottom: "8px", position: "relative" }}>
-                    <button onClick={() => removeChapter(chap.id)} style={{ position: "absolute", top: "6px", right: "6px", border: "none", background: "none", color: "#EF4444", cursor: "pointer" }}>
-                      <Trash2 className="w-3.5 h-3.5" />
+                    <button onClick={() => removeChapter(chap.id)} style={{ position: "absolute", top: "6px", right: "6px", border: "none", background: "none", color: "#EF4444", cursor: "pointer", fontSize: "14px" }}>
+                      ✕
                     </button>
                     <div className="input-group" style={{ marginBottom: "4px" }}>
                       <input type="text" value={chap.title} onChange={(e) => updateChapter(chap.id, "title", e.target.value)} style={{ fontWeight: "700" }} />
@@ -340,7 +339,7 @@ export default function RapportMemoireGenerator({ onBack }) {
             {/* TAB 3: Style & Ornements */}
             {activeTab === "style" && (
               <div className="presets-box">
-                <label>🎨 Thème Académique & Ornements</label>
+                <label>Thème Académique & Ornements</label>
                 <div className="theme-grid" style={{ marginBottom: "10px" }}>
                   {RAPPORT_THEMES.map((th) => (
                     <div
@@ -372,7 +371,7 @@ export default function RapportMemoireGenerator({ onBack }) {
                     onChange={(e) => setShowOrnaments(e.target.checked)}
                   />
                   <label htmlFor="ornamentToggle" style={{ fontSize: "11.5px", fontWeight: "600", cursor: "pointer" }}>
-                    Afficher les coins ornementaux (⚜️ Dorures)
+                    Afficher les coins ornementaux
                   </label>
                 </div>
               </div>
@@ -384,12 +383,13 @@ export default function RapportMemoireGenerator({ onBack }) {
         <div className={`preview-area ${isMobile && mobileView === "editor" ? "mobile-hide-preview" : ""}`}>
           {/* Zoom Control Bar */}
           <div className="zoom-bar no-print">
-            <button onClick={onBack} className="btn btn-secondary">
-              <ArrowLeft className="w-4 h-4" />
-              <span>Accueil</span>
-            </button>
+            {onBack && (
+              <button onClick={onBack} className="btn btn-secondary">
+                <span>Accueil</span>
+              </button>
+            )}
             <div style={{ height: "16px", width: "1px", background: "#E2E8F0" }}></div>
-            <label>🔍 Zoom :</label>
+            <label>Zoom :</label>
             <input
               type="range"
               min="0.4"
@@ -401,13 +401,12 @@ export default function RapportMemoireGenerator({ onBack }) {
             <span style={{ fontSize: "11.5px", fontWeight: "700", color: "#2563EB" }}>
               {Math.round(zoomScale * 100)}%
             </span>
-            <span className="chip active font-mono">
+            <span className="font-mono text-xs text-slate-600">
               Total : {totalPages} Pages A4
             </span>
             <div style={{ height: "16px", width: "1px", background: "#E2E8F0" }}></div>
             <button onClick={exportPDF} disabled={isExporting} className="btn btn-primary">
-              {isExporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              <span>Exporter PDF Multipages</span>
+              <span>{isExporting ? "PDF..." : "Exporter PDF Multipages"}</span>
             </button>
           </div>
 
@@ -554,7 +553,6 @@ export default function RapportMemoireGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => setMobileView("editor")}
         >
-          <span>✏️</span>
           <span>Saisie</span>
         </button>
 
@@ -562,7 +560,6 @@ export default function RapportMemoireGenerator({ onBack }) {
           className={`mobile-bottom-btn ${mobileView === "preview" ? "active" : ""}`}
           onClick={() => setMobileView("preview")}
         >
-          <span>👁️</span>
           <span>Aperçu</span>
         </button>
 
@@ -573,7 +570,6 @@ export default function RapportMemoireGenerator({ onBack }) {
             setActiveTheme(RAPPORT_THEMES[nextIdx]);
           }}
         >
-          <span>🎨</span>
           <span>Thème</span>
         </button>
 
@@ -581,7 +577,6 @@ export default function RapportMemoireGenerator({ onBack }) {
           className="mobile-bottom-btn"
           onClick={exportPDF}
         >
-          <span>📄</span>
           <span>Export PDF</span>
         </button>
       </div>
