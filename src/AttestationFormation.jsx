@@ -166,8 +166,11 @@ export default function AttestationFormation({ onBack }) {
   const [sealType, setSealType] = useState("wax");
   const [watermark, setWatermark] = useState("rosace");
   
-  // Responsive Zoom scale
+  // Responsive Zoom scale & Mobile View states
   const [zoomScale, setZoomScale] = useState(0.8);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  const [mobileView, setMobileView] = useState("editor");
+  const isMobile = windowWidth < 860;
 
   // Sidebar Resize and Collapse States
   const [sidebarWidth, setSidebarWidth] = useState(440);
