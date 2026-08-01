@@ -94,9 +94,30 @@ export default function RapportMemoireGenerator({ onBack }) {
   const [showOrnaments, setShowOrnaments] = useState(true);
   const [watermarkText, setWatermarkText] = useState("");
   const [zoomScale, setZoomScale] = useState(0.75);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  const [mobileView, setMobileView] = useState("editor");
+  const isMobile = windowWidth < 860;
 
   const [logoImg, setLogoImg] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+
+  // Auto zoom based on viewport width
+  useEffect(() => {
+    const updateAutoZoom = () => {
+      const w = window.innerWidth;
+      setWindowWidth(w);
+      if (w < 860) {
+        const availableWidth = Math.max(260, w - 32);
+        const autoZoom = Math.max(0.3, Math.min(0.95, availableWidth / 794));
+        setZoomScale(Number(autoZoom.toFixed(2)));
+      } else {
+        setZoomScale(0.75);
+      }
+    };
+    updateAutoZoom();
+    window.addEventListener("resize", updateAutoZoom);
+    return () => window.removeEventListener("resize", updateAutoZoom);
+  }, []);
 
   const previewContainerRef = useRef(null);
 
@@ -172,9 +193,27 @@ export default function RapportMemoireGenerator({ onBack }) {
 
   return (
     <div className="wrap">
+      {/* MOBILE VIEW TOGGLE SWITCHER (< 860px) */}
+      <div className="mobile-view-tabs no-print">
+        <button 
+          type="button"
+          className={`mobile-view-btn ${mobileView === "editor" ? "active" : ""}`}
+          onClick={() => setMobileView("editor")}
+        >
+          ✏️ Formulaire d'Édition
+        </button>
+        <button 
+          type="button"
+          className={`mobile-view-btn ${mobileView === "preview" ? "active" : ""}`}
+          onClick={() => setMobileView("preview")}
+        >
+          👁️ Aperçu ({Math.round(zoomScale * 100)}%)
+        </button>
+      </div>
+
       <div className="container">
         {/* Left Sidebar Editor Panel */}
-        <div className="editor-panel no-print">
+        <div className={`editor-panel no-print ${isMobile && mobileView === "preview" ? "mobile-hide-editor" : ""}`}>
           <div className="editor-header">
             <h1>
               <BookOpen className="w-5 h-5 text-blue-600" />
@@ -342,7 +381,7 @@ export default function RapportMemoireGenerator({ onBack }) {
         </div>
 
         {/* Right Side Canvas Preview Area */}
-        <div className="preview-area">
+        <div className={`preview-area ${isMobile && mobileView === "editor" ? "mobile-hide-preview" : ""}`}>
           {/* Zoom Control Bar */}
           <div className="zoom-bar no-print">
             <button onClick={onBack} className="btn btn-secondary">

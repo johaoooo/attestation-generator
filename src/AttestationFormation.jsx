@@ -249,13 +249,14 @@ export default function AttestationFormation({ onBack }) {
   const canvasRef = useRef(null);
   const certRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
 
-  // Bulk import state
-  const [csvText, setCsvText] = useState(
-    "Nom\nMadame AKAKPO Chantal\nMonsieur SOSSOU Boris\nMadame DOSSOU Pascaline"
-  );
+  // Signatures
+  const [sig1Img, setSig1Img] = useState(null);
+  const [sig2Img, setSig2Img] = useState(null);
+
+  // Bulk Generation State
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkNamesText, setBulkNamesText] = useState("");
   const [bulkList, setBulkList] = useState([]);
   const [currentBulkIndex, setCurrentBulkIndex] = useState(0);
 
@@ -268,15 +269,20 @@ export default function AttestationFormation({ onBack }) {
   useEffect(() => {
     const updateAutoZoom = () => {
       const w = window.innerWidth;
-      if (w < 600) setZoomScale(0.42);
-      else if (w < 900) setZoomScale(0.60);
-      else if (w < 1300) setZoomScale(0.78);
-      else setZoomScale(0.90);
+      setWindowWidth(w);
+      if (w < 860) {
+        const targetPaperWidth = pageFormat === "landscape" ? 1123 : 794;
+        const availableWidth = Math.max(260, w - 32);
+        const autoZoom = Math.max(0.24, Math.min(0.95, availableWidth / targetPaperWidth));
+        setZoomScale(Number(autoZoom.toFixed(2)));
+      } else {
+        setZoomScale(0.8);
+      }
     };
     updateAutoZoom();
     window.addEventListener("resize", updateAutoZoom);
     return () => window.removeEventListener("resize", updateAutoZoom);
-  }, []);
+  }, [pageFormat]);
 
   // Load saved content from localStorage on startup
   useEffect(() => {
@@ -1369,9 +1375,27 @@ export default function AttestationFormation({ onBack }) {
         </div>
       )}
 
-      <div className="container" style={{ gridTemplateColumns: isSidebarCollapsed ? "50px 1fr" : `${sidebarWidth}px 1fr`, transition: "grid-template-columns 0.25s ease" }}>
+      {/* MOBILE VIEW TOGGLE SWITCHER (< 860px) */}
+      <div className="mobile-view-tabs no-print">
+        <button 
+          type="button"
+          className={`mobile-view-btn ${mobileView === "editor" ? "active" : ""}`}
+          onClick={() => setMobileView("editor")}
+        >
+          ✏️ Formulaire d'Édition
+        </button>
+        <button 
+          type="button"
+          className={`mobile-view-btn ${mobileView === "preview" ? "active" : ""}`}
+          onClick={() => setMobileView("preview")}
+        >
+          👁️ Aperçu ({Math.round(zoomScale * 100)}%)
+        </button>
+      </div>
+
+      <div className="container" style={{ gridTemplateColumns: isMobile ? "1fr" : (isSidebarCollapsed ? "50px 1fr" : `${sidebarWidth}px 1fr`), transition: "grid-template-columns 0.25s ease" }}>
         {/* ================= EDITING SIDEBAR ================= */}
-        <aside className="editor-panel" style={{ width: "100%", overflow: "hidden" }}>
+        <aside className={`editor-panel ${isMobile && mobileView === "preview" ? "mobile-hide-editor" : ""}`} style={{ width: "100%", overflow: "hidden" }}>
           {isSidebarCollapsed ? (
             <div style={{ padding: "12px 6px", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
               <button
@@ -2153,7 +2177,7 @@ export default function AttestationFormation({ onBack }) {
         </aside>
 
         {/* ================= PREVIEW AREA ================= */}
-        <main className="preview-area">
+        <main className={`preview-area ${isMobile && mobileView === "editor" ? "mobile-hide-preview" : ""}`}>
           <div className="action-bar">
             {/* COLLAPSED RE-OPEN BUTTON */}
             {isSidebarCollapsed && (

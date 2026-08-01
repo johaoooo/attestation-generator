@@ -71,6 +71,9 @@ export default function AfficheGenerator({ onBack }) {
   const [activeTab, setActiveTab] = useState("content");
   const [pageFormat, setPageFormat] = useState("portrait");
   const [zoomScale, setZoomScale] = useState(0.85);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  const [mobileView, setMobileView] = useState("editor");
+  const isMobile = windowWidth < 860;
 
   const [sidebarWidth, setSidebarWidth] = useState(440);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -82,6 +85,25 @@ export default function AfficheGenerator({ onBack }) {
   const [stampImg, setStampImg] = useState(null);
   const [signatureImg, setSignatureImg] = useState(null);
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
+
+  // Auto zoom based on viewport width
+  useEffect(() => {
+    const updateAutoZoom = () => {
+      const w = window.innerWidth;
+      setWindowWidth(w);
+      if (w < 860) {
+        const targetPaperWidth = pageFormat === "landscape" ? 960 : 678;
+        const availableWidth = Math.max(260, w - 32);
+        const autoZoom = Math.max(0.3, Math.min(0.95, availableWidth / targetPaperWidth));
+        setZoomScale(Number(autoZoom.toFixed(2)));
+      } else {
+        setZoomScale(0.85);
+      }
+    };
+    updateAutoZoom();
+    window.addEventListener("resize", updateAutoZoom);
+    return () => window.removeEventListener("resize", updateAutoZoom);
+  }, [pageFormat]);
 
   const previewRef = useRef(null);
 
@@ -183,9 +205,27 @@ export default function AfficheGenerator({ onBack }) {
         .certificate-sheet.format-portrait { width: 678px; height: 960px; padding: 40px 52px; }
       `}</style>
 
-      <div className="container" style={{ gridTemplateColumns: isSidebarCollapsed ? "50px 1fr" : `${sidebarWidth}px 1fr`, transition: "grid-template-columns 0.25s ease" }}>
+      {/* MOBILE VIEW TOGGLE SWITCHER (< 860px) */}
+      <div className="mobile-view-tabs no-print">
+        <button 
+          type="button"
+          className={`mobile-view-btn ${mobileView === "editor" ? "active" : ""}`}
+          onClick={() => setMobileView("editor")}
+        >
+          ✏️ Formulaire d'Édition
+        </button>
+        <button 
+          type="button"
+          className={`mobile-view-btn ${mobileView === "preview" ? "active" : ""}`}
+          onClick={() => setMobileView("preview")}
+        >
+          👁️ Aperçu ({Math.round(zoomScale * 100)}%)
+        </button>
+      </div>
+
+      <div className="container" style={{ gridTemplateColumns: isMobile ? "1fr" : (isSidebarCollapsed ? "50px 1fr" : `${sidebarWidth}px 1fr`), transition: "grid-template-columns 0.25s ease" }}>
         {/* Left Sidebar Editor Panel */}
-        <aside className="editor-panel no-print" style={{ width: "100%", overflow: "hidden" }}>
+        <aside className={`editor-panel no-print ${isMobile && mobileView === "preview" ? "mobile-hide-editor" : ""}`} style={{ width: "100%", overflow: "hidden" }}>
           {isSidebarCollapsed ? (
             <div style={{ padding: "12px 6px", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
               <button
@@ -454,7 +494,7 @@ export default function AfficheGenerator({ onBack }) {
         </aside>
 
         {/* ================= PREVIEW AREA ================= */}
-        <main className="preview-area">
+        <main className={`preview-area ${isMobile && mobileView === "editor" ? "mobile-hide-preview" : ""}`}>
           <div className="action-bar">
             {isSidebarCollapsed && (
               <button

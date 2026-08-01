@@ -132,7 +132,28 @@ export default function CvGenerator({ onBack }) {
   const [activeTheme, setActiveTheme] = useState(CV_THEMES[0]);
   const [photoShape, setPhotoShape] = useState("circle");
   const [zoomScale, setZoomScale] = useState(0.85);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  const [mobileView, setMobileView] = useState("editor");
+  const isMobile = windowWidth < 860;
   const [isExporting, setIsExporting] = useState(false);
+
+  // Auto zoom based on viewport width
+  useEffect(() => {
+    const updateAutoZoom = () => {
+      const w = window.innerWidth;
+      setWindowWidth(w);
+      if (w < 860) {
+        const availableWidth = Math.max(260, w - 32);
+        const autoZoom = Math.max(0.32, Math.min(0.95, availableWidth / 794));
+        setZoomScale(Number(autoZoom.toFixed(2)));
+      } else {
+        setZoomScale(0.85);
+      }
+    };
+    updateAutoZoom();
+    window.addEventListener("resize", updateAutoZoom);
+    return () => window.removeEventListener("resize", updateAutoZoom);
+  }, []);
 
   const previewRef = useRef(null);
 
@@ -212,9 +233,27 @@ export default function CvGenerator({ onBack }) {
 
   return (
     <div className="wrap">
+      {/* MOBILE VIEW TOGGLE SWITCHER (< 860px) */}
+      <div className="mobile-view-tabs no-print">
+        <button 
+          type="button"
+          className={`mobile-view-btn ${mobileView === "editor" ? "active" : ""}`}
+          onClick={() => setMobileView("editor")}
+        >
+          ✏️ Formulaire d'Édition
+        </button>
+        <button 
+          type="button"
+          className={`mobile-view-btn ${mobileView === "preview" ? "active" : ""}`}
+          onClick={() => setMobileView("preview")}
+        >
+          👁️ Aperçu ({Math.round(zoomScale * 100)}%)
+        </button>
+      </div>
+
       <div className="container">
         {/* Left Sidebar Editor Panel */}
-        <div className="editor-panel no-print">
+        <div className={`editor-panel no-print ${isMobile && mobileView === "preview" ? "mobile-hide-editor" : ""}`}>
           <div className="editor-header">
             <h1>
               <UserCheck className="w-5 h-5 text-blue-600" />
@@ -390,7 +429,7 @@ export default function CvGenerator({ onBack }) {
         </div>
 
         {/* Right Side Canvas Preview Area */}
-        <div className="preview-area">
+        <div className={`preview-area ${isMobile && mobileView === "editor" ? "mobile-hide-preview" : ""}`}>
           {/* Zoom Bar */}
           <div className="zoom-bar no-print">
             <button onClick={onBack} className="btn btn-secondary">
