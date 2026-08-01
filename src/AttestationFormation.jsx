@@ -1501,7 +1501,7 @@ export default function AttestationFormation({ onBack }) {
             {activeTab === "content" && (
               <>
                 <button className="btn btn-save-content" onClick={handleSaveContent} style={{ width: "100%", justifyContent: "center", marginBottom: "4px" }}>
-                  💾 Enregistrer les modifications
+                  Enregistrer les modifications
                 </button>
 
                 <div className="input-group">
