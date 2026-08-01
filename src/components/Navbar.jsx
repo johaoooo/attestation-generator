@@ -1,17 +1,29 @@
 import React, { useState } from "react";
-import { Layers } from "./Icons.jsx";
+import { 
+  FileText, 
+  Award, 
+  Mail, 
+  UserCheck, 
+  BookOpen, 
+  Home, 
+  Layers,
+  Receipt,
+  ImageIcon,
+  Menu,
+  X
+} from "./Icons.jsx";
 
 export default function Navbar({ activeDocType, setActiveDocType }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: "home", label: "Accueil" },
-    { id: "attestation", label: "Attestation" },
-    { id: "courrier", label: "Courrier Officiel" },
-    { id: "facture", label: "Facture" },
-    { id: "affiche", label: "Affiche & Poster" },
-    { id: "cv", label: "CV Professionnel" },
-    { id: "rapport", label: "Rapport & Mémoire" },
+    { id: "home", label: "Accueil", icon: Home },
+    { id: "attestation", label: "Attestation", icon: Award },
+    { id: "courrier", label: "Courrier Officiel", icon: Mail },
+    { id: "facture", label: "Facture", icon: Receipt },
+    { id: "affiche", label: "Affiche & Poster", icon: ImageIcon },
+    { id: "cv", label: "CV Professionnel", icon: UserCheck },
+    { id: "rapport", label: "Rapport & Mémoire", icon: BookOpen },
   ];
 
   const handleNavClick = (id) => {
@@ -39,6 +51,7 @@ export default function Navbar({ activeDocType, setActiveDocType }) {
       {/* Desktop Navigation Links */}
       <nav className="nav-links desktop-only">
         {navItems.map((item) => {
+          const Icon = item.icon;
           const isActive = activeDocType === item.id;
           return (
             <button
@@ -46,6 +59,7 @@ export default function Navbar({ activeDocType, setActiveDocType }) {
               onClick={() => handleNavClick(item.id)}
               className={`nav-item ${isActive ? "active" : ""}`}
             >
+              <Icon className="w-4 h-4" />
               <span>{item.label}</span>
             </button>
           );
@@ -58,7 +72,7 @@ export default function Navbar({ activeDocType, setActiveDocType }) {
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         aria-label="Toggle navigation menu"
       >
-        <span>{mobileMenuOpen ? "Fermer" : "Menu"}</span>
+        {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
 
       {/* Mobile Drawer Navigation */}
@@ -67,11 +81,12 @@ export default function Navbar({ activeDocType, setActiveDocType }) {
           <div className="mobile-drawer-header">
             <span className="mobile-drawer-title">Choisir un document</span>
             <button className="mobile-drawer-close" onClick={() => setMobileMenuOpen(false)}>
-              ✕
+              <X className="w-5 h-5" />
             </button>
           </div>
           <div className="mobile-drawer-items">
             {navItems.map((item) => {
+              const Icon = item.icon;
               const isActive = activeDocType === item.id;
               return (
                 <button
@@ -79,6 +94,7 @@ export default function Navbar({ activeDocType, setActiveDocType }) {
                   onClick={() => handleNavClick(item.id)}
                   className={`mobile-nav-item ${isActive ? "active" : ""}`}
                 >
+                  <Icon className="w-5 h-5" />
                   <span>{item.label}</span>
                 </button>
               );
