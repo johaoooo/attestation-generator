@@ -141,6 +141,41 @@ export default function CourrierGenerator({ onBack }) {
   const [sidebarWidth, setSidebarWidth] = useState(440);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  // Touch Drag & Quick Edit States
+  const [selectedElement, setSelectedElement] = useState(null);
+  const [dragMode, setDragMode] = useState(false);
+  const [positions, setPositions] = useState({
+    logo: { x: 0, y: 0 },
+    stamp: { x: 0, y: 0 },
+    signature: { x: 0, y: 0 },
+  });
+  const [dragState, setDragState] = useState(null);
+
+  const handleTouchStart = (key, e) => {
+    const touch = e.touches ? e.touches[0] : e;
+    const currentPos = positions[key] || { x: 0, y: 0 };
+    setDragState({
+      key,
+      startX: touch.clientX - currentPos.x,
+      startY: touch.clientY - currentPos.y
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    if (!dragState) return;
+    const touch = e.touches ? e.touches[0] : e;
+    const newX = touch.clientX - dragState.startX;
+    const newY = touch.clientY - dragState.startY;
+    setPositions(prev => ({
+      ...prev,
+      [dragState.key]: { x: newX, y: newY }
+    }));
+  };
+
+  const handleTouchEnd = () => {
+    setDragState(null);
+  };
+
   // Auto zoom based on viewport width
   useEffect(() => {
     const updateAutoZoom = () => {
@@ -863,6 +898,121 @@ export default function CourrierGenerator({ onBack }) {
             </div>
           </div>
         </main>
+      </div>
+
+      {/* MOBILE QUICK EDIT BOTTOM SHEET */}
+      {selectedElement && (
+        <div className="mobile-quick-sheet no-print">
+          <div className="quick-sheet-header">
+            <span className="quick-sheet-title">
+              ✏️ Éditer {selectedElement === "objet" ? "l'Objet" : selectedElement === "destinataire" ? "le Destinataire" : selectedElement === "signataire" ? "le Signataire" : "le Document"}
+            </span>
+            <button className="quick-sheet-close" onClick={() => setSelectedElement(null)}>✕</button>
+          </div>
+
+          <div className="quick-sheet-content">
+            {selectedElement === "objet" && (
+              <div className="input-group">
+                <label>Objet du Courrier</label>
+                <input 
+                  type="text" 
+                  value={data.objet} 
+                  onChange={setField("objet")}
+                  autoFocus
+                />
+              </div>
+            )}
+
+            {selectedElement === "destinataire" && (
+              <div className="input-group">
+                <label>Destinataire</label>
+                <input 
+                  type="text" 
+                  value={data.destinataireNom} 
+                  onChange={setField("destinataireNom")}
+                  autoFocus
+                />
+              </div>
+            )}
+
+            {selectedElement === "signataire" && (
+              <div className="grid-2">
+                <div className="input-group">
+                  <label>Nom du Signataire</label>
+                  <input 
+                    type="text" 
+                    value={data.signataireNom} 
+                    onChange={setField("signataireNom")}
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Titre / Fonction</label>
+                  <input 
+                    type="text" 
+                    value={data.signataireTitre} 
+                    onChange={setField("signataireTitre")}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
+              <button 
+                className="btn btn-primary" 
+                style={{ flex: 1, padding: "10px" }}
+                onClick={() => setSelectedElement(null)}
+              >
+                ✓ Appliquer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MOBILE FLOATING BOTTOM ACTION BAR */}
+      <div className="mobile-bottom-bar no-print">
+        <button 
+          className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
+          onClick={() => { setMobileView("editor"); setSelectedElement(null); }}
+        >
+          <span>✏️</span>
+          <span>Saisie</span>
+        </button>
+
+        <button 
+          className={`mobile-bottom-btn ${mobileView === "preview" && !dragMode ? "active" : ""}`}
+          onClick={() => { setMobileView("preview"); setDragMode(false); }}
+        >
+          <span>👁️</span>
+          <span>Aperçu</span>
+        </button>
+
+        <button 
+          className={`mobile-bottom-btn ${dragMode ? "active" : ""}`}
+          onClick={() => { setMobileView("preview"); setDragMode(!dragMode); }}
+        >
+          <span>🤏</span>
+          <span>{dragMode ? "Posé ✓" : "Déplacer"}</span>
+        </button>
+
+        <button 
+          className="mobile-bottom-btn"
+          onClick={() => {
+            const nextIdx = (THEMES.indexOf(activeTheme) + 1) % THEMES.length;
+            setActiveTheme(THEMES[nextIdx]);
+          }}
+        >
+          <span>🎨</span>
+          <span>Thème</span>
+        </button>
+
+        <button 
+          className="mobile-bottom-btn"
+          onClick={handleExportPDF}
+        >
+          <span>📄</span>
+          <span>Export PDF</span>
+        </button>
       </div>
     </div>
   );

@@ -831,6 +831,155 @@ html, body, #root {
   }
 }
 
+/* TOUCH-INTERACTIVE & DRAGGABLE SHEET ELEMENTS */
+.touch-movable {
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+  position: relative;
+  transition: box-shadow 0.15s ease;
+}
+
+.touch-movable:active {
+  cursor: grabbing;
+}
+
+.interactive-tappable {
+  cursor: pointer;
+  border: 1.5px dashed transparent;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.interactive-tappable:hover,
+.interactive-tappable:focus-within {
+  border-color: rgba(37, 99, 235, 0.4);
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.interactive-tappable.active-selected {
+  border-color: #2563EB !important;
+  background: rgba(37, 99, 235, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.drag-indicator-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #2563EB;
+  color: #FFFFFF;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* MOBILE BOTTOM FLOATING ACTION BAR */
+.mobile-bottom-bar {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .mobile-bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0F172A;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 16px;
+    z-index: 120;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .mobile-bottom-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: #94A3B8;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 4px 12px;
+    border-radius: 8px;
+  }
+
+  .mobile-bottom-btn.active, .mobile-bottom-btn:hover {
+    color: #3B82F6;
+    background: rgba(59, 130, 246, 0.12);
+  }
+
+  /* QUICK EDIT BOTTOM SHEET */
+  .mobile-quick-sheet {
+    position: fixed;
+    bottom: 65px;
+    left: 12px;
+    right: 12px;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    border: 1.5px solid #E2E8F0;
+    z-index: 130;
+    padding: 16px;
+    max-height: 55vh;
+    overflow-y: auto;
+    animation: slideUpSheet 0.25s ease-out;
+  }
+
+  @keyframes slideUpSheet {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .quick-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #F1F5F9;
+  }
+
+  .quick-sheet-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #0F172A;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .quick-sheet-close {
+    background: #F1F5F9;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: #64748B;
+    cursor: pointer;
+  }
+
+  .wrap {
+    padding-bottom: 75px !important;
+  }
+}
+
 /* PRINT STYLES */
 @media print {
   body {

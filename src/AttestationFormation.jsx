@@ -270,6 +270,44 @@ export default function AttestationFormation({ onBack }) {
   const [copied, setCopied] = useState(false);
   const [celebrated, setCelebrated] = useState(false);
 
+  // Touch Drag & Interactive Direct Edit States
+  const [selectedElement, setSelectedElement] = useState(null);
+  const [dragMode, setDragMode] = useState(false);
+  const [positions, setPositions] = useState({
+    seal: { x: 0, y: 0 },
+    sig1: { x: 0, y: 0 },
+    sig2: { x: 0, y: 0 },
+    stamp: { x: 0, y: 0 },
+    logoLeft: { x: 0, y: 0 },
+    logoRight: { x: 0, y: 0 },
+  });
+  const [dragState, setDragState] = useState(null);
+
+  const handleTouchStart = (key, e) => {
+    const touch = e.touches ? e.touches[0] : e;
+    const currentPos = positions[key] || { x: 0, y: 0 };
+    setDragState({
+      key,
+      startX: touch.clientX - currentPos.x,
+      startY: touch.clientY - currentPos.y
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    if (!dragState) return;
+    const touch = e.touches ? e.touches[0] : e;
+    const newX = touch.clientX - dragState.startX;
+    const newY = touch.clientY - dragState.startY;
+    setPositions(prev => ({
+      ...prev,
+      [dragState.key]: { x: newX, y: newY }
+    }));
+  };
+
+  const handleTouchEnd = () => {
+    setDragState(null);
+  };
+
   // Adjust zoom automatically based on screen width
   useEffect(() => {
     const updateAutoZoom = () => {
@@ -2343,7 +2381,10 @@ export default function AttestationFormation({ onBack }) {
                       )}
                     </div>
 
-                    <div className="cert-header-center">
+                    <div 
+                      className={`cert-header-center interactive-tappable ${selectedElement === "title" ? "active-selected" : ""}`}
+                      onClick={() => setSelectedElement("title")}
+                    >
                       <h1 className="main-title">{data.title || "Attestation"}</h1>
                       
                       <div className="divider-ornament">
@@ -2370,7 +2411,10 @@ export default function AttestationFormation({ onBack }) {
                       Je soussignée <b>Mme TOSSA Afiavi Gbessito Honorine</b>, atteste que :
                     </p>
 
-                    <div className="recipient-name-block">
+                    <div 
+                      className={`recipient-name-block interactive-tappable ${selectedElement === "destinataire" ? "active-selected" : ""}`}
+                      onClick={() => setSelectedElement("destinataire")}
+                    >
                       <div className="recipient-name">
                         {data.destinataire || "______________________________________________"}
                       </div>
@@ -2389,7 +2433,10 @@ export default function AttestationFormation({ onBack }) {
                     </p>
 
                     {/* LOCATION & DATE */}
-                    <div className="date-place-tag">
+                    <div 
+                      className={`date-place-tag interactive-tappable ${selectedElement === "datePlace" ? "active-selected" : ""}`}
+                      onClick={() => setSelectedElement("datePlace")}
+                    >
                       Fait à <b>{data.villeDelivrance || "Houegbo"}</b> le <b>{formatDateFR(data.dateDelivrance) || "31 juillet 2026"}</b>
                     </div>
                   </div>
@@ -2397,7 +2444,17 @@ export default function AttestationFormation({ onBack }) {
                   {/* FOOTER & SIGNATORIES IN LOWER LEFT & RIGHT CORNERS */}
                   <footer className="cert-footer">
                     {/* CORNER LOWER LEFT: SIGNATORY 1 */}
-                    <div className="signature-corner-left">
+                    <div 
+                      className={`signature-corner-left interactive-tappable touch-movable ${selectedElement === "signataire" ? "active-selected" : ""}`}
+                      onClick={() => setSelectedElement("signataire")}
+                      onTouchStart={(e) => handleTouchStart('sig1', e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                      style={{
+                        transform: `translate(${positions.sig1?.x || 0}px, ${positions.sig1?.y || 0}px)`
+                      }}
+                    >
+                      {dragMode && <span className="drag-indicator-badge">🖐 Glisser</span>}
                       <div className="signature-display" style={{ height: `${Math.max(sig1Size, 36)}px` }}>
                         {showSig1 ? (
                           customSignatureImg ? (
@@ -2418,7 +2475,17 @@ export default function AttestationFormation({ onBack }) {
                     </div>
 
                     {/* CENTER: OFFICIAL SEAL & AUTH NUMBER WITH CUSTOM SIZE */}
-                    <div className="seal-center-footer">
+                    <div 
+                      className={`seal-center-footer interactive-tappable touch-movable ${selectedElement === "seal" ? "active-selected" : ""}`}
+                      onClick={() => setSelectedElement("seal")}
+                      onTouchStart={(e) => handleTouchStart('seal', e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                      style={{
+                        transform: `translate(${positions.seal?.x || 0}px, ${positions.seal?.y || 0}px)`
+                      }}
+                    >
+                      {dragMode && <span className="drag-indicator-badge">🖐 Glisser</span>}
                       {customStampImg ? (
                         <img
                           src={customStampImg}
@@ -2438,7 +2505,17 @@ export default function AttestationFormation({ onBack }) {
                     </div>
 
                     {/* CORNER LOWER RIGHT: SIGNATORY 2 */}
-                    <div className="signature-corner-right">
+                    <div 
+                      className={`signature-corner-right interactive-tappable touch-movable ${selectedElement === "signataire" ? "active-selected" : ""}`}
+                      onClick={() => setSelectedElement("signataire")}
+                      onTouchStart={(e) => handleTouchStart('sig2', e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                      style={{
+                        transform: `translate(${positions.sig2?.x || 0}px, ${positions.sig2?.y || 0}px)`
+                      }}
+                    >
+                      {dragMode && <span className="drag-indicator-badge">🖐 Glisser</span>}
                       <div className="signature-display" style={{ height: `${Math.max(sig2Size, 36)}px` }}>
                         {showSig2 ? (
                           customSignatureImg2 ? (
@@ -2461,6 +2538,156 @@ export default function AttestationFormation({ onBack }) {
             </div>
           </div>
         </main>
+      </div>
+
+      {/* MOBILE QUICK EDIT BOTTOM SHEET */}
+      {selectedElement && (
+        <div className="mobile-quick-sheet no-print">
+          <div className="quick-sheet-header">
+            <span className="quick-sheet-title">
+              ✏️ Éditer {selectedElement === "destinataire" ? "le Bénéficiaire" : selectedElement === "title" ? "le Titre" : selectedElement === "datePlace" ? "Lieu & Date" : selectedElement === "signataire" ? "le Signataire" : "Sceau & Tampon"}
+            </span>
+            <button className="quick-sheet-close" onClick={() => setSelectedElement(null)}>✕</button>
+          </div>
+
+          <div className="quick-sheet-content">
+            {selectedElement === "destinataire" && (
+              <div className="input-group">
+                <label>Nom du Bénéficiaire</label>
+                <input 
+                  type="text" 
+                  value={data.destinataire} 
+                  onChange={(e) => setData(prev => ({ ...prev, destinataire: e.target.value }))}
+                  placeholder="Ex: Madame AKAKPO Chantal"
+                  autoFocus
+                />
+              </div>
+            )}
+
+            {selectedElement === "title" && (
+              <div className="input-group">
+                <label>Titre de l'Attestation</label>
+                <input 
+                  type="text" 
+                  value={data.title} 
+                  onChange={(e) => setData(prev => ({ ...prev, title: e.target.value }))}
+                  autoFocus
+                />
+              </div>
+            )}
+
+            {selectedElement === "datePlace" && (
+              <div className="grid-2">
+                <div className="input-group">
+                  <label>Ville de Délivrance</label>
+                  <input 
+                    type="text" 
+                    value={data.villeDelivrance} 
+                    onChange={(e) => setData(prev => ({ ...prev, villeDelivrance: e.target.value }))}
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Date de Délivrance</label>
+                  <input 
+                    type="date" 
+                    value={data.dateDelivrance} 
+                    onChange={(e) => setData(prev => ({ ...prev, dateDelivrance: e.target.value }))}
+                  />
+                </div>
+              </div>
+            )}
+
+            {selectedElement === "signataire" && (
+              <div className="grid-2">
+                <div className="input-group">
+                  <label>Nom du Signataire</label>
+                  <input 
+                    type="text" 
+                    value={data.signataire} 
+                    onChange={(e) => setData(prev => ({ ...prev, signataire: e.target.value }))}
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Titre / Fonction</label>
+                  <input 
+                    type="text" 
+                    value={data.fonction} 
+                    onChange={(e) => setData(prev => ({ ...prev, fonction: e.target.value }))}
+                  />
+                </div>
+              </div>
+            )}
+
+            {selectedElement === "seal" && (
+              <div className="input-group">
+                <label>Taille du Sceau / Tampon ({stampSize}px)</label>
+                <input 
+                  type="range"
+                  min="40"
+                  max="120"
+                  value={stampSize}
+                  onChange={(e) => setStampSize(parseInt(e.target.value))}
+                />
+              </div>
+            )}
+
+            <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
+              <button 
+                className="btn btn-primary" 
+                style={{ flex: 1, padding: "10px" }}
+                onClick={() => setSelectedElement(null)}
+              >
+                ✓ Appliquer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MOBILE FLOATING BOTTOM ACTION BAR */}
+      <div className="mobile-bottom-bar no-print">
+        <button 
+          className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
+          onClick={() => { setMobileView("editor"); setSelectedElement(null); }}
+        >
+          <span>✏️</span>
+          <span>Saisie</span>
+        </button>
+
+        <button 
+          className={`mobile-bottom-btn ${mobileView === "preview" && !dragMode ? "active" : ""}`}
+          onClick={() => { setMobileView("preview"); setDragMode(false); }}
+        >
+          <span>👁️</span>
+          <span>Aperçu</span>
+        </button>
+
+        <button 
+          className={`mobile-bottom-btn ${dragMode ? "active" : ""}`}
+          onClick={() => { setMobileView("preview"); setDragMode(!dragMode); }}
+        >
+          <span>🤏</span>
+          <span>{dragMode ? "Posé ✓" : "Déplacer"}</span>
+        </button>
+
+        <button 
+          className="mobile-bottom-btn"
+          onClick={() => {
+            const nextIdx = (THEMES.indexOf(activeTheme) + 1) % THEMES.length;
+            setActiveTheme(THEMES[nextIdx]);
+          }}
+        >
+          <span>🎨</span>
+          <span>Thème</span>
+        </button>
+
+        <button 
+          className="mobile-bottom-btn"
+          onClick={handleExportPDF}
+        >
+          <span>📄</span>
+          <span>Export PDF</span>
+        </button>
       </div>
     </div>
   );

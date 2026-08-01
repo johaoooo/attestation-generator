@@ -547,6 +547,44 @@ export default function RapportMemoireGenerator({ onBack }) {
           </div>
         </div>
       </div>
+
+      {/* MOBILE FLOATING BOTTOM ACTION BAR */}
+      <div className="mobile-bottom-bar no-print">
+        <button 
+          className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
+          onClick={() => setMobileView("editor")}
+        >
+          <span>✏️</span>
+          <span>Saisie</span>
+        </button>
+
+        <button 
+          className={`mobile-bottom-btn ${mobileView === "preview" ? "active" : ""}`}
+          onClick={() => setMobileView("preview")}
+        >
+          <span>👁️</span>
+          <span>Aperçu</span>
+        </button>
+
+        <button 
+          className="mobile-bottom-btn"
+          onClick={() => {
+            const nextIdx = (RAPPORT_THEMES.indexOf(activeTheme) + 1) % RAPPORT_THEMES.length;
+            setActiveTheme(RAPPORT_THEMES[nextIdx]);
+          }}
+        >
+          <span>🎨</span>
+          <span>Thème</span>
+        </button>
+
+        <button 
+          className="mobile-bottom-btn"
+          onClick={exportPDF}
+        >
+          <span>📄</span>
+          <span>Export PDF</span>
+        </button>
+      </div>
     </div>
   );
 }
