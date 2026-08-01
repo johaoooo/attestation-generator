@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Layers } from "./Icons.jsx";
 
 export default function Navbar({ activeDocType, setActiveDocType }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -25,6 +26,9 @@ export default function Navbar({ activeDocType, setActiveDocType }) {
         onClick={() => handleNavClick("home")}
         className="nav-brand"
       >
+        <div className="nav-brand-logo">
+          <Layers className="w-5 h-5" />
+        </div>
         <div className="flex items-center">
           <span className="nav-brand-title">
             Doc<span>Studio</span>
