@@ -46,6 +46,63 @@ const PRESETS_LIST = [
       signataireNom: "TOSSA Afiavi Gbessito Honorine",
       signataireTitre: "La Directrice Générale",
     }
+  },
+  {
+    name: "🎓 Demande de Stage Professionnel",
+    data: {
+      expediteurNom: "HAMADA Asma",
+      expediteurAdresse: "Béchar, République Algérienne",
+      expediteurContact: "Tél: +213 550 00 00 00 | Email: asma.hamada@email.com",
+      expediteurLegal: "Étudiante diplômée en Formation Supérieure Paramédicale",
+      destinataireNom: "À l'attention de M. le Directeur des Ressources Humaines",
+      destinataireEntreprise: "Centre Hospitalier Universitaire (CHU)",
+      destinataireAdresse: "Béchar",
+      villeDate: "Béchar, le 03 Août 2026",
+      reference: "RÉF. : STG/2026/089",
+      objet: "Objet : Demande de stage pratique au sein du service infirmier",
+      salutation: "Monsieur le Directeur,",
+      corps: "Actuellement en fin de cycle d'études supérieures paramédicales, j'ai l'honneur de solliciter votre bienveillance afin d'effectuer un stage professionnel pratique d'une durée de trois (03) mois au sein de votre prestigieux établissement hospitalier.\n\nCe stage me permettra de consolider mes connaissances théoriques et de développer mes aptitudes pratiques au contact de vos équipes d'experts.\n\nDans l'attente d'une suite favorable, veuillez agréer, Monsieur le Directeur, l'expression de mes salutations distinguées.",
+      signataireNom: "HAMADA Asma",
+      signataireTitre: "La Candidate",
+    }
+  },
+  {
+    name: "📜 Lettre de Recommandation Officielle",
+    data: {
+      expediteurNom: "ONG ESPOIR ET NATURE",
+      expediteurAdresse: "Siège Social, Cotonou, Bénin",
+      expediteurContact: "Tél: +229 01 21 30 00 00 | Email: direction@espoirnature.org",
+      expediteurLegal: "ONG d'Utilité Publique N° 2012/045/MISP/DC/SGA/SAG",
+      destinataireNom: "À qui de droit",
+      destinataireEntreprise: "Attestation de Recommandation",
+      destinataireAdresse: "Cotonou",
+      villeDate: "Cotonou, le 03 Août 2026",
+      reference: "REF : REC/2026/EN-901",
+      objet: "Objet : Lettre de recommandation professionnelle",
+      salutation: "Madame, Monsieur,",
+      corps: "Nous soussignés, Direction de l'ONG ESPOIR ET NATURE, certifions et recommandons chaleureusement la candidature de l'intéressé(e) pour ses compétences exceptionnelles et son intégrité professionnelle.\n\nAu cours de ses missions au sein de notre organisme, il/elle a fait preuve d'une grande rigueur, de leadership et d'un professionnalisme exemplaire dans la gestion des programmes de formation.\n\nEn foi de quoi, la présente recommandation lui est délivrée pour servir et valoir ce que de droit.",
+      signataireNom: "Mme TOSSA Afiavi Gbessito Honorine",
+      signataireTitre: "La Directrice Générale",
+    }
+  },
+  {
+    name: "⚖️ Convocation & Notification Officielle",
+    data: {
+      expediteurNom: "DIRECTION DES RESSOURCES HUMAINES",
+      expediteurAdresse: "Maison AFI COLLECTION du Bénin",
+      expediteurContact: "Tél: +229 01 97 00 00 00 | Email: drh@aficollection.bj",
+      expediteurLegal: "Maison AFI COLLECTION S.A.R.L - Cotonou",
+      destinataireNom: "À l'attention des Membres du Conseil d'Administration",
+      destinataireEntreprise: "Maison AFI COLLECTION",
+      destinataireAdresse: "Cotonou",
+      villeDate: "Cotonou, le 03 Août 2026",
+      reference: "N/REF : DRH/CONV-2026/012",
+      objet: "Objet : Convocation à la réunion ordinaire du Conseil d'Administration",
+      salutation: "Madame, Monsieur le Membre du Conseil,",
+      corps: "Vous êtes prié(e) de bien vouloir assister à la Réunion Ordinaire du Conseil d'Administration qui se tiendra le Lundi 17 Août 2026 à 10h00 au siège social de l'institution.\n\nOrdre du jour :\n1. Examen et approbation du bilan d'étape des formations.\n2. Validation du partenariat stratégique international.\n3. Divers.\n\nVotre présence est vivement souhaitée.",
+      signataireNom: "TOSSA Honorine",
+      signataireTitre: "La Présidente du Conseil",
+    }
   }
 ];
 
@@ -241,7 +298,9 @@ export default function CourrierGenerator({ onBack }) {
       {/* EXACT CSS STYLES CLONED FROM ATTESTATIONFORMATION */}
       <style>{`
         .wrap { padding: 24px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 1580px; display: grid; grid-template-columns: 440px 1fr; gap: 24px; align-items: start; }
+        .container { width: 100%; max-width: 1580px; display: grid; grid-template-columns: 440px 1fr; gap: 24px; align-items: start; transition: grid-template-columns 0.25s ease; }
+        .container.sidebar-collapsed { grid-template-columns: 0px 1fr !important; gap: 0px !important; }
+        .container.sidebar-collapsed .editor-panel { display: none !important; }
         @media (max-width: 1100px) { .container { grid-template-columns: 1fr; } }
         
         .editor-panel { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; max-height: calc(100vh - 48px); position: sticky; top: 24px; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -699,6 +758,7 @@ export default function CourrierGenerator({ onBack }) {
               <button type="button" className={`zoom-btn ${zoomScale === 0.65 ? "active" : ""}`} onClick={() => setZoomScale(0.65)}>65%</button>
               <button type="button" className={`zoom-btn ${zoomScale === 0.8 ? "active" : ""}`} onClick={() => setZoomScale(0.8)}>80%</button>
               <button type="button" className={`zoom-btn ${zoomScale === 1.0 ? "active" : ""}`} onClick={() => setZoomScale(1.0)}>100%</button>
+              <button type="button" className={`zoom-btn ${zoomScale === 1.2 ? "active" : ""}`} onClick={() => setZoomScale(1.2)}>120%</button>
             </div>
 
             {/* ACTION BUTTONS CLONED EXACTLY FROM ATTESTATION FORMATION */}
