@@ -118,6 +118,18 @@ export default function RapportMemoireGenerator({ onBack }) {
   const [customOrnamentColor, setCustomOrnamentColor] = useState("");
   const [logoImg, setLogoImg] = useState(null);
   
+  // Customization of Cover Page
+  const [bgImage, setBgImage] = useState(null);
+  const [bgOpacity, setBgOpacity] = useState(0.15);
+  const [bgFit, setBgFit] = useState("contain");
+  const [borderStyle, setBorderStyle] = useState("double");
+  const [borderWidth, setBorderWidth] = useState(2);
+  const [borderInset, setBorderInset] = useState(26);
+  const [showVolutes, setShowVolutes] = useState(true);
+  const [titleRadius, setTitleRadius] = useState(16);
+  const [titleFontSize, setTitleFontSize] = useState(32);
+  const [verticalGap, setVerticalGap] = useState(20);
+
   const [zoomScale, setZoomScale] = useState(0.75);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
@@ -161,6 +173,15 @@ export default function RapportMemoireGenerator({ onBack }) {
     if (file) {
       const reader = new FileReader();
       reader.onload = (uploadEvent) => setLogoImg(uploadEvent.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBgUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => setBgImage(uploadEvent.target.result);
       reader.readAsDataURL(file);
     }
   };
@@ -271,14 +292,14 @@ export default function RapportMemoireGenerator({ onBack }) {
             <button className={`tab-btn ${activeTab === "cover" ? "active" : ""}`} onClick={() => setActiveTab("cover")}>
               🖼️ Couverture
             </button>
+            <button className={`tab-btn ${activeTab === "background" ? "active" : ""}`} onClick={() => setActiveTab("background")}>
+              🎨 Fond & Bordures
+            </button>
             <button className={`tab-btn ${activeTab === "students" ? "active" : ""}`} onClick={() => setActiveTab("students")}>
               👥 Équipe / Auteurs
             </button>
             <button className={`tab-btn ${activeTab === "chapters" ? "active" : ""}`} onClick={() => setActiveTab("chapters")}>
               📑 Chapitres
-            </button>
-            <button className={`tab-btn ${activeTab === "style" ? "active" : ""}`} onClick={() => setActiveTab("style")}>
-              🎨 Thèmes & Style
             </button>
           </div>
 
@@ -367,7 +388,119 @@ export default function RapportMemoireGenerator({ onBack }) {
               </>
             )}
 
-            {/* TAB 3: STUDENTS & AUTHORS */}
+            {/* TAB 3: BACKGROUND & BORDERS CUSTOMIZATION */}
+            {activeTab === "background" && (
+              <>
+                <div className="presets-box">
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🖼️ Image de Fond & Filigrane</label>
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Charger une Image de Fond (PNG / JPG)</label>
+                    <input type="file" accept="image/*" onChange={handleBgUpload} />
+                  </div>
+                  {bgImage && (
+                    <>
+                      <div className="input-group">
+                        <label>Opacité de l'image de fond ({Math.round(bgOpacity * 100)}%)</label>
+                        <input type="range" min={0.05} max={1} step={0.05} value={bgOpacity} onChange={(e) => setBgOpacity(Number(e.target.value))} />
+                      </div>
+                      <div className="input-group">
+                        <label>Ajustement de l'image</label>
+                        <select value={bgFit} onChange={(e) => setBgFit(e.target.value)}>
+                          <option value="contain">Contain (Filigrane Centré)</option>
+                          <option value="cover">Cover (Remplir toute la page)</option>
+                          <option value="fill">Fill (Étirer)</option>
+                        </select>
+                      </div>
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => setBgImage(null)} style={{ marginTop: "4px" }}>
+                        Supprimer l'image de fond
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                <div className="presets-box">
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🖼️ Style des Bordures & Volutes</label>
+                  
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "8px 0" }}>
+                    <input type="checkbox" id="volutesCheck" checked={showVolutes} onChange={(e) => setShowVolutes(e.target.checked)} />
+                    <label htmlFor="volutesCheck" style={{ fontSize: "13px", fontWeight: "700", cursor: "pointer" }}>
+                      ⚜️ Afficher les Volutes d'Angle Ornementales
+                    </label>
+                  </div>
+
+                  <div className="input-group">
+                    <label>Style de Bordure</label>
+                    <select value={borderStyle} onChange={(e) => setBorderStyle(e.target.value)}>
+                      <option value="double">Double Royal (Filet Double)</option>
+                      <option value="solid">Simple Épuré (Ligne Continue)</option>
+                      <option value="dashed">Pointillé Luxe (Dashed)</option>
+                      <option value="groove">Groove 3D Sculpté</option>
+                      <option value="ridge">Ridge 3D Relief</option>
+                      <option value="none">Sans Bordure</option>
+                    </select>
+                  </div>
+
+                  <div className="input-group">
+                    <label>Épaisseur de Bordure ({borderWidth}px)</label>
+                    <input type="range" min={1} max={8} value={borderWidth} onChange={(e) => setBorderWidth(Number(e.target.value))} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Retrait de la Bordure ({borderInset}px)</label>
+                    <input type="range" min={15} max={45} value={borderInset} onChange={(e) => setBorderInset(Number(e.target.value))} />
+                  </div>
+                </div>
+
+                <div className="presets-box">
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>📐 Dimensions & Espacements du Titre</label>
+
+                  <div className="input-group">
+                    <label>Taille du Titre ({titleFontSize}px)</label>
+                    <input type="range" min={22} max={44} value={titleFontSize} onChange={(e) => setTitleFontSize(Number(e.target.value))} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Arrondi du Cadre de Titre ({titleRadius}px)</label>
+                    <input type="range" min={0} max={30} value={titleRadius} onChange={(e) => setTitleRadius(Number(e.target.value))} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Espacement Vertical des Éléments ({verticalGap}px)</label>
+                    <input type="range" min={10} max={40} value={verticalGap} onChange={(e) => setVerticalGap(Number(e.target.value))} />
+                  </div>
+                </div>
+
+                <div className="presets-box">
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🎨 Couleurs du Thème</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginTop: "8px", marginBottom: "12px" }}>
+                    {RAPPORT_THEMES.map((th) => (
+                      <button
+                        key={th.id}
+                        type="button"
+                        className={`chip ${activeTheme.id === th.id && !customAccentColor ? "active" : ""}`}
+                        onClick={() => { setActiveTheme(th); setCustomAccentColor(""); setCustomOrnamentColor(""); }}
+                        style={{ padding: "8px", display: "flex", alignItems: "center", gap: "6px" }}
+                      >
+                        <span style={{ width: "14px", height: "14px", borderRadius: "50%", backgroundColor: th.primaryColor, border: "1px solid #ffffff", display: "inline-block" }} />
+                        <span style={{ fontSize: "11px", fontWeight: "700" }}>{th.name}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Couleur du Cadre de Titre</label>
+                    <input type="color" value={accentColor} onChange={(e) => setCustomAccentColor(e.target.value)} style={{ height: "36px", cursor: "pointer", width: "100%" }} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Couleur des Volutes / Bordures</label>
+                    <input type="color" value={ornamentColor} onChange={(e) => setCustomOrnamentColor(e.target.value)} style={{ height: "36px", cursor: "pointer", width: "100%" }} />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* TAB 4: STUDENTS & AUTHORS */}
             {activeTab === "students" && (
               <>
                 <div className="presets-box">
@@ -396,7 +529,7 @@ export default function RapportMemoireGenerator({ onBack }) {
               </>
             )}
 
-            {/* TAB 4: CHAPTERS */}
+            {/* TAB 5: CHAPTERS */}
             {activeTab === "chapters" && (
               <>
                 <div className="presets-box">
@@ -418,39 +551,6 @@ export default function RapportMemoireGenerator({ onBack }) {
                       <textarea rows={4} value={ch.content} onChange={(e) => updateChapter(ch.id, "content", e.target.value)} placeholder="Contenu du chapitre..." />
                     </div>
                   ))}
-                </div>
-              </>
-            )}
-
-            {/* TAB 5: STYLE & THEMES */}
-            {activeTab === "style" && (
-              <>
-                <div className="presets-box">
-                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🎨 Palettes de Couleurs & Thèmes Institutionnels</label>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginTop: "8px", marginBottom: "12px" }}>
-                    {RAPPORT_THEMES.map((th) => (
-                      <button
-                        key={th.id}
-                        type="button"
-                        className={`chip ${activeTheme.id === th.id && !customAccentColor ? "active" : ""}`}
-                        onClick={() => { setActiveTheme(th); setCustomAccentColor(""); setCustomOrnamentColor(""); }}
-                        style={{ padding: "8px", display: "flex", alignItems: "center", gap: "6px" }}
-                      >
-                        <span style={{ width: "14px", height: "14px", borderRadius: "50%", backgroundColor: th.primaryColor, border: "1px solid #ffffff", display: "inline-block" }} />
-                        <span style={{ fontSize: "11px", fontWeight: "700" }}>{th.name}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Couleur du Cadre de Titre (Encadré Principal)</label>
-                    <input type="color" value={accentColor} onChange={(e) => setCustomAccentColor(e.target.value)} style={{ height: "36px", cursor: "pointer", width: "100%" }} />
-                  </div>
-
-                  <div className="input-group">
-                    <label>Couleur des Volutes / Ornements de coins</label>
-                    <input type="color" value={ornamentColor} onChange={(e) => setCustomOrnamentColor(e.target.value)} style={{ height: "36px", cursor: "pointer", width: "100%" }} />
-                  </div>
                 </div>
               </>
             )}
@@ -520,6 +620,16 @@ export default function RapportMemoireGenerator({ onBack }) {
                   }}
                   accentColor={accentColor}
                   ornamentColor={ornamentColor}
+                  bgImage={bgImage}
+                  bgOpacity={bgOpacity}
+                  bgFit={bgFit}
+                  borderStyle={borderStyle}
+                  borderWidth={borderWidth}
+                  borderInset={borderInset}
+                  showVolutes={showVolutes}
+                  titleRadius={titleRadius}
+                  titleFontSize={titleFontSize}
+                  verticalGap={verticalGap}
                 />
               </div>
 

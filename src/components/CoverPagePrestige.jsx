@@ -3,10 +3,10 @@ import React from "react";
 /**
  * CoverPagePrestige
  * Style de couverture "Institutionnelle & Cadre Prestige" pour RapportGenerator.
- * Feuille A4 (794 x 1123 px) — cadre ornemental à volutes + logo + titre encadré.
+ * Supporte : image de fond sur-mesure, styles de bordures personnalisés, 
+ * volutes modifiables, offsets d'éléments et mise en page réactive.
  */
 
-// Ornement de coin (volute), réutilisé et retourné aux 4 angles
 function CornerOrnament({ className, style, color = "#8f7bc4" }) {
   return (
     <svg
@@ -17,11 +17,8 @@ function CornerOrnament({ className, style, color = "#8f7bc4" }) {
       height="140"
       fill="none"
     >
-      {/* double filet d'encadrement partant du coin */}
       <path d="M6 60 V6 H60" stroke={color} strokeWidth="2.4" />
       <path d="M14 60 V14 H60" stroke={color} strokeWidth="1.6" />
-
-      {/* volute principale */}
       <path
         d="M10 55
            C 10 30, 30 10, 55 10
@@ -32,7 +29,6 @@ function CornerOrnament({ className, style, color = "#8f7bc4" }) {
         strokeWidth="3"
         strokeLinecap="round"
       />
-      {/* petites feuilles / fleurons */}
       <circle cx="70" cy="30" r="4.5" fill={color} />
       <path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill={color} />
       <path d="M14 40 C 6 46, 6 56, 14 60 C 18 54, 18 46, 14 40 Z" fill={color} />
@@ -83,7 +79,21 @@ const defaultData = {
   logoUrl: null,
 };
 
-export default function CoverPagePrestige({ data = {}, accentColor = "#4a7fc1", ornamentColor = "#8f7bc4" }) {
+export default function CoverPagePrestige({
+  data = {},
+  accentColor = "#4a7fc1",
+  ornamentColor = "#8f7bc4",
+  bgImage = null,
+  bgOpacity = 0.15,
+  bgFit = "contain",
+  borderStyle = "double",
+  borderWidth = 2,
+  borderInset = 26,
+  showVolutes = true,
+  titleRadius = 16,
+  titleFontSize = 32,
+  verticalGap = 20
+}) {
   const d = { ...defaultData, ...data };
   const studentsList = Array.isArray(d.students) ? d.students : (d.auteur ? [d.auteur] : defaultData.students);
 
@@ -101,76 +111,142 @@ export default function CoverPagePrestige({ data = {}, accentColor = "#4a7fc1", 
         boxSizing: "border-box"
       }}
     >
-      {/* Cadre : double filet + 4 volutes */}
-      <div style={{ position: "absolute", inset: "26px", border: `1.6px solid ${ornamentColor}`, pointerEvents: "none", zIndex: 2 }} />
-      <div style={{ position: "absolute", inset: "32px", border: `1px solid ${ornamentColor}`, pointerEvents: "none", zIndex: 2 }} />
-
-      <CornerOrnament color={ornamentColor} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }} />
-      <CornerOrnament
-        color={ornamentColor}
-        style={{ position: "absolute", top: 0, right: 0, transform: "scaleX(-1)", zIndex: 3 }}
-      />
-      <CornerOrnament
-        color={ornamentColor}
-        style={{ position: "absolute", bottom: 0, left: 0, transform: "scaleY(-1)", zIndex: 3 }}
-      />
-      <CornerOrnament
-        color={ornamentColor}
-        style={{ position: "absolute", bottom: 0, right: 0, transform: "scale(-1,-1)", zIndex: 3 }}
-      />
-
-      {/* Contenu */}
-      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", padding: "64px 80px", textAlign: "center", zIndex: 4, boxSizing: "border-box" }}>
-        {/* En-tête institution */}
-        <p style={{ fontSize: "19px", fontStyle: "italic", fontWeight: "700", textDecoration: "underline", lineHeight: "1.3", maxWidth: "560px", margin: 0 }}>
-          {d.instituteName || d.institution}
-        </p>
-        <p style={{ fontSize: "14px", fontStyle: "italic", fontWeight: "700", textDecoration: "underline", marginTop: "8px", letterSpacing: "0.05em", margin: "8px 0 0 0" }}>
-          {d.instituteSubtitle || d.faculte}
-        </p>
-        <p style={{ fontSize: "17px", fontStyle: "italic", marginTop: "12px", margin: "12px 0 0 0" }}>
-          <span style={{ fontWeight: "700", textDecoration: "underline" }}>{d.specialityLabel || "Spécialité"}</span>
-          {" : "}
-          {d.speciality || "1ᵉʳ année ASSP"}
-        </p>
-
-        {/* Logo */}
-        <div style={{ marginTop: "24px", marginBottom: "28px" }}>
-          {d.logoUrl ? (
-            <img src={d.logoUrl} alt="Logo" style={{ height: "90px", objectFit: "contain" }} />
-          ) : (
-            <GenericLogoPlaceholder />
-          )}
-        </div>
-
-        {/* Label "Exposé sur" */}
-        <p style={{ fontSize: "16px", fontWeight: "700", alignSelf: "flex-start", marginLeft: "8px", margin: "0 0 4px 8px" }}>
-          : {d.exposeLabel || "Exposé sur"}
-        </p>
-
-        {/* Titre encadré */}
-        <div
+      {/* Background Image Watermark / Overlay */}
+      {bgImage && (
+        <img
+          src={bgImage}
+          alt="Fond de couverture"
           style={{
+            position: "absolute",
+            inset: 0,
             width: "100%",
-            marginTop: "12px",
-            marginBottom: "36px",
-            borderRadius: "16px",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "28px 24px",
-            background: accentColor,
-            boxSizing: "border-box"
+            height: "100%",
+            objectFit: bgFit,
+            objectPosition: "center center",
+            opacity: bgOpacity,
+            pointerEvents: "none",
+            zIndex: 1
           }}
-        >
-          <h1 style={{ color: "#ffffff", fontWeight: "700", fontSize: "32px", lineHeight: "1.25", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif", margin: 0 }}>
-            {d.title || d.titre}
-          </h1>
+        />
+      )}
+
+      {/* Cadres & Bordures Personnalisées */}
+      {borderStyle !== "none" && (
+        <>
+          <div
+            style={{
+              position: "absolute",
+              inset: `${borderInset}px`,
+              borderStyle: borderStyle === "dashed" ? "dashed" : borderStyle === "groove" ? "groove" : borderStyle === "ridge" ? "ridge" : "solid",
+              borderWidth: `${borderStyle === "double" ? borderWidth + 2 : borderWidth}px`,
+              borderColor: ornamentColor,
+              pointerEvents: "none",
+              zIndex: 2
+            }}
+          />
+          {borderStyle === "double" && (
+            <div
+              style={{
+                position: "absolute",
+                inset: `${borderInset + 6}px`,
+                borderStyle: "solid",
+                borderWidth: "1px",
+                borderColor: ornamentColor,
+                pointerEvents: "none",
+                zIndex: 2,
+                opacity: 0.8
+              }}
+            />
+          )}
+        </>
+      )}
+
+      {/* Volutes Ornementales de Coin */}
+      {showVolutes && (
+        <>
+          <CornerOrnament color={ornamentColor} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }} />
+          <CornerOrnament
+            color={ornamentColor}
+            style={{ position: "absolute", top: 0, right: 0, transform: "scaleX(-1)", zIndex: 3 }}
+          />
+          <CornerOrnament
+            color={ornamentColor}
+            style={{ position: "absolute", bottom: 0, left: 0, transform: "scaleY(-1)", zIndex: 3 }}
+          />
+          <CornerOrnament
+            color={ornamentColor}
+            style={{ position: "absolute", bottom: 0, right: 0, transform: "scale(-1,-1)", zIndex: 3 }}
+          />
+        </>
+      )}
+
+      {/* Contenu Déplaçable & Ajustable */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: `${borderInset + 35}px 70px`,
+          textAlign: "center",
+          zIndex: 4,
+          boxSizing: "border-box"
+        }}
+      >
+        {/* Top Header Group */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: `${verticalGap / 2}px` }}>
+          {/* En-tête institution */}
+          <p style={{ fontSize: "19px", fontStyle: "italic", fontWeight: "700", textDecoration: "underline", lineHeight: "1.3", maxWidth: "580px", margin: 0 }}>
+            {d.instituteName || d.institution}
+          </p>
+          <p style={{ fontSize: "14px", fontStyle: "italic", fontWeight: "700", textDecoration: "underline", letterSpacing: "0.05em", margin: 0 }}>
+            {d.instituteSubtitle || d.faculte}
+          </p>
+          <p style={{ fontSize: "17px", fontStyle: "italic", margin: 0 }}>
+            <span style={{ fontWeight: "700", textDecoration: "underline" }}>{d.specialityLabel || "Spécialité"}</span>
+            {" : "}
+            {d.speciality || "1ᵉʳ année ASSP"}
+          </p>
+
+          {/* Logo */}
+          <div style={{ marginTop: "12px", marginBottom: "8px" }}>
+            {d.logoUrl ? (
+              <img src={d.logoUrl} alt="Logo" style={{ height: "90px", objectFit: "contain" }} />
+            ) : (
+              <GenericLogoPlaceholder />
+            )}
+          </div>
         </div>
 
-        {/* Préparé par / Professeur */}
-        <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: "0 8px", textAlign: "left", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif" }}>
+        {/* Title Box Group */}
+        <div style={{ width: "100%", margin: `${verticalGap}px 0` }}>
+          <p style={{ fontSize: "16px", fontWeight: "700", textAlign: "left", marginLeft: "8px", marginBottom: "6px", margin: "0 0 6px 8px" }}>
+            : {d.exposeLabel || "Exposé sur"}
+          </p>
+
+          <div
+            style={{
+              width: "100%",
+              borderRadius: `${titleRadius}px`,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "24px 20px",
+              background: accentColor,
+              boxSizing: "border-box"
+            }}
+          >
+            <h1 style={{ color: "#ffffff", fontWeight: "700", fontSize: `${titleFontSize}px`, lineHeight: "1.25", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif", margin: 0 }}>
+              {d.title || d.titre}
+            </h1>
+          </div>
+        </div>
+
+        {/* Authors & Professor Group */}
+        <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: "0 8px", textAlign: "left", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif", margin: `${verticalGap / 2}px 0` }}>
           <div>
             <p style={{ fontWeight: "700", textDecoration: "underline", fontSize: "15px", marginBottom: "8px", margin: "0 0 8px 0" }}>
               {d.preparedByLabel || "Préparé par"} :
@@ -191,8 +267,8 @@ export default function CoverPagePrestige({ data = {}, accentColor = "#4a7fc1", 
           </div>
         </div>
 
-        {/* Année pédagogique */}
-        <p style={{ marginTop: "auto", marginBottom: "40px", fontSize: "15px", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif" }}>
+        {/* Footer Academic Year */}
+        <p style={{ fontSize: "15px", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif", marginTop: "12px", marginBottom: "16px", margin: "12px 0 16px 0" }}>
           <span style={{ fontWeight: "700", textDecoration: "underline" }}>{d.yearLabel || "Année pédagogique"} :</span> {d.year || d.annee || "2023/2024"}
         </p>
       </div>
