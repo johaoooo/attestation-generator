@@ -132,7 +132,7 @@ export default function LettreOfficielle({ data = {}, fontFamily = "'Georgia', '
       </div>
 
       {/* ===== CORPS DE LA LETTRE ===== */}
-      <div style={{ flex: 1, padding: "54px 56px 0 56px", fontSize: "14.5px", lineHeight: "1.55", zIndex: 2, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+      <div style={{ flex: 1, padding: "90px 56px 0 56px", fontSize: "14.5px", lineHeight: "1.55", zIndex: 2, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
         <div>
           {/* Référence + Destinataire/Date sur la même ligne (Alignement Gauche sur la colonne de droite) */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "36px" }}>
