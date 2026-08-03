@@ -1,71 +1,59 @@
-# 📄 RAPPORT D'AVANCEMENT & DOCUMENTATION TECHNIQUE — DOCSTUDIO
+# 📄 RAPPORT DE REFONTE & DOCUMENTATION TECHNIQUE — DOCSTUDIO PME ALL-IN-ONE
 
-**Projet** : DocStudio — Générateur Multi-Documents Professionnels  
+**Projet** : DocStudio PME — Suite Marketing & Documents All-in-One  
 **Localisation** : `/home/joe/generateur-attestation`  
-**Technologies** : React 19, Vite 8, Vanilla CSS, html2canvas, jsPDF  
-**Date du rapport** : 30 Juillet 2026  
+**Technologies** : React 19, Vite 8, Tailwind CSS v4, html2canvas, jsPDF  
+**Date de la refonte** : Août 2026  
 
 ---
 
-## 1. Vue d'Ensemble du Projet
+## 1. Vision & Objectif de la Refonte
 
-**DocStudio** est une plateforme web moderne et responsive permettant la création, l'édition en temps réel et l'exportation au format PDF vectoriel haute définition de **6 types de documents professionnels** :
+**DocStudio PME** est une suite complète de création visuelle et documentaire spécialement conçue pour les responsables marketing et dirigeants de PME. 
+Elle élimine le besoin d'utiliser séparément des outils lourds comme Canva ou Photoshop en regroupant **dans un seul environnement web ultra-rapide et sécurisé** :
 
-1. 📜 **Attestation de Formation & Certificat** (Avec sceaux de cire 💮, dorures ⚜️, vérification QR Code et import CSV/Excel en masse).
-2. ✉️ **Courrier Administratif & Officiel** (Conforme aux normes AFNOR et administratives de Porto-Novo).
-3. 🧾 **Facture Officielle & Proforma** (Calculs automatiques HT/TVA/TTC, acompte, RIB/MoMo et mentions légales).
-4. 🖼️ **Affiche & Poster d'Événement** (Foires internationales, ateliers de formation, conférences business et événements culturels).
-5. 💼 **CV Professionnel** (3 mises en page métiers : Barre latérale, Entête bandeau, Prestige).
-6. 📚 **Rapport de Stage & Mémoire Multi-Pages** (Page de garde officielle, Sommaire interactif et pagination A4).
+1. 🎨 **Studio Canva & Photoshop PME (Visual Marketing Studio)** :
+   - Éditeur visuel interactif avec **Glisser-Déposer (Drag & Drop)**, calques (Layers), et retouches d'images.
+   - 7 Formats marketing : Posts Instagram/FB (1:1), Story WhatsApp/Insta (9:16), Bannière Web/LinkedIn (16:9), Affiche Événement A4, Flyer A5, Cartes de visite et Badges.
+   - Presets de modèles PME prêts à l'emploi (Lancement de produit, Solde -50%, Atelier/Masterclass, Offre promo).
 
----
+2. 🏢 **Brand Kit & Charte Graphique PME Centralisée** :
+   - Enregistrement unique de la charte de la PME : Logo, Sceau/Tampon officiel, Signature de la Direction, Palette de couleurs, IFU, RCCM, RIB/MoMo, Coordonnées.
+   - Injection **automatique et instantanée** de ces visuels et informations dans TOUS les documents et visuels créés.
 
-## 2. Bilan des Fonctionnalités Implémentées
+3. 🎴 **Générateur de Cartes de Visite PME** :
+   - Cartes Recto / Verso avec QR Code dynamique vers le site web ou MoMo.
+   - Exportation en planche A4 de **10 cartes par page** prête pour impression HD.
 
-### 🎨 A. Refonte Visuelle & Bibliothèque d'Icônes SVG Pro
-- **Module d'icônes vectorielles (`Icons.jsx`)** : Remplacement à 100% de tous les emojis texte par des icônes SVG vectorielles haute définition (`FileText`, `Star`, `Palette`, `PenTool`, `Building`, `User`, `Smartphone`, `Monitor`, `Receipt`, `ImageIcon`, `ShieldCheck`, `Zap`, `Printer`, `Download`, etc.).
-- **Épuration de la Barre de Navigation (`Navbar.jsx`)** : Suppression du sous-titre *"Générateur Multi-Documents"* sous la marque `DocStudio` pour optimiser l'espace et afficher proprement l'ensemble des 6 générateurs dans le menu.
-
-### 🎛️ B. Redimensionnement & Masquage du Menu Latéral
-- **Réduction Rapide (`◀ Masquer`)** : Permet de réduire le menu d'édition à une bande minimale de `50 px`, libérant **100% de la largeur de l'écran** pour le canevas de document.
-- **Réouverture en 1 Clic (`▶ Ouvrir le menu d'édition`)** : Bouton réactif disponible sur la bande latérale et dans la barre d'outils.
-- **Curseur de Largeur Sur-Mesure (`📐 Largeur du Menu Latéral`)** : Ajustement continu de la largeur du menu de `260 px` à `600 px` dans l'onglet *Style & Format*.
-
-### 📐 C. Moteur de Rendu A4 (Portrait / Paysage & Défilement Fluide)
-- **Support A4 Portrait (`210 mm × 297 mm`) & Paysage (`297 mm × 210 mm`)** avec basculement instantané.
-- **Correction du Bug CSS Grid & Flexbox (`min-width: 0;` & `text-align: center`)** : Élimination du rognage du document à gauche et activation du défilement horizontal natif en mode Paysage.
-- **Barre de Contrôles de Zoom** : Boutons de zoom réactifs (`50%`, `65%`, `80%`, `100%`).
-
-### 🧾 D. Module : Générateur de Factures (`FactureGenerator.jsx`)
-- **Deux statuts de facturation** : *Facture Définitive* ou *Facture Proforma*.
-- **Tableau dynamique d'articles** : Ajout et suppression de lignes (Description, Qté, Prix Unitaire HT, Taux TVA %).
-- **Calculs Automatiques** : Total HT, Montant TVA, Total TTC, Déduction d'acompte et Net à payer calculés en temps réel.
-- **Détails Financiers & Signatures** : N° IFU, RCCM, IBAN / RIB bancaire, Mobile Money, date d'échéance, logo, cachet officiel et signature manuscrite.
-
-### 🖼️ E. Module : Générateur d'Affiches & Posters (`AfficheGenerator.jsx`)
-- **Conception d'Affiches d'Événements** : Foires culturelles, ateliers de formation certifiants, forums tech & business.
-- **Mise en Page Événementielle** : Sur-titres institutionnels, Titre principal en typographies de prestige (`Cinzel`, `Playfair Display`, `Montserrat`), sous-titre, dates & lieux, programme détaillé et badge promo (ex: *✨ ENTRÉE LIBRE & GRATUITE*).
-- **Supports Visuels** : Upload d'image de fond poster, logo d'organisation, tampon et signature manuscrite.
+4. 💼 **Générateurs Administratifs, Ventes & RH** :
+   - Factures & Proformas (calculs automatiques HT/TVA/TTC, acompte, RIB/MoMo).
+   - Courriers officiels (conforme aux normes administratives et AFNOR).
+   - Attestations de formation & Certificats de réussite (sceaux de cire, dorures et import CSV).
+   - CV professionnels & Rapports d'activité multi-pages.
 
 ---
 
-## 3. Architecture de la Codebase
+## 2. Architecture de la Codebase
 
 ```
 generateur-attestation/
 ├── src/
-│   ├── App.jsx                       # Routeur principal de l'application (6 vues)
-│   ├── index.css                     # Design system CSS centralisé
-│   ├── AttestationFormation.jsx      # Composant Attestation de Formation & Certificat
-│   └── components/
-│       ├── Navbar.jsx                # Barre de navigation supérieure (avec icônes SVG pro)
-│       ├── HomeHub.jsx               # Tableau de bord d'accueil (Hub des 6 documents)
-│       ├── CourrierGenerator.jsx     # Générateur de Courrier Administratif & Officiel
-│       ├── FactureGenerator.jsx      # Générateur de Factures & Proformas
-│       ├── AfficheGenerator.jsx      # Générateur d'Affiches & Posters d'Événements
-│       ├── CvGenerator.jsx           # Générateur de CV Professionnel
-│       ├── RapportMemoireGenerator.jsx # Générateur de Rapports & Mémoires
-│       └── Icons.jsx                 # Bibliothèque d'icônes SVG vectorielles
+│   ├── App.jsx                       # Routeur principal & gestionnaire du Brand Kit Modal
+│   ├── index.css                     # Design system CSS Studio Dark & Glassmorphism
+│   ├── utils/
+│   │   └── brandStore.js             # Gestionnaire centralisé du Brand Kit PME (LocalStorage + Custom Events)
+│   ├── components/
+│   │   ├── BrandKitModal.jsx         # Fenêtre modale d'édition de la Charte Graphique PME
+│   │   ├── CanvaStudio.jsx           # Studio Canva & Photoshop (Drag & Drop, Calques, Presets, Export PNG/PDF)
+│   │   ├── CarteVisiteGenerator.jsx  # Générateur de Cartes de Visite (Recto/Verso, Planche A4 PDF)
+│   │   ├── HomeHub.jsx               # Dashboard Hub PME réinventé
+│   │   ├── Navbar.jsx                # Barre de navigation avec bouton Charte PME
+│   │   ├── FactureGenerator.jsx      # Générateur de Factures & Proformas
+│   │   ├── CourrierGenerator.jsx     # Générateur de Courriers Officiels
+│   │   ├── AfficheGenerator.jsx      # Générateur d'Affiches Événementielles
+│   │   ├── CvGenerator.jsx           # Générateur de CV
+│   │   ├── RapportMemoireGenerator.jsx # Générateur de Rapports & Mémoires
+│   │   └── Icons.jsx                 # Bibliothèque d'icônes SVG vectorielles HD
 ├── docstudio.md                      # Documentation technique du projet
 ├── package.json
 └── vite.config.js
@@ -73,8 +61,8 @@ generateur-attestation/
 
 ---
 
-## 4. Validation & Diagnostic de Compilation
+## 3. Validation de Compilation
 
 - **Commande de Build** : `npm run build`
-- **Résultat** : `✓ built in 795ms` — **0 erreur**.
-- **Serveur de Développement** : Prêt pour exécution locale via `npm run dev`.
+- **Résultat** : `✓ built in 1.20s` — **0 erreur**.
+- **Serveur Dev** : Lancé sur le port 5180 (`http://localhost:5180`).

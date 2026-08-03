@@ -13,14 +13,38 @@ function formatDateFR(iso) {
   if (!y || !m || !d) return "";
   return `${d} ${MOIS[m - 1]} ${y}`;
 }
+function renderFormattedText(text) {
+  if (!text) return null;
+  const regex = /(<b>.*?<\/b>|TOSSA Afiavi Gbessito Honorine|Macramé|macrame|Teinture de pagne|teinture de pagne|ONG ESPOIR ET NATURE|ong espoir et nature|Maison AFI COLLECTION du Bénin|AFI COLLECTION|afi collection)/gi;
+  const parts = text.split(regex);
+
+  return parts.map((part, index) => {
+    if (!part) return null;
+    if (part.startsWith("<b>") && part.endsWith("</b>")) {
+      return <b key={index}>{part.slice(3, -4)}</b>;
+    }
+    const lower = part.toLowerCase();
+    if (
+      lower === "tossa afiavi gbessito honorine" ||
+      lower === "macramé" || lower === "macrame" ||
+      lower === "teinture de pagne" ||
+      lower === "ong espoir et nature" ||
+      lower === "maison afi collection du bénin" || lower === "maison afi collection du benin" ||
+      lower === "afi collection"
+    ) {
+      return <b key={index}>{part}</b>;
+    }
+    return part;
+  });
+}
 
 const DEFAULT_DATA = {
   title: "Attestation",
-  introText: "Je soussignée Mme TOSSA Afiavi Gbessito Honorine, atteste que :",
-  destinataire: "Mme / M. [Nom du Bénéficiaire]",
-  bodyText: "a participé avec assiduité aux formations Macramé et Teinture de pagne",
-  partnershipText: "Organisé par l'ONG ESPOIR ET NATURE en partenariat avec la Maison AFI COLLECTION du Bénin.",
-  closingText: "En foi de quoi la présente attestation lui est délivrée pour servir et valoir ce que de droit.",
+  introText: "Je soussignée Mme <b>TOSSA Afiavi Gbessito Honorine</b>, atteste que le/la nommé(e) :",
+  destinataire: "",
+  bodyText: "a suivi avec succès et une assiduité le programme de formation en <b>Macramé</b> et <b>Teinture de pagne</b>,",
+  partnershipText: "organisée par l'<b>ONG ESPOIR ET NATURE</b> en partenariat avec la <b>Maison AFI COLLECTION du Bénin</b>.",
+  closingText: "En foi de quoi, la présente <b>attestation </b> lui est délivrée pour <b>servir et valoir ce que de droit</b>.",
   villeDelivrance: "Houegbo",
   dateDelivrance: "2026-07-31",
   numero: "AP-2026-0104",
@@ -30,10 +54,45 @@ const DEFAULT_DATA = {
   fonction2: "(Maison AFI COLLECTION du Bénin)",
 };
 
+function ExcellenceShield() {
+  return (
+    <svg width="64" height="78" viewBox="0 0 64 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* gold outline */}
+      <path
+        d="M32 2 L58 10 V34 C58 52 46 64 32 70 C18 64 6 52 6 34 V10 Z"
+        fill="#c9a227"
+      />
+      {/* red inner shield */}
+      <path
+        d="M32 6 L54 13 V34 C54 49.5 43.5 60 32 65.5 C20.5 60 10 49.5 10 34 V13 Z"
+        fill="#b3101a"
+      />
+      {/* ribbon */}
+      <path d="M18 66 L32 60 L46 66 L44 78 L32 71 L20 78 Z" fill="#c9a227" />
+    </svg>
+  );
+}
+
 const THEMES = [
   {
+    id: "navy-gold-excellence",
+    name: "👑 Certificate of Excellence (Bleu & Or)",
+    bg: "#FFFFFF",
+    border: "#0b1f4b",
+    borderSoft: "#d4af37",
+    primary: "#0b1f4b",
+    accent: "#d4af37",
+    gold: "#d4af37",
+    sealBg: "#b3101a",
+    fontHeader: "'Playfair Display', serif",
+    fontBody: "'Playfair Display', serif",
+    cardBg: "#FFFFFF",
+    hasShield: true,
+    hasCornerBrackets: true,
+  },
+  {
     id: "classic-gold",
-    name: "Or Prestigieux",
+    name: "🏆 Or Prestigieux & Parchemin",
     bg: "#FAF6EE",
     border: "#C59B27",
     borderSoft: "#EAD49B",
@@ -47,7 +106,7 @@ const THEMES = [
   },
   {
     id: "emerald-royal",
-    name: "Émeraude Royale",
+    name: "🌲 Émeraude Royale & Or Ancien",
     bg: "#F4F8F5",
     border: "#1B4D3E",
     borderSoft: "#86BBA6",
@@ -61,7 +120,7 @@ const THEMES = [
   },
   {
     id: "midnight-dark",
-    name: "Nuit Luxe (Sombre)",
+    name: "🌌 Nuit Luxe Obsidienne (Sombre)",
     bg: "#0B1329",
     border: "#D4AF37",
     borderSoft: "#524316",
@@ -75,7 +134,7 @@ const THEMES = [
   },
   {
     id: "ruby-bordeaux",
-    name: "Bordeaux Saphir",
+    name: "🍷 Bordeaux Saphir & Rubis",
     bg: "#FDF8F5",
     border: "#581820",
     borderSoft: "#D9A0A6",
@@ -89,7 +148,7 @@ const THEMES = [
   },
   {
     id: "sapphire-blue",
-    name: "Bleu Saphir & Or",
+    name: "💎 Bleu Saphir & Argent Impérial",
     bg: "#F0F4F8",
     border: "#0F2942",
     borderSoft: "#8CA2B8",
@@ -103,7 +162,7 @@ const THEMES = [
   },
   {
     id: "rose-gold",
-    name: "Rose Poudré & Or Rose",
+    name: "🌸 Rose Poudré & Or Rose",
     bg: "#FAF4F4",
     border: "#B76E79",
     borderSoft: "#E8C5C8",
@@ -117,7 +176,7 @@ const THEMES = [
   },
   {
     id: "vintage-parchment",
-    name: "Parchemin Vintage",
+    name: "📜 Parchemin Authentique Vintage",
     bg: "#F7F0DF",
     border: "#6B4C29",
     borderSoft: "#C9B293",
@@ -131,7 +190,7 @@ const THEMES = [
   },
   {
     id: "modern-minimal",
-    name: "Minimal Tech",
+    name: "💻 Minimaliste Tech & Slate",
     bg: "#FFFFFF",
     border: "#1E293B",
     borderSoft: "#CBD5E1",
@@ -142,6 +201,160 @@ const THEMES = [
     fontHeader: "'Times New Roman', Times, serif",
     fontBody: "'Times New Roman', Times, serif",
     cardBg: "#FFFFFF",
+  },
+  {
+    id: "black-diamond",
+    name: "🏛️ Diamant Noir & Platine (Sombre)",
+    bg: "#090A0F",
+    border: "#94A3B8",
+    borderSoft: "#334155",
+    primary: "#F1F5F9",
+    accent: "#CBD5E1",
+    gold: "#E2E8F0",
+    sealBg: "#1E293B",
+    fontHeader: "'Cinzel', serif",
+    fontBody: "'Cinzel', serif",
+    cardBg: "#090A0F",
+  },
+  {
+    id: "sage-gold",
+    name: "🌿 Vert Sauge & Doré Végétal",
+    bg: "#F2F5F3",
+    border: "#2C4A3E",
+    borderSoft: "#A3B8B0",
+    primary: "#1A3027",
+    accent: "#D4AF37",
+    gold: "#D4AF37",
+    sealBg: "#2C4A3E",
+    fontHeader: "'Cormorant Garamond', serif",
+    fontBody: "'Cormorant Garamond', serif",
+    cardBg: "#F2F5F3",
+  },
+  {
+    id: "imperial-purple",
+    name: "⚜️ Violet Impérial & Feuille d'Or",
+    bg: "#FAF5FF",
+    border: "#4C1D95",
+    borderSoft: "#C084FC",
+    primary: "#2E1065",
+    accent: "#F59E0B",
+    gold: "#F59E0B",
+    sealBg: "#581C87",
+    fontHeader: "'Playfair Display', serif",
+    fontBody: "'Playfair Display', serif",
+    cardBg: "#FAF5FF",
+  },
+  {
+    id: "amber-sunfire",
+    name: "☀️ Ambre Doré & Terre Sienne",
+    bg: "#FFFBEB",
+    border: "#B45309",
+    borderSoft: "#FDE68A",
+    primary: "#78350F",
+    accent: "#D97706",
+    gold: "#F59E0B",
+    sealBg: "#9A3412",
+    fontHeader: "'Times New Roman', Times, serif",
+    fontBody: "'Times New Roman', Times, serif",
+    cardBg: "#FFFBEB",
+  },
+  {
+    id: "arctic-platinum",
+    name: "❄️ Arctique Platine & Argent",
+    bg: "#F8FAFC",
+    border: "#475569",
+    borderSoft: "#CBD5E1",
+    primary: "#0F172A",
+    accent: "#0284C7",
+    gold: "#64748B",
+    sealBg: "#334155",
+    fontHeader: "'Montserrat', sans-serif",
+    fontBody: "'Montserrat', sans-serif",
+    cardBg: "#F8FAFC",
+  },
+  {
+    id: "terracotta-prestige",
+    name: "🎭 Terracotta & Cuivre Antique",
+    bg: "#FDF6F0",
+    border: "#9A3412",
+    borderSoft: "#FDBA74",
+    primary: "#431407",
+    accent: "#C2410C",
+    gold: "#D97706",
+    sealBg: "#7C2D12",
+    fontHeader: "'Cinzel', serif",
+    fontBody: "'Cinzel', serif",
+    cardBg: "#FDF6F0",
+  },
+  {
+    id: "ocean-turquoise",
+    name: "🌊 Turquoise Océan & Bronze",
+    bg: "#F0FDFA",
+    border: "#0F766E",
+    borderSoft: "#99F6E4",
+    primary: "#042F2C",
+    accent: "#D97706",
+    gold: "#CA8A04",
+    sealBg: "#115E59",
+    fontHeader: "'Plus Jakarta Sans', sans-serif",
+    fontBody: "'Plus Jakarta Sans', sans-serif",
+    cardBg: "#F0FDFA",
+  },
+  {
+    id: "bronze-executive",
+    name: "🛡️ Bronze Exécutif & Brun",
+    bg: "#FDFBF7",
+    border: "#78350F",
+    borderSoft: "#D97706",
+    primary: "#451A03",
+    accent: "#B45309",
+    gold: "#D97706",
+    sealBg: "#78350F",
+    fontHeader: "'Times New Roman', Times, serif",
+    fontBody: "'Times New Roman', Times, serif",
+    cardBg: "#FDFBF7",
+  },
+  {
+    id: "champagne-luxe",
+    name: "✨ Champagne & Ivoire Royal",
+    bg: "#FFFDF9",
+    border: "#EAB308",
+    borderSoft: "#FEF08A",
+    primary: "#713F12",
+    accent: "#CA8A04",
+    gold: "#EAB308",
+    sealBg: "#854D0E",
+    fontHeader: "'Playfair Display', serif",
+    fontBody: "'Playfair Display', serif",
+    cardBg: "#FFFDF9",
+  },
+  {
+    id: "cyber-neon-gold",
+    name: "🔮 Cyber Nuit Néon (Sombre)",
+    bg: "#05050B",
+    border: "#F59E0B",
+    borderSoft: "#3B0764",
+    primary: "#FAFAF9",
+    accent: "#38BDF8",
+    gold: "#F59E0B",
+    sealBg: "#6B21A8",
+    fontHeader: "'Montserrat', sans-serif",
+    fontBody: "'Montserrat', sans-serif",
+    cardBg: "#05050B",
+  },
+  {
+    id: "academic-crimson",
+    name: "🎓 Rouge Académique & Sceau d'État",
+    bg: "#FFF8F8",
+    border: "#991B1B",
+    borderSoft: "#FCA5A5",
+    primary: "#450A0A",
+    accent: "#D97706",
+    gold: "#D97706",
+    sealBg: "#7F1D1D",
+    fontHeader: "'Times New Roman', Times, serif",
+    fontBody: "'Times New Roman', Times, serif",
+    cardBg: "#FFF8F8",
   }
 ];
 
@@ -203,30 +416,30 @@ export default function AttestationFormation({ onBack }) {
   const [cornerStyle, setCornerStyle] = useState("classic");
 
   // INDIVIDUAL FONT & SIZE CONTROLS FOR ALL ELEMENTS
-  const [customTitleFont, setCustomTitleFont] = useState("'Great Vibes', cursive");
+  const [customTitleFont, setCustomTitleFont] = useState("'Times New Roman', Times, serif");
   const [customTitleSize, setCustomTitleSize] = useState(52);
   const [customTitleColor, setCustomTitleColor] = useState("");
 
   const [introFont, setIntroFont] = useState("'Times New Roman', Times, serif");
-  const [introSize, setIntroSize] = useState(16.5);
+  const [introSize, setIntroSize] = useState(20);
 
   const [customNameFont, setCustomNameFont] = useState("'Times New Roman', Times, serif");
-  const [customNameSize, setCustomNameSize] = useState(32);
+  const [customNameSize, setCustomNameSize] = useState(34);
   const [customNameColor, setCustomNameColor] = useState("");
   const [isNameBold, setIsNameBold] = useState(true);
   const [isNameItalic, setIsNameItalic] = useState(false);
 
   const [bodyFont, setBodyFont] = useState("'Times New Roman', Times, serif");
-  const [bodySize, setBodySize] = useState(17);
+  const [bodySize, setBodySize] = useState(20);
 
   const [partnershipFont, setPartnershipFont] = useState("'Times New Roman', Times, serif");
-  const [partnershipSize, setPartnershipSize] = useState(15.5);
+  const [partnershipSize, setPartnershipSize] = useState(20);
 
   const [closingFont, setClosingFont] = useState("'Times New Roman', Times, serif");
-  const [closingSize, setClosingSize] = useState(15.5);
+  const [closingSize, setClosingSize] = useState(20);
 
   const [datePlaceFont, setDatePlaceFont] = useState("'Times New Roman', Times, serif");
-  const [datePlaceSize, setDatePlaceSize] = useState(16);
+  const [datePlaceSize, setDatePlaceSize] = useState(20);
 
   const [signatoryFont, setSignatoryFont] = useState("'Times New Roman', Times, serif");
   const [signatorySize, setSignatorySize] = useState(14);
@@ -435,7 +648,10 @@ export default function AttestationFormation({ onBack }) {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (evt) => setCustomSignatureImg(evt.target.result);
+      reader.onload = (evt) => {
+        setCustomSignatureImg(evt.target.result);
+        setShowSig1(true);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -444,7 +660,10 @@ export default function AttestationFormation({ onBack }) {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (evt) => setCustomSignatureImg2(evt.target.result);
+      reader.onload = (evt) => {
+        setCustomSignatureImg2(evt.target.result);
+        setShowSig2(true);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -588,6 +807,7 @@ export default function AttestationFormation({ onBack }) {
   return (
     <div className="wrap">
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,500&family=Alex+Brush&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         .wrap {
@@ -1031,34 +1251,71 @@ export default function AttestationFormation({ onBack }) {
         /* CUSTOM BACKGROUND IMAGE */
         .custom-document-bg {
           position: absolute;
-          inset: 0;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
+          object-position: center center;
           opacity: ${bgOpacity};
           pointer-events: none;
           z-index: 1;
         }
 
-        /* CUSTOMIZABLE BORDER STYLES */
+        /* 20 CUSTOMIZABLE PRO BORDER STYLES */
         .frame-layer-custom-outer {
           position: absolute;
           inset: ${borderInset}px;
-          border-style: ${borderStyle === "dashed" ? "dashed" : "solid"};
-          border-width: ${borderStyle === "none" ? "0px" : `${borderWidth}px`};
+          border-style: ${
+            borderStyle === "dashed" || borderStyle === "dashed_double" ? "dashed" :
+            borderStyle === "dotted" ? "dotted" :
+            borderStyle === "groove" ? "groove" :
+            borderStyle === "ridge" ? "ridge" :
+            borderStyle === "inset" ? "inset" :
+            borderStyle === "outset" ? "outset" :
+            borderStyle === "double" || borderStyle === "triple" || borderStyle === "ornamental" || borderStyle === "vintage" || borderStyle === "baroque_gold" || borderStyle === "academic" ? "double" :
+            borderStyle === "none" ? "none" : "solid"
+          };
+          border-width: ${
+            borderStyle === "none" ? "0px" :
+            borderStyle === "diplomat" ? `${borderWidth + 6}px` :
+            borderStyle === "double" || borderStyle === "baroque_gold" ? `${borderWidth + 4}px` :
+            borderStyle === "triple" || borderStyle === "vintage" ? `${borderWidth + 6}px` :
+            borderStyle === "art_deco" ? `${borderWidth + 3}px` : `${borderWidth}px`
+          };
           border-color: ${activeBorderColor};
           pointer-events: none;
           z-index: 2;
+          box-shadow: ${
+            borderStyle === "glow_neon" ? `0 0 20px ${activeBorderColor}, inset 0 0 15px ${activeBorderColor}aa` :
+            borderStyle === "ornamental" || borderStyle === "vintage" || borderStyle === "baroque_gold" ? `0 0 14px ${activeBorderColor}44` : "none"
+          };
+          border-radius: ${borderStyle === "art_deco" ? "12px" : "0px"};
         }
 
         .frame-layer-custom-inner {
           position: absolute;
           inset: ${borderInset + 8}px;
-          border-style: ${borderStyle === "dashed" ? "dashed" : "solid"};
-          border-width: ${borderStyle === "double" || borderStyle === "ornamental" ? "1px" : "0px"};
-          border-color: ${activeTheme.borderSoft};
+          border-style: ${borderStyle === "dashed" || borderStyle === "dashed_double" ? "dashed" : "solid"};
+          border-width: ${
+            borderStyle === "double" || borderStyle === "triple" || borderStyle === "ornamental" || borderStyle === "vintage" || borderStyle === "baroque_gold" || borderStyle === "diplomat" || borderStyle === "academic" || borderStyle === "guilloche" ? "1px" : "0px"
+          };
+          border-color: ${customBorderColor || activeTheme.borderSoft || activeBorderColor};
           pointer-events: none;
           z-index: 2;
+          border-radius: ${borderStyle === "art_deco" ? "8px" : "0px"};
+        }
+
+        .frame-layer-custom-triple {
+          position: absolute;
+          inset: ${borderInset + 16}px;
+          border-style: ${borderStyle === "guilloche" ? "dashed" : "solid"};
+          border-width: ${borderStyle === "triple" || borderStyle === "vintage" || borderStyle === "baroque_gold" || borderStyle === "guilloche" ? "1px" : "0px"};
+          border-color: ${activeBorderColor};
+          pointer-events: none;
+          z-index: 2;
+          opacity: 0.7;
         }
 
         .corner-ornament {
@@ -1098,19 +1355,29 @@ export default function AttestationFormation({ onBack }) {
           text-align: center;
         }
 
-        /* HEADER SECTION WITH MOVED-DOWN ELEGANT TITLE */
+        /* HEADER SECTION WITH PERFECT BALANCED GRID & ADAPTIVE TITLE */
         .cert-header-layout {
           width: 100%;
           display: grid;
-          grid-template-columns: 130px 1fr 130px;
+          grid-template-columns: minmax(120px, 1fr) auto minmax(120px, 1fr);
           align-items: center;
-          padding-top: 16px;
+          padding-top: 2px;
+          gap: 16px;
+          position: relative;
         }
 
         .header-logo-box {
           display: flex;
           align-items: center;
           justify-content: center;
+        }
+
+        .header-logo-box.left {
+          justify-content: flex-start;
+        }
+
+        .header-logo-box.right {
+          justify-content: flex-end;
         }
 
         .header-logo-img-left {
@@ -1129,24 +1396,27 @@ export default function AttestationFormation({ onBack }) {
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
+          text-align: center;
         }
 
-        /* PRESTIGIOUS TITLE STYLING */
+        /* PRESTIGIOUS TITLE STYLING WITH ADAPTIVE RESPONSIVE SIZING */
         .main-title {
           font-family: ${customTitleFont || "'Great Vibes', cursive"};
-          font-size: ${customTitleSize}px;
+          font-size: ${activeTheme.id === "navy-gold-excellence" ? "clamp(36px, 5.5vw, 56px)" : `clamp(28px, 5vw, ${customTitleSize}px)`};
           font-weight: 700;
           color: ${customTitleColor || activeTheme.primary};
-          line-height: 1.15;
-          margin-top: 8px;
+          line-height: 1.1;
+          margin-top: 2px;
           margin-bottom: 2px;
+          white-space: nowrap;
         }
 
         .divider-ornament {
           display: flex;
           align-items: center;
           gap: 14px;
-          margin: 4px 0;
+          margin: 2px 0;
         }
 
         .divider-line {
@@ -1168,15 +1438,17 @@ export default function AttestationFormation({ onBack }) {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 12px;
-          margin: 6px 0;
+          gap: 3px;
+          margin: -4px 0 2px 0;
+          flex-grow: 1;
+          justify-content: flex-start;
         }
 
         .intro-phrase {
           font-family: ${introFont};
           font-size: ${introSize}px;
           color: ${activeTheme.primary};
-          line-height: 1.45;
+          line-height: 1.3;
         }
 
         .recipient-name-block {
@@ -1184,7 +1456,7 @@ export default function AttestationFormation({ onBack }) {
           display: flex;
           justify-content: center;
           align-items: center;
-          margin: 4px 0;
+          margin: 2px 0;
         }
 
         .recipient-name {
@@ -1193,8 +1465,8 @@ export default function AttestationFormation({ onBack }) {
           font-weight: ${isNameBold ? "700" : "400"};
           font-style: ${isNameItalic ? "italic" : "normal"};
           color: ${customNameColor || activeTheme.primary};
-          line-height: 1.25;
-          padding: 4px 28px;
+          line-height: 1.2;
+          padding: 2px 28px;
           border-bottom: 2px solid ${activeTheme.primary};
           min-width: 440px;
           text-align: center;
@@ -1205,7 +1477,7 @@ export default function AttestationFormation({ onBack }) {
           font-family: ${bodyFont};
           font-size: ${bodySize}px;
           color: ${activeTheme.primary};
-          line-height: 1.5;
+          line-height: 1.35;
           max-width: 800px;
           text-align: center;
           font-weight: 400;
@@ -1214,10 +1486,10 @@ export default function AttestationFormation({ onBack }) {
         .partnership-phrase {
           font-family: ${partnershipFont};
           font-size: ${partnershipSize}px;
-          font-style: italic;
+          font-style: normal;
           color: ${activeTheme.primary};
           max-width: 760px;
-          line-height: 1.4;
+          line-height: 1.3;
           opacity: 0.95;
         }
 
@@ -1225,17 +1497,18 @@ export default function AttestationFormation({ onBack }) {
           font-family: ${closingFont};
           font-size: ${closingSize}px;
           color: ${activeTheme.primary};
-          line-height: 1.4;
+          line-height: 1.3;
         }
 
         /* FAIT À HOUEGBO LE 31 JUILLET 2026 */
         .date-place-tag {
           font-family: ${datePlaceFont};
           font-size: ${datePlaceSize}px;
-          font-style: italic;
+          font-style: normal;
           font-weight: 600;
           color: ${activeTheme.primary};
-          margin-top: 6px;
+          margin-top: 4px;
+          margin-bottom: 4px;
         }
 
         /* FOOTER SECTION & DOUBLE SIGNATORIES IN LOWER LEFT & RIGHT CORNERS */
@@ -1245,6 +1518,8 @@ export default function AttestationFormation({ onBack }) {
           grid-template-columns: 1fr 130px 1fr;
           align-items: flex-end;
           gap: 16px;
+          margin-top: auto;
+          padding-bottom: 4px;
         }
 
         .signature-corner-left {
@@ -1252,6 +1527,7 @@ export default function AttestationFormation({ onBack }) {
           flex-direction: column;
           align-items: flex-start;
           text-align: left;
+          position: relative;
         }
 
         .signature-corner-right {
@@ -1259,18 +1535,28 @@ export default function AttestationFormation({ onBack }) {
           flex-direction: column;
           align-items: flex-end;
           text-align: right;
+          position: relative;
         }
 
         .signature-display {
           display: flex;
           align-items: flex-end;
-          margin-bottom: 2px;
+          margin-bottom: 6px;
+          height: 48px;
+          width: 100%;
+          position: relative;
         }
 
         .signature-img {
+          position: absolute;
+          bottom: -5px;
           object-fit: contain;
           transform: rotate(-2deg);
+          z-index: 5;
+          pointer-events: none;
         }
+        .signature-corner-left .signature-img { left: 0; }
+        .signature-corner-right .signature-img { right: 0; }
 
         .signature-handwriting {
           font-family: 'Great Vibes', cursive;
@@ -1636,10 +1922,30 @@ export default function AttestationFormation({ onBack }) {
                     <input
                       type="range"
                       min={30}
-                      max={180}
+                      max={380}
                       value={leftLogoSize}
                       onChange={(e) => setLeftLogoSize(Number(e.target.value))}
                     />
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
+                      {[
+                        { label: "Petit", size: 60 },
+                        { label: "Moyen", size: 100 },
+                        { label: "Grand", size: 160 },
+                        { label: "Géant", size: 220 },
+                        { label: "XXL", size: 280 },
+                        { label: "Maxi XL", size: 350 }
+                      ].map((p) => (
+                        <button
+                          key={p.label}
+                          type="button"
+                          className={`chip ${leftLogoSize === p.size ? "active" : ""}`}
+                          onClick={() => setLeftLogoSize(p.size)}
+                          style={{ padding: "3px 8px", fontSize: "10px" }}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   {leftLogoImg && (
@@ -1661,10 +1967,30 @@ export default function AttestationFormation({ onBack }) {
                     <input
                       type="range"
                       min={30}
-                      max={180}
+                      max={380}
                       value={rightLogoSize}
                       onChange={(e) => setRightLogoSize(Number(e.target.value))}
                     />
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
+                      {[
+                        { label: "Petit", size: 60 },
+                        { label: "Moyen", size: 100 },
+                        { label: "Grand", size: 160 },
+                        { label: "Géant", size: 220 },
+                        { label: "XXL", size: 280 },
+                        { label: "Maxi XL", size: 350 }
+                      ].map((p) => (
+                        <button
+                          key={p.label}
+                          type="button"
+                          className={`chip ${rightLogoSize === p.size ? "active" : ""}`}
+                          onClick={() => setRightLogoSize(p.size)}
+                          style={{ padding: "3px 8px", fontSize: "10px" }}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   {rightLogoImg && (
@@ -1706,19 +2032,24 @@ export default function AttestationFormation({ onBack }) {
             {/* TAB 4: SIGNATORIES & STAMPS WITH HIDE/SHOW TOGGLES & SIZING CONTROLS */}
             {activeTab === "signature" && (
               <>
-                {/* SIGNATORY 1 */}
+                {/* SIGNATORY 1 (DIRECTEUR) */}
                 <div className="presets-box">
-                  <label style={{ color: "#2563EB" }}>✍️ Signataire Gauche (Le Directeur)</label>
+                  <label style={{ color: "#2563EB", fontWeight: "800", fontSize: "13px" }}>
+                    ✍️ Signature du Directeur (Signataire Gauche)
+                  </label>
                   
-                  {/* VISIBILITY TOGGLE FOR SIGNATURE 1 */}
-                  <div className="input-group" style={{ marginBottom: "10px" }}>
-                    <button
-                      className={`chip ${showSig1 ? "active" : ""}`}
-                      onClick={() => setShowSig1(!showSig1)}
-                      style={{ padding: "6px 12px", fontSize: "11.5px" }}
-                    >
-                      {showSig1 ? "👁️ Signature Gauche : Visible" : "🚫 Signature Gauche : Masquée (Espace vierge)"}
-                    </button>
+                  {/* UPLOAD BOX DIRECTEUR */}
+                  <div className="input-group" style={{ margin: "8px 0", padding: "10px", border: "1.5px dashed #2563EB", borderRadius: "8px", background: "#F0F6FF" }}>
+                    <label style={{ color: "#1D4ED8", fontWeight: "700" }}>📥 Importer Signature PNG (Directeur)</label>
+                    <input type="file" accept="image/*" onChange={handleSignatureUpload} style={{ marginTop: "4px" }} />
+                    {customSignatureImg && (
+                      <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
+                        <img src={customSignatureImg} alt="Aperçu Directeur" style={{ height: "36px", objectFit: "contain", background: "#fff", padding: "2px", borderRadius: "4px", border: "1px solid #CBD5E1" }} />
+                        <button className="btn btn-secondary btn-sm" onClick={() => setCustomSignatureImg(null)}>
+                          Supprimer
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid-2" style={{ marginBottom: "8px" }}>
@@ -1732,20 +2063,21 @@ export default function AttestationFormation({ onBack }) {
                     </div>
                   </div>
 
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <button
+                      type="button"
+                      className={`chip ${showSig1 ? "active" : ""}`}
+                      onClick={() => setShowSig1(!showSig1)}
+                      style={{ padding: "6px 12px", fontSize: "11.5px", width: "100%", justifyContent: "center" }}
+                    >
+                      {showSig1 ? "👁️ Signature Directeur : Affichée" : "🚫 Signature Directeur : Masquée (Espace manuscrit)"}
+                    </button>
+                  </div>
+
                   {showSig1 && (
                     <>
                       <div className="input-group" style={{ marginBottom: "8px" }}>
-                        <label>Image de Signature 1 (PNG)</label>
-                        <input type="file" accept="image/*" onChange={handleSignatureUpload} />
-                        {customSignatureImg && (
-                          <button className="btn btn-secondary btn-sm" onClick={() => setCustomSignatureImg(null)} style={{ marginTop: "4px" }}>
-                            Supprimer Signature 1
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="input-group" style={{ marginBottom: "8px" }}>
-                        <label style={{ color: "#2563EB" }}>📏 Taille Signature 1 ({sig1Size}px)</label>
+                        <label style={{ color: "#2563EB" }}>📏 Taille Signature Directeur ({sig1Size}px)</label>
                         <input
                           type="range"
                           min={30}
@@ -1756,7 +2088,7 @@ export default function AttestationFormation({ onBack }) {
                       </div>
 
                       <div className="input-group">
-                        <label>Ou Signature Tactile au Doigt / Souris</label>
+                        <label>Ou Dessiner la Signature au Doigt / Souris</label>
                         <div className="canvas-container">
                           <canvas
                             ref={canvasRef}
@@ -1783,19 +2115,24 @@ export default function AttestationFormation({ onBack }) {
                   )}
                 </div>
 
-                {/* SIGNATORY 2 */}
-                <div className="presets-box" style={{ marginTop: "10px" }}>
-                  <label style={{ color: "#805AD5" }}>✍️ Signataire Droit (La Directrice)</label>
+                {/* SIGNATORY 2 (DIRECTRICE) */}
+                <div className="presets-box" style={{ marginTop: "12px" }}>
+                  <label style={{ color: "#805AD5", fontWeight: "800", fontSize: "13px" }}>
+                    ✍️ Signature de la Directrice (Signataire Droit)
+                  </label>
 
-                  {/* VISIBILITY TOGGLE FOR SIGNATURE 2 */}
-                  <div className="input-group" style={{ marginBottom: "10px" }}>
-                    <button
-                      className={`chip ${showSig2 ? "active" : ""}`}
-                      onClick={() => setShowSig2(!showSig2)}
-                      style={{ padding: "6px 12px", fontSize: "11.5px" }}
-                    >
-                      {showSig2 ? "👁️ Signature Droite : Visible" : "🚫 Signature Droite : Masquée (Espace vierge)"}
-                    </button>
+                  {/* UPLOAD BOX DIRECTRICE */}
+                  <div className="input-group" style={{ margin: "8px 0", padding: "10px", border: "1.5px dashed #805AD5", borderRadius: "8px", background: "#FAF5FF" }}>
+                    <label style={{ color: "#6B21A8", fontWeight: "700" }}>📥 Importer Signature PNG (Directrice)</label>
+                    <input type="file" accept="image/*" onChange={handleSignature2Upload} style={{ marginTop: "4px" }} />
+                    {customSignatureImg2 && (
+                      <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
+                        <img src={customSignatureImg2} alt="Aperçu Directrice" style={{ height: "36px", objectFit: "contain", background: "#fff", padding: "2px", borderRadius: "4px", border: "1px solid #CBD5E1" }} />
+                        <button className="btn btn-secondary btn-sm" onClick={() => setCustomSignatureImg2(null)}>
+                          Supprimer
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid-2" style={{ marginBottom: "8px" }}>
@@ -1809,29 +2146,28 @@ export default function AttestationFormation({ onBack }) {
                     </div>
                   </div>
 
-                  {showSig2 && (
-                    <>
-                      <div className="input-group" style={{ marginBottom: "8px" }}>
-                        <label>Image de Signature 2 (PNG)</label>
-                        <input type="file" accept="image/*" onChange={handleSignature2Upload} />
-                        {customSignatureImg2 && (
-                          <button className="btn btn-secondary btn-sm" onClick={() => setCustomSignatureImg2(null)} style={{ marginTop: "4px" }}>
-                            Supprimer Signature 2
-                          </button>
-                        )}
-                      </div>
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <button
+                      type="button"
+                      className={`chip ${showSig2 ? "active" : ""}`}
+                      onClick={() => setShowSig2(!showSig2)}
+                      style={{ padding: "6px 12px", fontSize: "11.5px", width: "100%", justifyContent: "center" }}
+                    >
+                      {showSig2 ? "👁️ Signature Directrice : Affichée" : "🚫 Signature Directrice : Masquée (Espace manuscrit)"}
+                    </button>
+                  </div>
 
-                      <div className="input-group">
-                        <label style={{ color: "#805AD5" }}>📏 Taille Signature 2 ({sig2Size}px)</label>
-                        <input
-                          type="range"
-                          min={30}
-                          max={160}
-                          value={sig2Size}
-                          onChange={(e) => setSig2Size(Number(e.target.value))}
-                        />
-                      </div>
-                    </>
+                  {showSig2 && (
+                    <div className="input-group">
+                      <label style={{ color: "#805AD5" }}>📏 Taille Signature Directrice ({sig2Size}px)</label>
+                      <input
+                        type="range"
+                        min={30}
+                        max={160}
+                        value={sig2Size}
+                        onChange={(e) => setSig2Size(Number(e.target.value))}
+                      />
+                    </div>
                   )}
                 </div>
 
@@ -1862,27 +2198,85 @@ export default function AttestationFormation({ onBack }) {
               </>
             )}
 
-            {/* TAB 5: BORDER */}
+            {/* TAB 5: BORDER & CADRES PRO (20 STYLES) */}
             {activeTab === "border" && (
               <>
                 <div className="presets-box">
-                  <label style={{ color: "#2563EB" }}>🖼️ Style du Cadre / Bordure</label>
-                  <div className="grid-2" style={{ marginBottom: "8px" }}>
-                    <button className={`chip ${borderStyle === "double" ? "active" : ""}`} onClick={() => setBorderStyle("double")}>
-                      👑 Double Cadre Royal
-                    </button>
-                    <button className={`chip ${borderStyle === "single" ? "active" : ""}`} onClick={() => setBorderStyle("single")}>
-                      🔲 Cadre Simple
-                    </button>
-                    <button className={`chip ${borderStyle === "dashed" ? "active" : ""}`} onClick={() => setBorderStyle("dashed")}>
-                      ✂️ Pointillé Premium
-                    </button>
-                    <button className={`chip ${borderStyle === "ornamental" ? "active" : ""}`} onClick={() => setBorderStyle("ornamental")}>
-                      ⚜️ Ornemental
-                    </button>
-                    <button className={`chip ${borderStyle === "none" ? "active" : ""}`} onClick={() => setBorderStyle("none")}>
-                      🚫 Sans Bordure
-                    </button>
+                  <label style={{ color: "#2563EB" }}>🖼️ 20 Styles de Bordures Pro & d'Élite</label>
+                  <div className="grid-2" style={{ marginBottom: "14px", maxHeight: "280px", overflowY: "auto", paddingRight: "4px" }}>
+                    {[
+                      { id: "double", label: "👑 Double Cadre Royal" },
+                      { id: "triple", label: "⚜️ Triple Linéaire Prestige" },
+                      { id: "single", label: "🔲 Cadre Simple Épuré" },
+                      { id: "dashed", label: "✂️ Pointillé Luxe" },
+                      { id: "groove", label: "🏛️ Sculpté 3D Groove" },
+                      { id: "ridge", label: "✨ Moulure 3D Ridge" },
+                      { id: "ornamental", label: "🏆 Ornemental Lumineux" },
+                      { id: "vintage", label: "📜 Vintage Filigrané" },
+                      { id: "inset", label: "💠 Inset 3D Encastré" },
+                      { id: "outset", label: "🖼️ Outset 3D Saillant" },
+                      { id: "dotted", label: "🌟 Perles & Points" },
+                      { id: "dashed_double", label: "⚡ Mix Pointillé & Double" },
+                      { id: "art_deco", label: "💎 Art Déco 1920" },
+                      { id: "guilloche", label: "🌿 Guilloché Banque" },
+                      { id: "diplomat", label: "🎖️ Diplomatique Épais" },
+                      { id: "academic", label: "🎓 Académique National" },
+                      { id: "shield_border", label: "🛡️ Armoirie & Équilibre" },
+                      { id: "glow_neon", label: "🔮 Halo Néon Lumineux" },
+                      { id: "baroque_gold", label: "⚜️ Baroque Feuille d'Or" },
+                      { id: "none", label: "🚫 Sans Bordure" }
+                    ].map((b) => (
+                      <button
+                        key={b.id}
+                        type="button"
+                        className={`chip ${borderStyle === b.id ? "active" : ""}`}
+                        onClick={() => setBorderStyle(b.id)}
+                        style={{ padding: "6px 8px", fontSize: "11px", textAlign: "left" }}
+                      >
+                        {b.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <label style={{ color: "#2563EB", marginTop: "10px" }}>🎨 Palette de Couleurs Pro Préréglées</label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px" }}>
+                    {[
+                      { label: "👑 Doré Impérial", color: "#D4AF37" },
+                      { label: "💙 Bleu Marine", color: "#0B1F4B" },
+                      { label: "💎 Or Rose", color: "#E5B899" },
+                      { label: "🌲 Émeraude Luxe", color: "#064E3B" },
+                      { label: "🍷 Bordeau Royal", color: "#7F1D1D" },
+                      { label: "🖤 Noir Obsidienne", color: "#0F172A" },
+                      { label: "🥈 Argent Métallisé", color: "#94A3B8" }
+                    ].map((swatch) => (
+                      <button
+                        key={swatch.label}
+                        type="button"
+                        className={`chip ${customBorderColor === swatch.color ? "active" : ""}`}
+                        onClick={() => setCustomBorderColor(swatch.color)}
+                        style={{ padding: "4px 8px", fontSize: "11px", display: "flex", alignItems: "center", gap: "5px" }}
+                      >
+                        <span style={{ width: "12px", height: "12px", borderRadius: "50%", backgroundColor: swatch.color, border: "1px solid #ffffff", display: "inline-block" }} />
+                        {swatch.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="input-group" style={{ marginBottom: "10px" }}>
+                    <label>Sélecteur de Couleur Sur-Mesure</label>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                      <input
+                        type="color"
+                        value={activeBorderColor}
+                        onChange={(e) => setCustomBorderColor(e.target.value)}
+                        style={{ height: "38px", padding: "2px", cursor: "pointer", flex: 1, borderRadius: "6px" }}
+                      />
+                      {customBorderColor && (
+                        <button className="btn btn-secondary btn-sm" onClick={() => setCustomBorderColor("")}>
+                          Couleur du Thème
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="input-group" style={{ marginBottom: "8px" }}>
@@ -1890,38 +2284,21 @@ export default function AttestationFormation({ onBack }) {
                     <input
                       type="range"
                       min={1}
-                      max={8}
+                      max={12}
                       value={borderWidth}
                       onChange={(e) => setBorderWidth(Number(e.target.value))}
                     />
                   </div>
 
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                  <div className="input-group">
                     <label>Marge de retrait interne ({borderInset}px)</label>
                     <input
                       type="range"
-                      min={8}
-                      max={36}
+                      min={6}
+                      max={42}
                       value={borderInset}
                       onChange={(e) => setBorderInset(Number(e.target.value))}
                     />
-                  </div>
-
-                  <div className="input-group">
-                    <label>Couleur de Bordure Personnalisée</label>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                      <input
-                        type="color"
-                        value={activeBorderColor}
-                        onChange={(e) => setCustomBorderColor(e.target.value)}
-                        style={{ height: "36px", padding: "2px", cursor: "pointer", flex: 1 }}
-                      />
-                      {customBorderColor && (
-                        <button className="btn btn-secondary btn-sm" onClick={() => setCustomBorderColor("")}>
-                          Réinitialiser
-                        </button>
-                      )}
-                    </div>
                   </div>
                 </div>
 
@@ -2357,15 +2734,101 @@ export default function AttestationFormation({ onBack }) {
                   </>
                 )}
 
+                {/* NAVY & GOLD EXCELLENCE SPECIFIC ORNAMENTS */}
+                {activeTheme.id === "navy-gold-excellence" && (
+                  <>
+                    {/* OUTER GOLD PERIMETER BORDER */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: "18px",
+                        border: "2px solid #d4af37",
+                        pointerEvents: "none",
+                        zIndex: 3
+                      }}
+                    />
+                    {/* INNER NAVY PERIMETER BORDER */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: "34px",
+                        border: "1.5px solid #0b1f4b",
+                        pointerEvents: "none",
+                        zIndex: 3
+                      }}
+                    />
+
+                    {/* TOP-LEFT NAVY BRACKET */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "6px",
+                        left: "6px",
+                        width: "220px",
+                        height: "90px",
+                        borderTop: "16px solid #0b1f4b",
+                        borderLeft: "16px solid #0b1f4b",
+                        pointerEvents: "none",
+                        zIndex: 4
+                      }}
+                    />
+                    {/* GOLD DIAGONAL ACCENT TOP-LEFT */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "-4px",
+                        left: "-4px",
+                        width: "60px",
+                        height: "2px",
+                        background: "#d4af37",
+                        transform: "rotate(45deg)",
+                        transformOrigin: "left top",
+                        pointerEvents: "none",
+                        zIndex: 4
+                      }}
+                    />
+
+                    {/* BOTTOM-RIGHT NAVY BRACKET */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "6px",
+                        right: "6px",
+                        width: "220px",
+                        height: "90px",
+                        borderBottom: "16px solid #0b1f4b",
+                        borderRight: "16px solid #0b1f4b",
+                        pointerEvents: "none",
+                        zIndex: 4
+                      }}
+                    />
+                    {/* GOLD DIAGONAL ACCENT BOTTOM-RIGHT */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "-4px",
+                        right: "-4px",
+                        width: "60px",
+                        height: "2px",
+                        background: "#d4af37",
+                        transform: "rotate(45deg)",
+                        transformOrigin: "right bottom",
+                        pointerEvents: "none",
+                        zIndex: 4
+                      }}
+                    />
+                  </>
+                )}
+
                 {/* WATERMARK BACKGROUND SVG */}
                 {!customBgImg && watermark === "rosace" && <RosaceWatermark color={activeTheme.gold} />}
                 {!customBgImg && watermark === "shield" && <ShieldWatermark color={activeTheme.gold} />}
 
                 {/* INNER CONTENT WITH FULL DYNAMIC TYPOGRAPHY */}
                 <div className="cert-inner-content">
-                  {/* HEADER & LOGOS */}
+                  {/* HEADER & LOGOS WITH BALANCED 3-COLUMN LAYOUT */}
                   <header className="cert-header-layout">
-                    <div className="header-logo-box">
+                    <div className="header-logo-box left">
                       {leftLogoImg && (
                         <img
                           src={leftLogoImg}
@@ -2379,16 +2842,28 @@ export default function AttestationFormation({ onBack }) {
                       className={`cert-header-center interactive-tappable ${selectedElement === "title" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("title")}
                     >
-                      <h1 className="main-title">{data.title || "Attestation"}</h1>
+                      <h1 
+                        className="main-title"
+                        style={{
+                          fontSize: activeTheme.id === "navy-gold-excellence" ? "clamp(36px, 5.5vw, 56px)" : `clamp(28px, 5vw, ${customTitleSize}px)`,
+                          letterSpacing: activeTheme.id === "navy-gold-excellence" ? "0.08em" : "normal",
+                          fontWeight: 800,
+                          textTransform: "uppercase"
+                        }}
+                      >
+                        {data.title || "ATTESTATION"}
+                      </h1>
                       
-                      <div className="divider-ornament">
-                        <span className="divider-line" />
-                        <div className="divider-icon">◆</div>
-                        <span className="divider-line" />
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "6px 0" }}>
+                        <span style={{ width: "40px", height: "1px", background: "#d4af37" }} />
+                        <span style={{ width: "6px", height: "6px", transform: "rotate(45deg)", backgroundColor: "#0b1f4b", display: "inline-block" }} />
+                        <span style={{ width: "8px", height: "8px", transform: "rotate(45deg)", backgroundColor: "#d4af37", display: "inline-block" }} />
+                        <span style={{ width: "6px", height: "6px", transform: "rotate(45deg)", backgroundColor: "#0b1f4b", display: "inline-block" }} />
+                        <span style={{ width: "40px", height: "1px", background: "#d4af37" }} />
                       </div>
                     </div>
 
-                    <div className="header-logo-box">
+                    <div className="header-logo-box right">
                       {rightLogoImg && (
                         <img
                           src={rightLogoImg}
@@ -2402,28 +2877,29 @@ export default function AttestationFormation({ onBack }) {
                   {/* BODY CONTENT - EACH ELEMENT USES ITS CUSTOM FONT & SIZE */}
                   <div className="cert-body-flow">
                     <p className="intro-phrase">
-                      Je soussignée <b>Mme TOSSA Afiavi Gbessito Honorine</b>, atteste que :
+                      {renderFormattedText(data.introText || "Je soussignée Mme <b>TOSSA Afiavi Gbessito Honorine</b>, atteste que le/la nommé(e) :")}
                     </p>
 
                     <div 
                       className={`recipient-name-block interactive-tappable ${selectedElement === "destinataire" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("destinataire")}
+                      style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "6px 0", width: "100%" }}
                     >
-                      <div className="recipient-name">
-                        {data.destinataire || "______________________________________________"}
+                      <div className="recipient-name" style={{ minWidth: "480px", textAlign: "center", minHeight: "36px" }}>
+                        {data.destinataire || ""}
                       </div>
                     </div>
 
                     <p className="body-phrase">
-                      a participé avec assiduité aux formations <b>Macramé</b> et <b>Teinture de pagne</b>
+                      {renderFormattedText(data.bodyText || "a suivi avec succès et une assiduité le programme de formation en <b>Macramé</b> et <b>Teinture de pagne</b>,")}
                     </p>
 
                     <p className="partnership-phrase">
-                      Organisé par l'<b>ONG ESPOIR ET NATURE</b> en partenariat avec la <b>Maison AFI COLLECTION du Bénin</b>.
+                      {renderFormattedText(data.partnershipText || "organisée par l'<b>ONG ESPOIR ET NATURE</b> en partenariat avec la <b>Maison AFI COLLECTION du Bénin</b>.")}
                     </p>
 
                     <p className="closing-phrase">
-                      En foi de quoi la présente <b>attestation</b> lui est délivrée pour <b>servir et valoir ce que de droit</b>.
+                      {renderFormattedText(data.closingText || "En foi de quoi, la présente <b>attestation </b> lui est délivrée pour <b>servir et valoir ce que de droit</b>.")}
                     </p>
 
                     {/* LOCATION & DATE */}
@@ -2448,7 +2924,7 @@ export default function AttestationFormation({ onBack }) {
                         transform: `translate(${positions.sig1?.x || 0}px, ${positions.sig1?.y || 0}px)`
                       }}
                     >
-                      <div className="signature-display" style={{ height: `${Math.max(sig1Size, 36)}px` }}>
+                      <div className="signature-display" style={{ height: "48px" }}>
                         {showSig1 ? (
                           customSignatureImg ? (
                             <img src={customSignatureImg} alt="Signature 1" className="signature-img" style={{ maxHeight: `${sig1Size}px` }} />
@@ -2507,7 +2983,7 @@ export default function AttestationFormation({ onBack }) {
                         transform: `translate(${positions.sig2?.x || 0}px, ${positions.sig2?.y || 0}px)`
                       }}
                     >
-                      <div className="signature-display" style={{ height: `${Math.max(sig2Size, 36)}px` }}>
+                      <div className="signature-display" style={{ height: "48px" }}>
                         {showSig2 ? (
                           customSignatureImg2 ? (
                             <img src={customSignatureImg2} alt="Signature 2" className="signature-img" style={{ maxHeight: `${sig2Size}px` }} />
@@ -2913,21 +3389,30 @@ function ShieldWatermark({ color }) {
   );
 }
 
-function WaxSeal({ sealBg, goldColor }) {
+function ExecutiveProCrest({ goldColor = "#d4af37", primaryColor = "#0b1f4b" }) {
   return (
-    <div style={{ position: "relative", width: "70px", height: "70px" }}>
-      <svg width="70" height="85" viewBox="0 0 80 95" style={{ position: "absolute", top: 0, left: 0 }}>
-        <path d="M25 50 L15 90 L32 82 L45 92 L38 50 Z" fill={sealBg} opacity="0.85" />
-        <path d="M55 50 L42 92 L55 82 L68 90 L58 50 Z" fill={sealBg} opacity="0.75" />
+    <div style={{ position: "relative", width: "76px", height: "90px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+      {/* LUXURY SATIN RIBBONS */}
+      <svg width="68" height="90" viewBox="0 0 80 100" style={{ position: "absolute", top: 0, left: 4 }}>
+        <path d="M22 55 L12 96 L32 86 L45 98 L38 55 Z" fill={primaryColor} opacity="0.95" />
+        <path d="M58 55 L42 98 L55 86 L68 96 L58 55 Z" fill={primaryColor} opacity="0.85" />
+        <path d="M25 55 L15 96 L22 92 Z" fill={goldColor} opacity="0.75" />
+        <path d="M55 55 L65 96 L58 92 Z" fill={goldColor} opacity="0.75" />
       </svg>
-      <svg width="70" height="70" viewBox="0 0 100 100" style={{ position: "absolute", top: 0, left: 0 }}>
-        <circle cx="50" cy="50" r="46" fill={sealBg} />
-        <circle cx="50" cy="50" r="40" fill="none" stroke={goldColor} strokeWidth="2" strokeDasharray="4 2" />
-        <circle cx="50" cy="50" r="34" fill="none" stroke={goldColor} strokeWidth="1" />
-        <path d="M50 28 L54 40 L66 40 L57 48 L60 60 L50 53 L40 60 L43 48 L34 40 L46 40 Z" fill={goldColor} />
+      {/* EMBOSSED GOLD & NAVY OFFICIAL SEAL */}
+      <svg width="72" height="72" viewBox="0 0 100 100" style={{ position: "absolute", top: 0, left: 2, filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))" }}>
+        <path d="M50 2 L56 8 L64 4 L68 12 L77 10 L79 19 L88 20 L87 29 L95 33 L91 41 L98 47 L92 53 L97 61 L89 65 L91 74 L82 76 L81 85 L72 85 L68 93 L60 91 L54 97 L48 93 L41 97 L37 91 L29 93 L26 85 L17 85 L16 76 L7 74 L9 65 L2 61 L6 53 L1 47 L7 41 L3 33 L11 29 L10 20 L19 19 L21 10 L30 12 L34 4 L42 8 Z" fill={goldColor} />
+        <circle cx="50" cy="50" r="38" fill={primaryColor} />
+        <circle cx="50" cy="50" r="34" fill="none" stroke={goldColor} strokeWidth="2" strokeDasharray="3 2" />
+        <circle cx="50" cy="50" r="28" fill="none" stroke={goldColor} strokeWidth="1.5" />
+        <path d="M50 32 L53 40 L62 40 L55 46 L58 55 L50 49 L42 55 L45 46 L38 40 L47 40 Z" fill={goldColor} />
       </svg>
     </div>
   );
+}
+
+function WaxSeal({ sealBg, goldColor }) {
+  return <ExecutiveProCrest goldColor={goldColor} primaryColor={sealBg} />;
 }
 
 function StarBadge({ goldColor }) {
