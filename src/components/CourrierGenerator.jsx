@@ -232,9 +232,11 @@ export default function CourrierGenerator({ onBack }) {
     }
   };
 
-  // Export Word (.doc) 100% Éditable et Fidèle dans Microsoft Word
+  // Export Word (.doc) 100% Éditable, 1 Page Unique & Fidèle dans Microsoft Word
   const handleExportWord = () => {
     const fontFamilyClean = fontBody.replace(/'/g, "");
+    const leftLogo = logoLeftImg || data.logoLeftUrl || data.logoUrl;
+    const rightLogo = logoRightImg || data.logoRightUrl || data.logoUrl;
 
     const htmlHeader = `
       <html xmlns:v="urn:schemas-microsoft-com:vml"
@@ -257,19 +259,19 @@ export default function CourrierGenerator({ onBack }) {
         <style>
           @page Section1 {
             size: 595.3pt 841.9pt;
-            margin: 54.0pt 54.0pt 36.0pt 54.0pt;
-            mso-header-margin: 36.0pt;
-            mso-footer-margin: 36.0pt;
+            margin: 36.0pt 45.0pt 24.0pt 45.0pt;
+            mso-header-margin: 20.0pt;
+            mso-footer-margin: 20.0pt;
             mso-paper-source: 0;
           }
           div.Section1 { page: Section1; }
           body {
             font-family: ${fontFamilyClean};
-            font-size: 11pt;
-            line-height: 1.55;
+            font-size: 10.5pt;
+            line-height: 1.4;
             color: #1a1a1a;
           }
-          p { margin: 0 0 10pt 0; }
+          p { margin: 0 0 6pt 0; }
           table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
         </style>
       </head>
@@ -283,21 +285,23 @@ export default function CourrierGenerator({ onBack }) {
 
     const paragraphes = data.corps ? data.corps.split("\n\n") : [];
 
+    const effectiveLogoSize = Math.min(80, logoSize);
+
     let bodyContent = `
-      <!-- EN-TÊTE LOGOS -->
+      <!-- EN-TÊTE LOGOS GAUCHE & DROIT -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%;">
         <tr>
           <td width="50%" align="left" valign="top">
-            ${logoLeftImg ? `<img src="${logoLeftImg}" height="${logoSize}" style="height:${logoSize}px; max-height:180px;" />` : `<div style="border:1.5pt dashed #cbd5e1; padding:8pt; width:60pt; text-align:center; font-size:9pt; font-weight:bold; color:#94a3b8;">LOGO G</div>`}
+            ${leftLogo ? `<img src="${leftLogo}" height="${effectiveLogoSize}" style="height:${effectiveLogoSize}px; max-height:90px;" />` : `<table border="0" cellspacing="0" cellpadding="0" style="border:1pt dashed #cbd5e1; padding:4pt 8pt; width:60pt; text-align:center;"><tr><td style="font-size:8.5pt; font-weight:bold; color:#94a3b8; text-align:center;">LOGO G</td></tr></table>`}
           </td>
           <td width="50%" align="right" valign="top">
-            ${logoRightImg ? `<img src="${logoRightImg}" height="${logoSize}" style="height:${logoSize}px; max-height:180px;" />` : `<div style="border:1.5pt dashed #cbd5e1; padding:8pt; width:60pt; text-align:center; font-size:9pt; font-weight:bold; color:#94a3b8;">LOGO D</div>`}
+            ${rightLogo ? `<img src="${rightLogo}" height="${effectiveLogoSize}" style="height:${effectiveLogoSize}px; max-height:90px;" />` : `<table border="0" cellspacing="0" cellpadding="0" style="border:1pt dashed #cbd5e1; padding:4pt 8pt; width:60pt; text-align:center;"><tr><td style="font-size:8.5pt; font-weight:bold; color:#94a3b8; text-align:center;">LOGO D</td></tr></table>`}
           </td>
         </tr>
       </table>
 
-      <!-- ESPACE ABAISSEMENT DE TEXTE -->
-      <p style="margin-top:36pt; font-size:1pt;">&nbsp;</p>
+      <!-- ESPACE INTERMÉDIAIRE COMPACT -->
+      <p style="margin-top:14pt; font-size:1pt;">&nbsp;</p>
 
       <!-- RÉFÉRENCE ET DESTINATAIRE ALIGNÉS SUR LA MÊME LIGNE -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%;">
@@ -306,62 +310,61 @@ export default function CourrierGenerator({ onBack }) {
             <p style="font-size:10.5pt; font-weight:bold; margin:0;">RÉF. : ${data.reference || "002/COMAFA/AMAF/FIMA-PN/2026"}</p>
           </td>
           <td width="58%" align="left" valign="top">
-            <p style="font-size:11pt; font-weight:bold; margin:0 0 6pt 0;">${data.villeDate || "Porto-Novo, le 15 juillet 2026"}</p>
-            <p style="font-size:11pt; font-weight:bold; margin:6pt 0 2pt 0;">A</p>
-            ${destLines.map(line => `<p style="font-size:11pt; margin:0;">${line}</p>`).join('')}
+            <p style="font-size:10.5pt; font-weight:bold; margin:0 0 4pt 0;">${data.villeDate || "Porto-Novo, le 15 juillet 2026"}</p>
+            <p style="font-size:10.5pt; font-weight:bold; margin:4pt 0 2pt 0;">A</p>
+            ${destLines.map(line => `<p style="font-size:10.5pt; margin:0;">${line}</p>`).join('')}
           </td>
         </tr>
       </table>
 
       <!-- OBJET -->
-      <p style="font-weight:bold; margin-top:22pt; margin-bottom:16pt; font-size:11.5pt; line-height:1.4;">
+      <p style="font-weight:bold; margin-top:14pt; margin-bottom:10pt; font-size:11pt; line-height:1.35;">
         ${data.objetLabel || "Objet"} : ${data.objet || ""}
       </p>
 
       <!-- FORMULE D'APPEL -->
-      <p style="font-weight:bold; margin-bottom:12pt; font-size:11pt;">
+      <p style="font-weight:bold; margin-bottom:8pt; font-size:10.5pt;">
         ${data.salutation || "Monsieur le Président,"}
       </p>
 
-      <!-- PARAGRAPHES JUSTIFIÉS -->
+      <!-- PARAGRAPHES JUSTIFIÉS COMPACTS -->
       <div>
-        ${paragraphes.map(p => `<p align="justify" style="text-align:justify; text-justify:inter-word; margin-bottom:12pt; font-size:11pt; line-height:1.55;">${p}</p>`).join('')}
+        ${paragraphes.map(p => `<p align="justify" style="text-align:justify; text-justify:inter-word; margin-bottom:7pt; font-size:10.5pt; line-height:1.4;">${p}</p>`).join('')}
       </div>
 
       <!-- BLOC SIGNATURE & TAMPON ALIGNÉ À DROITE -->
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%; margin-top:24pt;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%; margin-top:10pt;">
         <tr>
-          <td width="50%">&nbsp;</td>
-          <td width="50%" align="right" valign="top">
-            <p style="font-style:italic; font-size:10.5pt; margin-bottom:10pt;">${data.faitA || `Fait à ${data.villeDate}`}</p>
-            ${stampImg ? `<img src="${stampImg}" height="65" style="height:65px; margin-bottom:4pt;" /><br/>` : ''}
-            ${signatureImg ? `<img src="${signatureImg}" height="50" style="height:50px; margin-bottom:4pt;" /><br/>` : ''}
-            <table border="0" cellspacing="0" cellpadding="0" style="border:2pt solid #1b2a6b; display:inline-block; margin-top:4pt;">
+          <td width="45%">&nbsp;</td>
+          <td width="55%" align="right" valign="top">
+            <p style="font-style:italic; font-size:10pt; margin-bottom:4pt;">${data.faitA || `Fait à ${data.villeDate}`}</p>
+            ${stampImg ? `<img src="${stampImg}" height="55" style="height:55px; margin-bottom:2pt;" /><br/>` : ''}
+            ${signatureImg ? `<img src="${signatureImg}" height="45" style="height:45px; margin-bottom:2pt;" /><br/>` : ''}
+            <table border="0" cellspacing="0" cellpadding="0" style="border:1.5pt solid #1b2a6b; display:inline-block; margin-top:2pt;">
               <tr>
-                <td style="padding:3pt 10pt; font-weight:bold; font-size:10.5pt; color:#1b2a6b; font-family:${fontFamilyClean};">
+                <td style="padding:2pt 8pt; font-weight:bold; font-size:10pt; color:#1b2a6b; font-family:${fontFamilyClean};">
                   ${data.signataireNom || "TOSSA Afiavi G. Honorine"}
                 </td>
               </tr>
             </table>
-            <p style="font-weight:bold; font-size:10.5pt; margin-top:6pt;">${data.signataireTitre || "La Coordonnatrice"}</p>
+            <p style="font-weight:bold; font-size:10pt; margin-top:4pt;">${data.signataireTitre || "La Coordonnatrice"}</p>
           </td>
         </tr>
       </table>
 
-      <!-- PIED DE PAGE & BANDEAU TRICOLORE -->
-      <br/><br/>
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%; border-top:1pt solid #cbd5e1; padding-top:10pt; margin-top:30pt;">
+      <!-- PIED DE PAGE & BANDEAU TRICOLORE COMPACT -->
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%; border-top:1pt solid #cbd5e1; padding-top:6pt; margin-top:12pt;">
         <tr>
-          <td align="center" style="font-size:8.5pt; color:#334155; text-align:center;">
-            <p style="font-weight:bold; margin:0 0 2pt 0;">${footer.ligne1 || ""}</p>
-            <p style="margin:0 0 2pt 0;">${footer.ligne2 || ""}</p>
+          <td align="center" style="font-size:8pt; color:#334155; text-align:center;">
+            <p style="font-weight:bold; margin:0 0 1pt 0;">${footer.ligne1 || ""}</p>
+            <p style="margin:0 0 1pt 0;">${footer.ligne2 || ""}</p>
             <p style="margin:0;">${footer.ligne3 || ""}</p>
           </td>
         </tr>
       </table>
 
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%; height:20pt; margin-top:10pt;">
-        <tr height="24">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%; height:14pt; margin-top:6pt;">
+        <tr height="18">
           <td width="33%" bgcolor="${bandeauCouleurs[0] || "#0f9b4f"}" style="background-color:${bandeauCouleurs[0] || "#0f9b4f"};">&nbsp;</td>
           <td width="33%" bgcolor="${bandeauCouleurs[1] || "#f4d02c"}" style="background-color:${bandeauCouleurs[1] || "#f4d02c"};">&nbsp;</td>
           <td width="34%" bgcolor="${bandeauCouleurs[2] || "#d61a2c"}" style="background-color:${bandeauCouleurs[2] || "#d61a2c"};">&nbsp;</td>
