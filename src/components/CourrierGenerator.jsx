@@ -139,6 +139,12 @@ export default function CourrierGenerator({ onBack }) {
 
   const [logoLeftImg, setLogoLeftImg] = useState(null);
   const [logoRightImg, setLogoRightImg] = useState(null);
+  const [logoSize, setLogoSize] = useState(68);
+  
+  const [bgImage, setBgImage] = useState(null);
+  const [bgOpacity, setBgOpacity] = useState(0.15);
+  const [bgFit, setBgFit] = useState("contain");
+
   const [stampImg, setStampImg] = useState(null);
   const [signatureImg, setSignatureImg] = useState(null);
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
@@ -444,7 +450,7 @@ export default function CourrierGenerator({ onBack }) {
               </>
             )}
 
-            {/* TAB 3: DOUBLE LOGOS & SIGNATURES */}
+            {/* TAB 3: DOUBLE LOGOS, FOND & SIGNATURES */}
             {activeTab === "logos" && (
               <>
                 <div className="presets-box">
@@ -453,10 +459,64 @@ export default function CourrierGenerator({ onBack }) {
                     <label>Logo Haut-Gauche (Organisme Émetteur)</label>
                     <input type="file" accept="image/*" onChange={handleImageUpload(setLogoLeftImg)} />
                   </div>
-                  <div className="input-group">
+                  <div className="input-group" style={{ marginBottom: "10px" }}>
                     <label>Logo Haut-Droit (Ministère / Partenaire)</label>
                     <input type="file" accept="image/*" onChange={handleImageUpload(setLogoRightImg)} />
                   </div>
+                  <div className="input-group">
+                    <label>Taille des Logos : {logoSize}px</label>
+                    <input
+                      type="range"
+                      min="40"
+                      max="200"
+                      value={logoSize}
+                      onChange={(e) => setLogoSize(Number(e.target.value))}
+                    />
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "4px" }}>
+                      {[50, 68, 100, 140, 180].map((sz) => (
+                        <button
+                          key={sz}
+                          type="button"
+                          className={`chip ${logoSize === sz ? "active" : ""}`}
+                          onClick={() => setLogoSize(sz)}
+                          style={{ fontSize: "10.5px", padding: "3px 8px" }}
+                        >
+                          {sz === 50 ? "Petit 50px" : sz === 68 ? "Moyen 68px" : sz === 100 ? "Grand 100px" : sz === 140 ? "Géant 140px" : "Maxi 180px"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="presets-box">
+                  <label>🌌 Image de Fond / Filigrane</label>
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Image d'arrière-plan (Upload)</label>
+                    <input type="file" accept="image/*" onChange={handleImageUpload(setBgImage)} />
+                  </div>
+                  {bgImage && (
+                    <>
+                      <div className="input-group" style={{ marginBottom: "8px" }}>
+                        <label>Transparence / Opacité : {Math.round(bgOpacity * 100)}%</label>
+                        <input
+                          type="range"
+                          min="0.05"
+                          max="1.0"
+                          step="0.05"
+                          value={bgOpacity}
+                          onChange={(e) => setBgOpacity(Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="input-group">
+                        <label>Ajustement de l'image</label>
+                        <select value={bgFit} onChange={(e) => setBgFit(e.target.value)}>
+                          <option value="contain">Ajusté au centre (Contain)</option>
+                          <option value="cover">Couvrir la feuille A4 (Cover)</option>
+                          <option value="fill">Étirer (Fill)</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="presets-box">
@@ -597,6 +657,10 @@ export default function CourrierGenerator({ onBack }) {
               <div ref={previewRef}>
                 <LettreOfficielle
                   fontFamily={fontBody}
+                  logoSize={logoSize}
+                  bgImage={bgImage}
+                  bgOpacity={bgOpacity}
+                  bgFit={bgFit}
                   data={{
                     logoUrl: logoLeftImg,
                     logoLeftUrl: logoLeftImg,

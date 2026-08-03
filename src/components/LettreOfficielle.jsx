@@ -63,7 +63,14 @@ const defaultData = {
   bandeauCouleurs: ["#0f9b4f", "#f4d02c", "#d61a2c"], // vert / jaune / rouge (drapeau)
 };
 
-export default function LettreOfficielle({ data = {}, fontFamily = "'Georgia', 'Times New Roman', serif" }) {
+export default function LettreOfficielle({
+  data = {},
+  fontFamily = "'Georgia', 'Times New Roman', serif",
+  logoSize = 68,
+  bgImage = null,
+  bgOpacity = 0.15,
+  bgFit = "contain"
+}) {
   const d = {
     ...defaultData,
     ...data,
@@ -94,6 +101,25 @@ export default function LettreOfficielle({ data = {}, fontFamily = "'Georgia', '
         overflow: "hidden"
       }}
     >
+      {/* Image de Fond / Filigrane */}
+      {bgImage && (
+        <img
+          src={bgImage}
+          alt="Fond de lettre"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: bgFit,
+            objectPosition: "center center",
+            opacity: bgOpacity,
+            pointerEvents: "none",
+            zIndex: 1
+          }}
+        />
+      )}
+
       {/* Filigrane d'arrière-plan */}
       {d.watermarkText && (
         <div
@@ -119,15 +145,15 @@ export default function LettreOfficielle({ data = {}, fontFamily = "'Georgia', '
       {/* ===== EN-TÊTE : LOGO GAUCHE + LOGO DROIT ===== */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "40px 48px 0 48px", zIndex: 2 }}>
         {leftLogoSrc ? (
-          <img src={leftLogoSrc} alt="Logo Gauche" style={{ height: "68px", maxWidth: "220px", objectFit: "contain" }} />
+          <img src={leftLogoSrc} alt="Logo Gauche" style={{ height: `${logoSize}px`, maxHeight: "250px", objectFit: "contain" }} />
         ) : (
-          <GenericLogoPlaceholder label="LOGO G" size={64} />
+          <GenericLogoPlaceholder label="LOGO G" size={Math.min(90, logoSize)} />
         )}
 
         {rightLogoSrc ? (
-          <img src={rightLogoSrc} alt="Logo Droit" style={{ height: "68px", maxWidth: "220px", objectFit: "contain" }} />
+          <img src={rightLogoSrc} alt="Logo Droit" style={{ height: `${logoSize}px`, maxHeight: "250px", objectFit: "contain" }} />
         ) : (
-          <GenericLogoPlaceholder label="LOGO D" size={64} />
+          <GenericLogoPlaceholder label="LOGO D" size={Math.min(90, logoSize)} />
         )}
       </div>
 
