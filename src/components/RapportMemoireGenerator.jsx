@@ -116,7 +116,13 @@ export default function RapportMemoireGenerator({ onBack }) {
   const [activeTheme, setActiveTheme] = useState(RAPPORT_THEMES[0]);
   const [customAccentColor, setCustomAccentColor] = useState("");
   const [customOrnamentColor, setCustomOrnamentColor] = useState("");
+  
+  // Logos
   const [logoImg, setLogoImg] = useState(null);
+  const [logoLeftImg, setLogoLeftImg] = useState(null);
+  const [logoRightImg, setLogoRightImg] = useState(null);
+  const [logoSize, setLogoSize] = useState(80);
+  const [establishmentMarginTop, setEstablishmentMarginTop] = useState(15);
   
   // Customization of Cover Page
   const [bgImage, setBgImage] = useState(null);
@@ -126,8 +132,12 @@ export default function RapportMemoireGenerator({ onBack }) {
   const [borderWidth, setBorderWidth] = useState(2);
   const [borderInset, setBorderInset] = useState(26);
   const [showVolutes, setShowVolutes] = useState(true);
+  
+  // Theme Box / Title Banner Sizing
   const [titleRadius, setTitleRadius] = useState(16);
   const [titleFontSize, setTitleFontSize] = useState(32);
+  const [titleBoxPaddingV, setTitleBoxPaddingV] = useState(28);
+  const [titleBoxMinHeight, setTitleBoxMinHeight] = useState(100);
   const [verticalGap, setVerticalGap] = useState(20);
 
   const [zoomScale, setZoomScale] = useState(0.75);
@@ -173,6 +183,24 @@ export default function RapportMemoireGenerator({ onBack }) {
     if (file) {
       const reader = new FileReader();
       reader.onload = (uploadEvent) => setLogoImg(uploadEvent.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoLeftUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => setLogoLeftImg(uploadEvent.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoRightUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => setLogoRightImg(uploadEvent.target.result);
       reader.readAsDataURL(file);
     }
   };
@@ -292,11 +320,14 @@ export default function RapportMemoireGenerator({ onBack }) {
             <button className={`tab-btn ${activeTab === "cover" ? "active" : ""}`} onClick={() => setActiveTab("cover")}>
               🖼️ Couverture
             </button>
-            <button className={`tab-btn ${activeTab === "background" ? "active" : ""}`} onClick={() => setActiveTab("background")}>
-              🎨 Fond & Bordures
+            <button className={`tab-btn ${activeTab === "logos" ? "active" : ""}`} onClick={() => setActiveTab("logos")}>
+              🛡️ Logos & Position
+            </button>
+            <button className={`tab-btn ${activeTab === "theme_box" ? "active" : ""}`} onClick={() => setActiveTab("theme_box")}>
+              📐 Espace du Thème
             </button>
             <button className={`tab-btn ${activeTab === "students" ? "active" : ""}`} onClick={() => setActiveTab("students")}>
-              👥 Équipe / Auteurs
+              👥 Auteurs
             </button>
             <button className={`tab-btn ${activeTab === "chapters" ? "active" : ""}`} onClick={() => setActiveTab("chapters")}>
               📑 Chapitres
@@ -328,22 +359,9 @@ export default function RapportMemoireGenerator({ onBack }) {
               </div>
             )}
 
-            {/* TAB 2: COVER PAGE INFO */}
+            {/* TAB 2: COVER PAGE TEXTS */}
             {activeTab === "cover" && (
               <>
-                <div className="presets-box">
-                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🏛️ En-tête Institutionnel & Logo</label>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Logo de l'Établissement (Optionnel)</label>
-                    <input type="file" accept="image/*" onChange={handleLogoUpload} />
-                  </div>
-                  {logoImg && (
-                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setLogoImg(null)}>
-                      Supprimer le logo
-                    </button>
-                  )}
-                </div>
-
                 <div className="input-group">
                   <label>Nom de l'Établissement / Institut</label>
                   <textarea rows={2} name="instituteName" value={data.instituteName || data.institution || ""} onChange={handleChange} placeholder="ex: Institut national de la formation supérieure paramédicale" />
@@ -388,43 +406,96 @@ export default function RapportMemoireGenerator({ onBack }) {
               </>
             )}
 
-            {/* TAB 3: BACKGROUND & BORDERS CUSTOMIZATION */}
-            {activeTab === "background" && (
+            {/* TAB 3: LOGOS GAUCHE / DROIT & POSITION ÉTABLISSEMENT */}
+            {activeTab === "logos" && (
               <>
                 <div className="presets-box">
-                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🖼️ Image de Fond & Filigrane</label>
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🛡️ Logos Haut-Gauche & Haut-Droit</label>
+                  <p style={{ fontSize: "12px", color: "#64748b", margin: "4px 0 10px 0" }}>
+                    Insérez 2 logos côte à côte (ex: Ministère à gauche, Université à droite).
+                  </p>
+
                   <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Charger une Image de Fond (PNG / JPG)</label>
-                    <input type="file" accept="image/*" onChange={handleBgUpload} />
+                    <label>1. Logo Haut-Gauche</label>
+                    <input type="file" accept="image/*" onChange={handleLogoLeftUpload} />
                   </div>
-                  {bgImage && (
-                    <>
-                      <div className="input-group">
-                        <label>Opacité de l'image de fond ({Math.round(bgOpacity * 100)}%)</label>
-                        <input type="range" min={0.05} max={1} step={0.05} value={bgOpacity} onChange={(e) => setBgOpacity(Number(e.target.value))} />
-                      </div>
-                      <div className="input-group">
-                        <label>Ajustement de l'image</label>
-                        <select value={bgFit} onChange={(e) => setBgFit(e.target.value)}>
-                          <option value="contain">Contain (Filigrane Centré)</option>
-                          <option value="cover">Cover (Remplir toute la page)</option>
-                          <option value="fill">Fill (Étirer)</option>
-                        </select>
-                      </div>
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => setBgImage(null)} style={{ marginTop: "4px" }}>
-                        Supprimer l'image de fond
-                      </button>
-                    </>
+                  {logoLeftImg && (
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setLogoLeftImg(null)} style={{ marginBottom: "10px" }}>
+                      Supprimer Logo Gauche
+                    </button>
                   )}
+
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>2. Logo Haut-Droit</label>
+                    <input type="file" accept="image/*" onChange={handleLogoRightUpload} />
+                  </div>
+                  {logoRightImg && (
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setLogoRightImg(null)} style={{ marginBottom: "10px" }}>
+                      Supprimer Logo Droit
+                    </button>
+                  )}
+
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>3. Logo Central (Optionnel si pas de logos G/D)</label>
+                    <input type="file" accept="image/*" onChange={handleLogoUpload} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Taille des Logos ({logoSize}px)</label>
+                    <input type="range" min={50} max={150} value={logoSize} onChange={(e) => setLogoSize(Number(e.target.value))} />
+                  </div>
                 </div>
 
                 <div className="presets-box">
-                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🖼️ Style des Bordures & Volutes</label>
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>⬇️ Position du Nom de l'Établissement</label>
+                  <p style={{ fontSize: "12px", color: "#64748b", margin: "4px 0 10px 0" }}>
+                    Ramenez légèrement en bas le nom de l'établissement par rapport aux logos.
+                  </p>
+                  <div className="input-group">
+                    <label>Décalage vers le bas ({establishmentMarginTop}px)</label>
+                    <input type="range" min={0} max={80} value={establishmentMarginTop} onChange={(e) => setEstablishmentMarginTop(Number(e.target.value))} />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* TAB 4: THEME BOX SIZING & BORDERS */}
+            {activeTab === "theme_box" && (
+              <>
+                <div className="presets-box">
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>📐 Agrandir l'Espace du Thème (Bannière de Titre)</label>
+                  <p style={{ fontSize: "12px", color: "#64748b", margin: "4px 0 10px 0" }}>
+                    Agrandissez à volonté l'espace du bloc de titre et son épaisseur.
+                  </p>
+
+                  <div className="input-group">
+                    <label>Hauteur minimale du Thème ({titleBoxMinHeight}px)</label>
+                    <input type="range" min={60} max={250} value={titleBoxMinHeight} onChange={(e) => setTitleBoxMinHeight(Number(e.target.value))} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Épaisseur / Marge interne verticale ({titleBoxPaddingV}px)</label>
+                    <input type="range" min={10} max={80} value={titleBoxPaddingV} onChange={(e) => setTitleBoxPaddingV(Number(e.target.value))} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Taille de la Police du Titre ({titleFontSize}px)</label>
+                    <input type="range" min={20} max={54} value={titleFontSize} onChange={(e) => setTitleFontSize(Number(e.target.value))} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Arrondi du Cadre ({titleRadius}px)</label>
+                    <input type="range" min={0} max={40} value={titleRadius} onChange={(e) => setTitleRadius(Number(e.target.value))} />
+                  </div>
+                </div>
+
+                <div className="presets-box">
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🖼️ Bordures & Volutes</label>
                   
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "8px 0" }}>
                     <input type="checkbox" id="volutesCheck" checked={showVolutes} onChange={(e) => setShowVolutes(e.target.checked)} />
                     <label htmlFor="volutesCheck" style={{ fontSize: "13px", fontWeight: "700", cursor: "pointer" }}>
-                      ⚜️ Afficher les Volutes d'Angle Ornementales
+                      ⚜️ Volutes d'Angle Ornementales
                     </label>
                   </div>
 
@@ -432,10 +503,10 @@ export default function RapportMemoireGenerator({ onBack }) {
                     <label>Style de Bordure</label>
                     <select value={borderStyle} onChange={(e) => setBorderStyle(e.target.value)}>
                       <option value="double">Double Royal (Filet Double)</option>
-                      <option value="solid">Simple Épuré (Ligne Continue)</option>
-                      <option value="dashed">Pointillé Luxe (Dashed)</option>
-                      <option value="groove">Groove 3D Sculpté</option>
-                      <option value="ridge">Ridge 3D Relief</option>
+                      <option value="solid">Simple Épuré</option>
+                      <option value="dashed">Pointillé Luxe</option>
+                      <option value="groove">Groove 3D</option>
+                      <option value="ridge">Ridge 3D</option>
                       <option value="none">Sans Bordure</option>
                     </select>
                   </div>
@@ -452,22 +523,22 @@ export default function RapportMemoireGenerator({ onBack }) {
                 </div>
 
                 <div className="presets-box">
-                  <label style={{ color: "#2563eb", fontWeight: "700" }}>📐 Dimensions & Espacements du Titre</label>
-
-                  <div className="input-group">
-                    <label>Taille du Titre ({titleFontSize}px)</label>
-                    <input type="range" min={22} max={44} value={titleFontSize} onChange={(e) => setTitleFontSize(Number(e.target.value))} />
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🖼️ Image de Fond / Filigrane</label>
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Charger une Image de Fond (PNG / JPG)</label>
+                    <input type="file" accept="image/*" onChange={handleBgUpload} />
                   </div>
-
-                  <div className="input-group">
-                    <label>Arrondi du Cadre de Titre ({titleRadius}px)</label>
-                    <input type="range" min={0} max={30} value={titleRadius} onChange={(e) => setTitleRadius(Number(e.target.value))} />
-                  </div>
-
-                  <div className="input-group">
-                    <label>Espacement Vertical des Éléments ({verticalGap}px)</label>
-                    <input type="range" min={10} max={40} value={verticalGap} onChange={(e) => setVerticalGap(Number(e.target.value))} />
-                  </div>
+                  {bgImage && (
+                    <>
+                      <div className="input-group">
+                        <label>Opacité ({Math.round(bgOpacity * 100)}%)</label>
+                        <input type="range" min={0.05} max={1} step={0.05} value={bgOpacity} onChange={(e) => setBgOpacity(Number(e.target.value))} />
+                      </div>
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => setBgImage(null)}>
+                        Supprimer l'image de fond
+                      </button>
+                    </>
+                  )}
                 </div>
 
                 <div className="presets-box">
@@ -500,7 +571,7 @@ export default function RapportMemoireGenerator({ onBack }) {
               </>
             )}
 
-            {/* TAB 4: STUDENTS & AUTHORS */}
+            {/* TAB 5: STUDENTS & AUTHORS */}
             {activeTab === "students" && (
               <>
                 <div className="presets-box">
@@ -529,7 +600,7 @@ export default function RapportMemoireGenerator({ onBack }) {
               </>
             )}
 
-            {/* TAB 5: CHAPTERS */}
+            {/* TAB 6: CHAPTERS */}
             {activeTab === "chapters" && (
               <>
                 <div className="presets-box">
@@ -616,7 +687,9 @@ export default function RapportMemoireGenerator({ onBack }) {
                   data={{
                     ...data,
                     students: studentsList,
-                    logoUrl: logoImg || data.logoUrl
+                    logoUrl: logoImg || data.logoUrl,
+                    logoLeftUrl: logoLeftImg,
+                    logoRightUrl: logoRightImg
                   }}
                   accentColor={accentColor}
                   ornamentColor={ornamentColor}
@@ -629,6 +702,10 @@ export default function RapportMemoireGenerator({ onBack }) {
                   showVolutes={showVolutes}
                   titleRadius={titleRadius}
                   titleFontSize={titleFontSize}
+                  titleBoxPaddingV={titleBoxPaddingV}
+                  titleBoxMinHeight={titleBoxMinHeight}
+                  establishmentMarginTop={establishmentMarginTop}
+                  logoSize={logoSize}
                   verticalGap={verticalGap}
                 />
               </div>

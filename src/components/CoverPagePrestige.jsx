@@ -3,8 +3,12 @@ import React from "react";
 /**
  * CoverPagePrestige
  * Style de couverture "Institutionnelle & Cadre Prestige" pour RapportGenerator.
- * Supporte : image de fond sur-mesure, styles de bordures personnalisés, 
- * volutes modifiables, offsets d'éléments et mise en page réactive.
+ * Supporte : 
+ * - Logos haut-gauche et haut-droite (et logo central)
+ * - Déplacement vers le bas du nom de l'établissement
+ * - Agrandissement à volonté de l'espace du thème / bannière de titre
+ * - Image de fond / Filigrane
+ * - Styles de bordures & volutes ornementales
  */
 
 function CornerOrnament({ className, style, color = "#8f7bc4" }) {
@@ -31,7 +35,7 @@ function CornerOrnament({ className, style, color = "#8f7bc4" }) {
       />
       <circle cx="70" cy="30" r="4.5" fill={color} />
       <path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill={color} />
-      <path d="M14 40 C 6 46, 6 56, 14 60 C 18 54, 18 46, 14 40 Z" fill={color} />
+      <path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 40 14 Z" fill={color} />
       <path
         d="M46 46 C 40 52, 30 52, 25 45 C 32 40, 42 40, 46 46 Z"
         fill={color}
@@ -42,9 +46,9 @@ function CornerOrnament({ className, style, color = "#8f7bc4" }) {
   );
 }
 
-function GenericLogoPlaceholder() {
+function GenericLogoPlaceholder({ label = "LOGO" }) {
   return (
-    <svg viewBox="0 0 80 100" width="72" height="90">
+    <svg viewBox="0 0 80 100" width="65" height="80">
       <path d="M40 6 L40 60" stroke="#0e9488" strokeWidth="3" />
       <path
         d="M40 20 C 26 24, 26 36, 40 40 C 54 44, 54 56, 40 60"
@@ -55,9 +59,9 @@ function GenericLogoPlaceholder() {
       <path d="M18 26 L62 26" stroke="#0e9488" strokeWidth="3" />
       <circle cx="18" cy="26" r="4" fill="#0e9488" />
       <circle cx="62" cy="26" r="4" fill="#0e9488" />
-      <rect x="16" y="62" width="48" height="26" rx="2" fill="#0e9488" opacity="0.12" stroke="#0e9488" strokeWidth="1.5" />
-      <text x="40" y="79" textAnchor="middle" fontSize="7" fill="#0e9488" fontWeight="700">
-        LOGO
+      <rect x="14" y="62" width="52" height="26" rx="2" fill="#0e9488" opacity="0.12" stroke="#0e9488" strokeWidth="1.5" />
+      <text x="40" y="79" textAnchor="middle" fontSize="6.5" fill="#0e9488" fontWeight="700">
+        {label}
       </text>
     </svg>
   );
@@ -77,6 +81,8 @@ const defaultData = {
   yearLabel: "Année pédagogique",
   year: "2023/2024",
   logoUrl: null,
+  logoLeftUrl: null,
+  logoRightUrl: null,
 };
 
 export default function CoverPagePrestige({
@@ -92,10 +98,16 @@ export default function CoverPagePrestige({
   showVolutes = true,
   titleRadius = 16,
   titleFontSize = 32,
+  titleBoxPaddingV = 28,
+  titleBoxMinHeight = 100,
+  establishmentMarginTop = 15,
+  logoSize = 80,
   verticalGap = 20
 }) {
   const d = { ...defaultData, ...data };
   const studentsList = Array.isArray(d.students) ? d.students : (d.auteur ? [d.auteur] : defaultData.students);
+
+  const hasHeaderLogos = d.logoLeftUrl || d.logoRightUrl;
 
   return (
     <div
@@ -111,7 +123,7 @@ export default function CoverPagePrestige({
         boxSizing: "border-box"
       }}
     >
-      {/* Background Image Watermark / Overlay */}
+      {/* Image de Fond / Filigrane */}
       {bgImage && (
         <img
           src={bgImage}
@@ -130,7 +142,7 @@ export default function CoverPagePrestige({
         />
       )}
 
-      {/* Cadres & Bordures Personnalisées */}
+      {/* Cadres & Bordures */}
       {borderStyle !== "none" && (
         <>
           <div
@@ -161,7 +173,7 @@ export default function CoverPagePrestige({
         </>
       )}
 
-      {/* Volutes Ornementales de Coin */}
+      {/* Volutes Ornementales aux 4 Coins */}
       {showVolutes && (
         <>
           <CornerOrnament color={ornamentColor} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }} />
@@ -180,7 +192,7 @@ export default function CoverPagePrestige({
         </>
       )}
 
-      {/* Contenu Déplaçable & Ajustable */}
+      {/* Contenu de la Couverture */}
       <div
         style={{
           position: "absolute",
@@ -189,38 +201,63 @@ export default function CoverPagePrestige({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: `${borderInset + 35}px 70px`,
+          padding: `${borderInset + 30}px 60px`,
           textAlign: "center",
           zIndex: 4,
           boxSizing: "border-box"
         }}
       >
-        {/* Top Header Group */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", gap: `${verticalGap / 2}px` }}>
-          {/* En-tête institution */}
-          <p style={{ fontSize: "19px", fontStyle: "italic", fontWeight: "700", textDecoration: "underline", lineHeight: "1.3", maxWidth: "580px", margin: 0 }}>
-            {d.instituteName || d.institution}
-          </p>
-          <p style={{ fontSize: "14px", fontStyle: "italic", fontWeight: "700", textDecoration: "underline", letterSpacing: "0.05em", margin: 0 }}>
-            {d.instituteSubtitle || d.faculte}
-          </p>
-          <p style={{ fontSize: "17px", fontStyle: "italic", margin: 0 }}>
-            <span style={{ fontWeight: "700", textDecoration: "underline" }}>{d.specialityLabel || "Spécialité"}</span>
-            {" : "}
-            {d.speciality || "1ᵉʳ année ASSP"}
-          </p>
+        {/* TOP ROW : LOGO GAUCHE, INSTITUTION, LOGO DROIT */}
+        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          {/* Rangée supérieure avec Logos Gauche et Droit */}
+          <div style={{ width: "100%", display: "grid", gridTemplateColumns: "120px 1fr 120px", alignItems: "center" }}>
+            {/* Logo Gauche */}
+            <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+              {d.logoLeftUrl ? (
+                <img src={d.logoLeftUrl} alt="Logo Gauche" style={{ height: `${logoSize}px`, objectFit: "contain" }} />
+              ) : (
+                hasHeaderLogos && <GenericLogoPlaceholder label="LOGO G" />
+              )}
+            </div>
 
-          {/* Logo */}
-          <div style={{ marginTop: "12px", marginBottom: "8px" }}>
-            {d.logoUrl ? (
-              <img src={d.logoUrl} alt="Logo" style={{ height: "90px", objectFit: "contain" }} />
-            ) : (
-              <GenericLogoPlaceholder />
+            {/* Logo Central (si pas de logos gauche/droite) */}
+            {!hasHeaderLogos && (
+              <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "center", marginBottom: "8px" }}>
+                {d.logoUrl ? (
+                  <img src={d.logoUrl} alt="Logo" style={{ height: `${logoSize}px`, objectFit: "contain" }} />
+                ) : (
+                  <GenericLogoPlaceholder label="LOGO" />
+                )}
+              </div>
             )}
+
+            {/* Logo Droit */}
+            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gridColumn: "3" }}>
+              {d.logoRightUrl ? (
+                <img src={d.logoRightUrl} alt="Logo Droit" style={{ height: `${logoSize}px`, objectFit: "contain" }} />
+              ) : (
+                hasHeaderLogos && <GenericLogoPlaceholder label="LOGO D" />
+              )}
+            </div>
+          </div>
+
+          {/* Nom de l'établissement ramené légèrement en bas avec establishmentMarginTop */}
+          <div style={{ marginTop: `${establishmentMarginTop}px`, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
+            <p style={{ fontSize: "19px", fontStyle: "italic", fontWeight: "700", textDecoration: "underline", lineHeight: "1.3", maxWidth: "580px", margin: 0 }}>
+              {d.instituteName || d.institution}
+            </p>
+            <p style={{ fontSize: "14px", fontStyle: "italic", fontWeight: "700", textDecoration: "underline", letterSpacing: "0.05em", margin: 0 }}>
+              {d.instituteSubtitle || d.faculte}
+            </p>
+            <p style={{ fontSize: "17px", fontStyle: "italic", margin: 0 }}>
+              <span style={{ fontWeight: "700", textDecoration: "underline" }}>{d.specialityLabel || "Spécialité"}</span>
+              {" : "}
+              {d.speciality || "1ᵉʳ année ASSP"}
+            </p>
           </div>
         </div>
 
-        {/* Title Box Group */}
+        {/* TITLE BANNER GROUP (Espace du Thème agrandissable à volonté) */}
         <div style={{ width: "100%", margin: `${verticalGap}px 0` }}>
           <p style={{ fontSize: "16px", fontWeight: "700", textAlign: "left", marginLeft: "8px", marginBottom: "6px", margin: "0 0 6px 8px" }}>
             : {d.exposeLabel || "Exposé sur"}
@@ -229,14 +266,16 @@ export default function CoverPagePrestige({
           <div
             style={{
               width: "100%",
+              minHeight: `${titleBoxMinHeight}px`,
               borderRadius: `${titleRadius}px`,
               boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: "24px 20px",
+              padding: `${titleBoxPaddingV}px 24px`,
               background: accentColor,
-              boxSizing: "border-box"
+              boxSizing: "border-box",
+              transition: "all 0.2s ease"
             }}
           >
             <h1 style={{ color: "#ffffff", fontWeight: "700", fontSize: `${titleFontSize}px`, lineHeight: "1.25", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif", margin: 0 }}>
@@ -245,7 +284,7 @@ export default function CoverPagePrestige({
           </div>
         </div>
 
-        {/* Authors & Professor Group */}
+        {/* AUTHORS & PROFESSOR SECTION */}
         <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: "0 8px", textAlign: "left", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif", margin: `${verticalGap / 2}px 0` }}>
           <div>
             <p style={{ fontWeight: "700", textDecoration: "underline", fontSize: "15px", marginBottom: "8px", margin: "0 0 8px 0" }}>
@@ -267,7 +306,7 @@ export default function CoverPagePrestige({
           </div>
         </div>
 
-        {/* Footer Academic Year */}
+        {/* FOOTER ACADEMIC YEAR */}
         <p style={{ fontSize: "15px", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif", marginTop: "12px", marginBottom: "16px", margin: "12px 0 16px 0" }}>
           <span style={{ fontWeight: "700", textDecoration: "underline" }}>{d.yearLabel || "Année pédagogique"} :</span> {d.year || d.annee || "2023/2024"}
         </p>
