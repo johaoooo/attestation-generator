@@ -235,8 +235,15 @@ export default function CourrierGenerator({ onBack }) {
   // Export Word (.doc) 100% Éditable, 1 Page Unique & Fidèle dans Microsoft Word
   const handleExportWord = () => {
     const fontFamilyClean = fontBody.replace(/'/g, "");
-    const leftLogo = logoLeftImg || data.logoLeftUrl || data.logoUrl;
-    const rightLogo = logoRightImg || data.logoRightUrl || data.logoUrl;
+    const effectiveLogoSize = Math.min(80, logoSize);
+
+    const createPlaceholderSvg = (label, sz) => {
+      const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}"><rect width="${sz - 2}" height="${sz - 2}" x="1" y="1" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4 3" rx="4"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#64748B">${label}</text></svg>`;
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgStr)}`;
+    };
+
+    const leftLogo = logoLeftImg || data.logoLeftUrl || data.logoUrl || createPlaceholderSvg("LOGO G", effectiveLogoSize);
+    const rightLogo = logoRightImg || data.logoRightUrl || (leftLogo.startsWith("data:image/svg+xml") ? createPlaceholderSvg("LOGO D", effectiveLogoSize) : leftLogo);
 
     const htmlHeader = `
       <html xmlns:v="urn:schemas-microsoft-com:vml"
@@ -285,17 +292,15 @@ export default function CourrierGenerator({ onBack }) {
 
     const paragraphes = data.corps ? data.corps.split("\n\n") : [];
 
-    const effectiveLogoSize = Math.min(80, logoSize);
-
     let bodyContent = `
       <!-- EN-TÊTE LOGOS GAUCHE & DROIT -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%;">
         <tr>
           <td width="50%" align="left" valign="top">
-            ${leftLogo ? `<img src="${leftLogo}" height="${effectiveLogoSize}" style="height:${effectiveLogoSize}px; max-height:90px;" />` : `<table border="0" cellspacing="0" cellpadding="0" style="border:1pt dashed #cbd5e1; padding:4pt 8pt; width:60pt; text-align:center;"><tr><td style="font-size:8.5pt; font-weight:bold; color:#94a3b8; text-align:center;">LOGO G</td></tr></table>`}
+            <img src="${leftLogo}" height="${effectiveLogoSize}" style="height:${effectiveLogoSize}px; max-height:90px;" />
           </td>
           <td width="50%" align="right" valign="top">
-            ${rightLogo ? `<img src="${rightLogo}" height="${effectiveLogoSize}" style="height:${effectiveLogoSize}px; max-height:90px;" />` : `<table border="0" cellspacing="0" cellpadding="0" style="border:1pt dashed #cbd5e1; padding:4pt 8pt; width:60pt; text-align:center;"><tr><td style="font-size:8.5pt; font-weight:bold; color:#94a3b8; text-align:center;">LOGO D</td></tr></table>`}
+            <img src="${rightLogo}" height="${effectiveLogoSize}" style="height:${effectiveLogoSize}px; max-height:90px;" />
           </td>
         </tr>
       </table>
