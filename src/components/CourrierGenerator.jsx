@@ -1,48 +1,53 @@
 import React, { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDFModule, { jsPDF as jsPDFNamed } from "jspdf";
+import LettreOfficielle from "./LettreOfficielle.jsx";
 import {
   Download, ArrowLeft, Mail, FileText, RefreshCw, CheckCircle2, Sparkles, Layers, Plus, Trash2, ImageIcon,
   Palette, Star, Sliders, PenTool, Building, User, Smartphone, Monitor, Printer, Check
 } from "./Icons.jsx";
 
 const DEFAULT_COURRIER_DATA = {
+  logoUrl: null,
+  logoLeftUrl: null,
+  logoRightUrl: null,
   expediteurNom: "COORDIONNATION FIMA-PN",
   expediteurAdresse: "Porto-Novo, République du Bénin",
   expediteurContact: "Tél: +229 01 97 00 00 00 | Email: contact@fima-pn.bj",
   expediteurLegal: "Coordination Internationale de la Foire Internationale de Madingo-Kayes / Pointe-Noire",
-  destinataireNom: "Monsieur le Maire de la Commune",
-  destinataireEntreprise: "de Porto-Novo.",
+  destinataireNom: "Monsieur le Président de la Chambre des Métiers",
+  destinataireEntreprise: "de l'Artisanat du Bénin.",
   destinataireAdresse: "Porto-Novo",
   villeDate: "Porto-Novo, le 15 juillet 2026",
-  reference: "RÉF. : 002/COMAFA/AMAF/FIMA-PN/2026",
-  objet: "Objet : Information sur la tenue de la 4ème édition de la Foire Internationale de Madingo-Kayes/Pointe-Noire et sollicitation d'accompagnement",
-  salutation: "Monsieur le Maire,",
-  corps: "J'ai l'honneur de porter à votre connaissance que, depuis décembre 2022, date à laquelle la Mairie de Porto-Novo a envoyé deux artisans au Congo pour la valorisation du patrimoine culturel et artisanal de notre commune, j'ai été identifiée par les organisateurs de la Foire Internationale de Madingo-Kayes/Pointe-Noire (FIMA/PN) comme Coordonnatrice Internationale de ladite foire.\n\nÀ cet effet, je viens porter à votre connaissance la tenue de la 4ème édition de cette foire, qui se déroulera du 10 au 14 août à Madingo-Kayes et du 15 au 31 août à Pointe-Noire (voir en annexe les renseignements figurant sur l'affiche).\n\nPar la présente, je viens solliciter votre accompagnement afin de me permettre de révéler le Bénin en général, et la commune de Porto-Novo en particulier, à ce grand rendez-vous international.\n\nDans l'espoir que vous ne ménagerez aucun effort pour répondre favorablement à ma demande, recevez, Monsieur le Maire, l'expression de mes salutations distinguées.",
-  signataireNom: "",
+  reference: "002/COMAFA/AMAF/FIMA-PN/2026",
+  objetLabel: "Objet",
+  objet: "Information et sollicitation d'accompagnement / Participation Foire Internationale de Madingo Kayes (Pointe-Noire)",
+  salutation: "Monsieur le Président,",
+  corps: "J'ai l'honneur de porter à votre haute connaissance que, depuis trois (3) ans, j'ai été nommée Coordonnatrice de la Foire Internationale de Madingo-Kayes/Pointe-Noire, dont vous aviez reçu le courrier pour une large diffusion.\n\nJe tiens à vous remercier pour votre dynamisme et votre sens de l'écoute dans la vulgarisation de cette information au sein de toutes les confédérations. Que Dieu vous bénisse.\n\nCompte tenu du coût du billet et des frais de séjour liés à ce voyage, plusieurs personnes ayant manifesté le désir d'y aller, par des appels téléphoniques, ont dû désister.\n\nVu l'importance de cette rencontre, qui constitue un véritable carrefour des innovations en Afrique, je sollicite votre accompagnement de tout genre afin de révéler, à ce rendez-vous, le patrimoine culturel et artisanal béninois.\n\nDans l'espoir que vous ne ménagerez aucun effort pour répondre favorablement à ma demande, recevez, Monsieur le Président, l'expression de mes salutations distinguées.",
+  signataireNom: "TOSSA Afiavi G. Honorine",
   signataireTitre: "La Coordonnatrice",
+  faitA: "Fait à Porto-Novo le 15 juillet 2026"
 };
 
 const PRESETS_LIST = [
   {
-    name: "🏛️ Courrier Administratif Mairie (Porto-Novo)",
+    name: "🏛️ Lettre Officielle FIMA-PN / Mairie (Bénin)",
     data: { ...DEFAULT_COURRIER_DATA }
   },
   {
-    name: "✉️ Demande de Partenariat (ONG / Entreprise)",
+    name: "✉️ Demande de Partenariat (AFI COLLECTION / ONG)",
     data: {
+      ...DEFAULT_COURRIER_DATA,
       expediteurNom: "Maison AFI COLLECTION du Bénin",
-      expediteurAdresse: "Rue 104, Quartier Ganhi, Cotonou",
-      expediteurContact: "Tél: +229 01 97 00 00 00 | Email: contact@aficollection.bj",
-      expediteurLegal: "Maison AFI COLLECTION S.A.R.L - Capital 10.000.000 FCFA - RCCM RB/COT/24 B 1892",
+      reference: "N/REF : AC/CR-2026/042",
       destinataireNom: "À l'attention de M. le Directeur Général",
       destinataireEntreprise: "ONG ESPOIR ET NATURE",
       destinataireAdresse: "Avenue Monseigneur Steinmetz, Cotonou",
       villeDate: "Cotonou, le 30 Juillet 2026",
-      reference: "N/REF : AC/CR-2026/042",
-      objet: "Objet : Confirmation de partenariat et émission des attestations de formation",
+      objet: "Confirmation de partenariat et émission des attestations de fin de formation",
       salutation: "Monsieur le Directeur,",
       corps: "J'ai l'honneur de venir par la présente solliciter votre haute bienveillance afin de faire le point sur la dernière session de formation en Macramé et Teinture de pagne tenue récemment.\n\nNous tenons à vous exprimer notre vive gratitude pour la qualité de la collaboration entre nos deux institutions. Conformément à nos engagements communs, veuillez trouver ci-joint les spécifications relatives à l'émission des attestations de fin de formation pour les lauréats.\n\nRestant à votre entière disposition pour tout renseignement complémentaire, nous vous prions d'agréer, Monsieur le Directeur, l'expression de nos salutations distinguées.",
+      faitA: "Fait à Cotonou le 30 Juillet 2026",
       signataireNom: "TOSSA Afiavi Gbessito Honorine",
       signataireTitre: "La Directrice Générale",
     }
@@ -50,18 +55,17 @@ const PRESETS_LIST = [
   {
     name: "🎓 Demande de Stage Professionnel",
     data: {
+      ...DEFAULT_COURRIER_DATA,
       expediteurNom: "HAMADA Asma",
-      expediteurAdresse: "Béchar, République Algérienne",
-      expediteurContact: "Tél: +213 550 00 00 00 | Email: asma.hamada@email.com",
-      expediteurLegal: "Étudiante diplômée en Formation Supérieure Paramédicale",
+      reference: "STG/2026/089",
       destinataireNom: "À l'attention de M. le Directeur des Ressources Humaines",
       destinataireEntreprise: "Centre Hospitalier Universitaire (CHU)",
       destinataireAdresse: "Béchar",
       villeDate: "Béchar, le 03 Août 2026",
-      reference: "RÉF. : STG/2026/089",
-      objet: "Objet : Demande de stage pratique au sein du service infirmier",
+      objet: "Demande de stage pratique au sein du service infirmier",
       salutation: "Monsieur le Directeur,",
       corps: "Actuellement en fin de cycle d'études supérieures paramédicales, j'ai l'honneur de solliciter votre bienveillance afin d'effectuer un stage professionnel pratique d'une durée de trois (03) mois au sein de votre prestigieux établissement hospitalier.\n\nCe stage me permettra de consolider mes connaissances théoriques et de développer mes aptitudes pratiques au contact de vos équipes d'experts.\n\nDans l'attente d'une suite favorable, veuillez agréer, Monsieur le Directeur, l'expression de mes salutations distinguées.",
+      faitA: "Fait à Béchar le 03 Août 2026",
       signataireNom: "HAMADA Asma",
       signataireTitre: "La Candidate",
     }
@@ -69,18 +73,17 @@ const PRESETS_LIST = [
   {
     name: "📜 Lettre de Recommandation Officielle",
     data: {
+      ...DEFAULT_COURRIER_DATA,
       expediteurNom: "ONG ESPOIR ET NATURE",
-      expediteurAdresse: "Siège Social, Cotonou, Bénin",
-      expediteurContact: "Tél: +229 01 21 30 00 00 | Email: direction@espoirnature.org",
-      expediteurLegal: "ONG d'Utilité Publique N° 2012/045/MISP/DC/SGA/SAG",
+      reference: "REC/2026/EN-901",
       destinataireNom: "À qui de droit",
       destinataireEntreprise: "Attestation de Recommandation",
       destinataireAdresse: "Cotonou",
       villeDate: "Cotonou, le 03 Août 2026",
-      reference: "REF : REC/2026/EN-901",
-      objet: "Objet : Lettre de recommandation professionnelle",
+      objet: "Lettre de recommandation professionnelle",
       salutation: "Madame, Monsieur,",
       corps: "Nous soussignés, Direction de l'ONG ESPOIR ET NATURE, certifions et recommandons chaleureusement la candidature de l'intéressé(e) pour ses compétences exceptionnelles et son intégrité professionnelle.\n\nAu cours de ses missions au sein de notre organisme, il/elle a fait preuve d'une grande rigueur, de leadership et d'un professionnalisme exemplaire dans la gestion des programmes de formation.\n\nEn foi de quoi, la présente recommandation lui est délivrée pour servir et valoir ce que de droit.",
+      faitA: "Fait à Cotonou le 03 Août 2026",
       signataireNom: "Mme TOSSA Afiavi Gbessito Honorine",
       signataireTitre: "La Directrice Générale",
     }
@@ -88,150 +91,66 @@ const PRESETS_LIST = [
   {
     name: "⚖️ Convocation & Notification Officielle",
     data: {
+      ...DEFAULT_COURRIER_DATA,
       expediteurNom: "DIRECTION DES RESSOURCES HUMAINES",
-      expediteurAdresse: "Maison AFI COLLECTION du Bénin",
-      expediteurContact: "Tél: +229 01 97 00 00 00 | Email: drh@aficollection.bj",
-      expediteurLegal: "Maison AFI COLLECTION S.A.R.L - Cotonou",
+      reference: "DRH/CONV-2026/012",
       destinataireNom: "À l'attention des Membres du Conseil d'Administration",
       destinataireEntreprise: "Maison AFI COLLECTION",
       destinataireAdresse: "Cotonou",
       villeDate: "Cotonou, le 03 Août 2026",
-      reference: "N/REF : DRH/CONV-2026/012",
-      objet: "Objet : Convocation à la réunion ordinaire du Conseil d'Administration",
+      objet: "Convocation à la réunion ordinaire du Conseil d'Administration",
       salutation: "Madame, Monsieur le Membre du Conseil,",
       corps: "Vous êtes prié(e) de bien vouloir assister à la Réunion Ordinaire du Conseil d'Administration qui se tiendra le Lundi 17 Août 2026 à 10h00 au siège social de l'institution.\n\nOrdre du jour :\n1. Examen et approbation du bilan d'étape des formations.\n2. Validation du partenariat stratégique international.\n3. Divers.\n\nVotre présence est vivement souhaitée.",
+      faitA: "Fait à Cotonou le 03 Août 2026",
       signataireNom: "TOSSA Honorine",
       signataireTitre: "La Présidente du Conseil",
     }
   }
 ];
 
-const THEMES = [
-  {
-    id: "classic-gold",
-    name: "Or Prestigieux",
-    bg: "#FAF6EE",
-    border: "#C59B27",
-    primary: "#1B2430",
-    accent: "#8B263E",
-    fontHeader: "'Times New Roman', Times, serif",
-    fontBody: "'Times New Roman', Times, serif",
-  },
-  {
-    id: "emerald-royal",
-    name: "Émeraude Royale",
-    bg: "#F4F8F5",
-    border: "#1B4D3E",
-    primary: "#0B2B22",
-    accent: "#C59B27",
-    fontHeader: "'Times New Roman', Times, serif",
-    fontBody: "'Times New Roman', Times, serif",
-  },
-  {
-    id: "ruby-bordeaux",
-    name: "Bordeaux Saphir",
-    bg: "#FDF8F5",
-    border: "#581820",
-    primary: "#2C0D11",
-    accent: "#B8860B",
-    fontHeader: "'Times New Roman', Times, serif",
-    fontBody: "'Times New Roman', Times, serif",
-  },
-  {
-    id: "sapphire-blue",
-    name: "Bleu Saphir & Or",
-    bg: "#F0F4F8",
-    border: "#0F2942",
-    primary: "#0A192F",
-    accent: "#C59B27",
-    fontHeader: "'Times New Roman', Times, serif",
-    fontBody: "'Times New Roman', Times, serif",
-  },
-  {
-    id: "modern-minimal",
-    name: "Minimal Tech",
-    bg: "#FFFFFF",
-    border: "#1E293B",
-    primary: "#0F172A",
-    accent: "#2563EB",
-    fontHeader: "'Times New Roman', Times, serif",
-    fontBody: "'Times New Roman', Times, serif",
-  }
+const FONTS_OPTIONS = [
+  { label: "Georgia / Times (Classique)", value: "'Georgia', 'Times New Roman', serif" },
+  { label: "Times New Roman (Administratif)", value: "'Times New Roman', Times, serif" },
+  { label: "Cormorant Garamond (Prestige)", value: "'Cormorant Garamond', serif" },
+  { label: "Playfair Display (Élégant)", value: "'Playfair Display', serif" },
+  { label: "Plus Jakarta Sans (Moderne)", value: "'Plus Jakarta Sans', sans-serif" },
 ];
 
-const FONTS_OPTIONS = [
-  { label: "Times New Roman (Par défaut)", value: "'Times New Roman', Times, serif" },
-  { label: "Cormorant Garamond (Classique)", value: "'Cormorant Garamond', serif" },
-  { label: "Playfair Display (Prestige)", value: "'Playfair Display', serif" },
-  { label: "Cinzel (Impériale)", value: "'Cinzel', serif" },
-  { label: "Montserrat (Moderne)", value: "'Montserrat', sans-serif" },
-  { label: "Plus Jakarta Sans (Moderne Sans)", value: "'Plus Jakarta Sans', sans-serif" },
+const BANDEAU_PRESETS = [
+  { name: "🇧🇯 Bénin (Vert/Jaune/Rouge)", colors: ["#0f9b4f", "#f4d02c", "#d61a2c"] },
+  { name: "🇫🇷 France (Bleu/Blanc/Rouge)", colors: ["#002395", "#ffffff", "#ed2939"] },
+  { name: "🔱 Or Prestige & Saphir", colors: ["#0F2942", "#C59B27", "#8B263E"] },
+  { name: "🌿 Émeraude Royale", colors: ["#0B2B22", "#1B4D3E", "#C59B27"] },
+  { name: "🔷 Bleu Corporate Mono", colors: ["#1E3A8A", "#3B82F6", "#93C5FD"] },
 ];
 
 export default function CourrierGenerator({ onBack }) {
   const [data, setData] = useState({ ...DEFAULT_COURRIER_DATA });
-  const [courrierType, setCourrierType] = useState("standard");
-  const [letterheadImg, setLetterheadImg] = useState(null);
-
-  const [activeTheme, setActiveTheme] = useState(THEMES[0]);
   const [activeTab, setActiveTab] = useState("content");
   
-  // Page Format Orientation matching AttestationFormation exactly
   const [pageFormat, setPageFormat] = useState("portrait");
   const [zoomScale, setZoomScale] = useState(0.8);
   const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
   const [mobileView, setMobileView] = useState("editor");
   const isMobile = windowWidth < 860;
 
-  const [fontBody, setFontBody] = useState("'Times New Roman', Times, serif");
-  const [fontSize, setFontSize] = useState(12);
-  const [headerLogoSpace, setHeaderLogoSpace] = useState(90);
+  const [fontBody, setFontBody] = useState("'Georgia', 'Times New Roman', serif");
   const [watermarkText, setWatermarkText] = useState("");
-  const [showWaxSeal, setShowWaxSeal] = useState(false);
 
-  const [logoImg, setLogoImg] = useState(null);
+  const [logoLeftImg, setLogoLeftImg] = useState(null);
+  const [logoRightImg, setLogoRightImg] = useState(null);
   const [stampImg, setStampImg] = useState(null);
   const [signatureImg, setSignatureImg] = useState(null);
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
 
-  // Sidebar Resize and Collapse States
-  const [sidebarWidth, setSidebarWidth] = useState(440);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
-  // Touch Drag & Quick Edit States
-  const [selectedElement, setSelectedElement] = useState(null);
-  const [dragMode, setDragMode] = useState(false);
-  const [positions, setPositions] = useState({
-    logo: { x: 0, y: 0 },
-    stamp: { x: 0, y: 0 },
-    signature: { x: 0, y: 0 },
+  const [footer, setFooter] = useState({
+    ligne1: "AFI COLLECTION DU BÉNIN | RCCM RB/ABC/15 A 2297 | IFU 12013190056803",
+    ligne2: "Ilot : 283, Parcelle : g-8, Maison : Kwami Alexandre TOSSA, Atlantique, Abomey-Calavi, Zoundja, Bénin",
+    ligne3: "(+229) 61 68 40 40 / 63 61 71 71 / 63 63 16 16 | afiavitossa@gmail.com",
   });
-  const [dragState, setDragState] = useState(null);
+  const [bandeauCouleurs, setBandeauCouleurs] = useState(["#0f9b4f", "#f4d02c", "#d61a2c"]);
 
-  const handleTouchStart = (key, e) => {
-    const touch = e.touches ? e.touches[0] : e;
-    const currentPos = positions[key] || { x: 0, y: 0 };
-    setDragState({
-      key,
-      startX: touch.clientX - currentPos.x,
-      startY: touch.clientY - currentPos.y
-    });
-  };
-
-  const handleTouchMove = (e) => {
-    if (!dragState) return;
-    const touch = e.touches ? e.touches[0] : e;
-    const newX = touch.clientX - dragState.startX;
-    const newY = touch.clientY - dragState.startY;
-    setPositions(prev => ({
-      ...prev,
-      [dragState.key]: { x: newX, y: newY }
-    }));
-  };
-
-  const handleTouchEnd = () => {
-    setDragState(null);
-  };
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Auto zoom based on viewport width
   useEffect(() => {
@@ -259,6 +178,11 @@ export default function CourrierGenerator({ onBack }) {
     setData((prev) => ({ ...prev, [field]: val }));
   };
 
+  const setFooterField = (field) => (e) => {
+    const val = e.target.value;
+    setFooter((prev) => ({ ...prev, [field]: val }));
+  };
+
   const handleImageUpload = (setter) => (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -268,7 +192,7 @@ export default function CourrierGenerator({ onBack }) {
     }
   };
 
-  // Export PDF identical to AttestationFormation
+  // Export PDF avec capture SVG parfaite
   const handleExportPDF = async () => {
     if (!previewRef.current) return;
     setIsDownloadingPDF(true);
@@ -276,7 +200,15 @@ export default function CourrierGenerator({ onBack }) {
       const canvas = await html2canvas(previewRef.current, {
         scale: 2,
         useCORS: true,
+        allowTaint: true,
+        logging: false,
         backgroundColor: "#ffffff",
+        onclone: (clonedDoc) => {
+          const svgs = clonedDoc.querySelectorAll("svg");
+          svgs.forEach((svg) => {
+            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+          });
+        }
       });
       const imgData = canvas.toDataURL("image/jpeg", 0.98);
       const jsPDFConstructor = jsPDFModule?.jsPDF || jsPDFNamed || window.jspdf?.jsPDF;
@@ -285,9 +217,10 @@ export default function CourrierGenerator({ onBack }) {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Courrier_${pageFormat}_${data.reference.replace(/[^a-zA-Z0-9]/g, "_")}.pdf`);
+      pdf.save(`Lettre_Officielle_${(data.reference || "002_COMAFA").replace(/[^a-zA-Z0-9]/g, "_")}.pdf`);
     } catch (err) {
-      console.error("Erreur PDF:", err);
+      console.error("Erreur PDF Lettre Officielle:", err);
+      alert("Erreur lors de la génération du PDF.");
     } finally {
       setIsDownloadingPDF(false);
     }
@@ -295,7 +228,6 @@ export default function CourrierGenerator({ onBack }) {
 
   return (
     <div className="wrap">
-      {/* EXACT CSS STYLES CLONED FROM ATTESTATIONFORMATION */}
       <style>{`
         .wrap { padding: 24px; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 1580px; display: grid; grid-template-columns: 440px 1fr; gap: 24px; align-items: start; transition: grid-template-columns 0.25s ease; }
@@ -324,13 +256,6 @@ export default function CourrierGenerator({ onBack }) {
         .input-group input, .input-group select, .input-group textarea { padding: 8px 10px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 12.5px; font-family: inherit; color: #0F172A; background: #FFFFFF; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
         .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12); }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-        
-        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .theme-card { padding: 10px; border: 2px solid #E2E8F0; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.15s; background: #FFFFFF; }
-        .theme-card:hover { border-color: #93C5FD; }
-        .theme-card.active { border-color: #2563EB; background: #EFF6FF; }
-        .theme-swatch { width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); flex-shrink: 0; }
         
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
         .btn-secondary { background: #F1F5F9; color: #334155; }
@@ -338,7 +263,6 @@ export default function CourrierGenerator({ onBack }) {
         .btn-pdf { background: #DC2626; color: #FFFFFF; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2); }
         .btn-pdf:hover { background: #B91C1C; transform: translateY(-1px); }
 
-        /* PREVIEW AREA & ACTION BAR CLONED EXACTLY FROM ATTESTATION FORMATION */
         .preview-area { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; min-width: 0; }
         .action-bar { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 8px 16px; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); flex-wrap: wrap; }
         .format-selector-bar { display: flex; align-items: center; background: #F1F5F9; padding: 3px; border-radius: 8px; gap: 2px; }
@@ -351,13 +275,6 @@ export default function CourrierGenerator({ onBack }) {
         
         .cert-scroll { width: 100%; min-width: 0; max-width: 100%; overflow-x: auto; overflow-y: auto; text-align: center; background: #CBD5E1; border-radius: 14px; padding: 30px 20px; min-height: 520px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); }
         .cert-scale-wrapper { display: inline-block; text-align: left; margin: 0 auto; transform-origin: top center; transition: transform 0.2s ease; }
-
-        /* CERTIFICATE / COURRIER SHEET DYNAMICS CLONED FROM ATTESTATION FORMATION */
-        .certificate-sheet { position: relative; border-radius: 8px; overflow: hidden; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; font-size: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; justify-content: space-between; margin: 0 auto; }
-        .certificate-sheet.format-landscape { width: 960px; height: 678px; padding: 40px 52px; }
-        .certificate-sheet.format-portrait { width: 678px; height: 960px; padding: 40px 52px; }
-
-        .wax-seal-badge { width: 70px; height: 70px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #DC2626 0%, #991B1B 70%, #450A0A 100%); border: 3px solid #F59E0B; box-shadow: 0 4px 10px rgba(153, 27, 27, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; color: #FEF3C7; font-family: 'Cinzel', serif; font-size: 10px; font-weight: 800; text-align: center; text-transform: uppercase; letter-spacing: 0.05em; transform: rotate(-10deg); }
       `}</style>
 
       {/* MOBILE VIEW TOGGLE SWITCHER (< 860px) */}
@@ -367,7 +284,7 @@ export default function CourrierGenerator({ onBack }) {
           className={`mobile-view-btn ${mobileView === "editor" ? "active" : ""}`}
           onClick={() => setMobileView("editor")}
         >
-          ✏️ Formulaire d'Édition
+          ✏️ Édition
         </button>
         <button 
           type="button"
@@ -378,43 +295,27 @@ export default function CourrierGenerator({ onBack }) {
         </button>
       </div>
 
-      <div className="container" style={{ gridTemplateColumns: isMobile ? "1fr" : (isSidebarCollapsed ? "50px 1fr" : `${sidebarWidth}px 1fr`), transition: "grid-template-columns 0.25s ease" }}>
+      <div className={`container ${isSidebarCollapsed ? "sidebar-collapsed" : ""}`}>
         {/* Left Sidebar Editor Panel */}
-        <aside className={`editor-panel no-print ${isMobile && mobileView === "preview" ? "mobile-hide-editor" : ""}`} style={{ width: "100%", overflow: "hidden" }}>
-          {isSidebarCollapsed ? (
-            <div style={{ padding: "12px 6px", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-              <button
-                type="button"
-                onClick={() => setIsSidebarCollapsed(false)}
-                className="btn btn-primary"
-                style={{ padding: "10px 8px", fontSize: "14px" }}
-                title="Déplier et afficher le menu d'édition"
-              >
-                ▶
-              </button>
-              <div style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", fontSize: "11px", fontWeight: "700", color: "#64748B", letterSpacing: "0.1em" }}>
-                MENU ÉDITION
-              </div>
+        <aside className={`editor-panel no-print ${isMobile && mobileView === "preview" ? "mobile-hide-editor" : ""}`}>
+          <div className="editor-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <h1>
+                <Mail size={18} className="text-blue-600" />
+                <span>Lettre Officielle A4</span>
+              </h1>
+              <p>Style Institutionnel & Administrative</p>
             </div>
-          ) : (
-            <>
-              <div className="editor-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <h1>
-                    <span>Courrier Officiel</span>
-                  </h1>
-                  <p>Rédaction & mise en page administrative</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsSidebarCollapsed(true)}
-                  className="btn btn-secondary"
-                  style={{ padding: "4px 8px", fontSize: "11px" }}
-                  title="Réduire le menu pour agrandir le document"
-                >
-                  ◀ Masquer
-                </button>
-              </div>
+            <button
+              type="button"
+              onClick={() => setIsSidebarCollapsed(true)}
+              className="btn btn-secondary"
+              style={{ padding: "4px 8px", fontSize: "11px" }}
+              title="Masquer le menu"
+            >
+              ◀ Plier le Studio
+            </button>
+          </div>
 
           {/* Navigation Tabs */}
           <div className="tabs">
@@ -424,7 +325,31 @@ export default function CourrierGenerator({ onBack }) {
               onClick={() => setActiveTab("content")}
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>1. Contenu</span>
+              <span>1. Texte & Corps</span>
+            </button>
+            <button
+              type="button"
+              className={`tab-btn ${activeTab === "destinataire" ? "active" : ""}`}
+              onClick={() => setActiveTab("destinataire")}
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>2. Destinataire & Réf</span>
+            </button>
+            <button
+              type="button"
+              className={`tab-btn ${activeTab === "logos" ? "active" : ""}`}
+              onClick={() => setActiveTab("logos")}
+            >
+              <ImageIcon className="w-3.5 h-3.5" />
+              <span>3. Double Logos</span>
+            </button>
+            <button
+              type="button"
+              className={`tab-btn ${activeTab === "footer" ? "active" : ""}`}
+              onClick={() => setActiveTab("footer")}
+            >
+              <Building className="w-3.5 h-3.5" />
+              <span>4. Pied de Page</span>
             </button>
             <button
               type="button"
@@ -432,296 +357,198 @@ export default function CourrierGenerator({ onBack }) {
               onClick={() => setActiveTab("presets")}
             >
               <Star className="w-3.5 h-3.5" />
-              <span>2. Modèles</span>
-            </button>
-            <button
-              type="button"
-              className={`tab-btn ${activeTab === "style" ? "active" : ""}`}
-              onClick={() => setActiveTab("style")}
-            >
-              <Palette className="w-3.5 h-3.5" />
-              <span>3. Style & Format</span>
-            </button>
-            <button
-              type="button"
-              className={`tab-btn ${activeTab === "signatures" ? "active" : ""}`}
-              onClick={() => setActiveTab("signatures")}
-            >
-              <PenTool className="w-3.5 h-3.5" />
-              <span>4. Tampons & Signatures</span>
+              <span>5. Modèles</span>
             </button>
           </div>
 
+          {/* TAB CONTENT */}
           <div className="tab-content">
-            {/* TAB 1: CONTENT */}
+            {/* TAB 1: TEXTE ET CORPS */}
             {activeTab === "content" && (
               <>
-                <div className="presets-box">
-                  <label style={{ color: "#2563EB" }}>🏢 Support & Type de Courrier</label>
-                  <div className="grid-2" style={{ marginTop: "4px" }}>
-                    <button
-                      type="button"
-                      className={`chip ${courrierType === "standard" ? "active" : ""}`}
-                      onClick={() => setCourrierType("standard")}
-                    >
-                      📄 Courrier Standard
-                    </button>
-                    <button
-                      type="button"
-                      className={`chip ${courrierType === "letterhead" ? "active" : ""}`}
-                      onClick={() => setCourrierType("letterhead")}
-                    >
-                      🏢 Papier En-Tête
-                    </button>
+                <div className="input-group">
+                  <label>Formule d'Appel (Salutation)</label>
+                  <input type="text" value={data.salutation} onChange={setField("salutation")} placeholder="ex: Monsieur le Président," />
+                </div>
+
+                <div className="input-group">
+                  <label>Objet de la Lettre</label>
+                  <textarea rows={2} value={data.objet} onChange={setField("objet")} placeholder="ex: Information et sollicitation..." />
+                </div>
+
+                <div className="input-group">
+                  <label>Paragraphes (Séparés par un double saut de ligne)</label>
+                  <textarea
+                    rows={12}
+                    value={data.corps}
+                    onChange={setField("corps")}
+                    placeholder="Saisissez ici les paragraphes du courrier..."
+                    style={{ lineHeight: "1.5" }}
+                  />
+                </div>
+
+                <div className="input-group">
+                  <label>Police de caractère</label>
+                  <select value={fontBody} onChange={(e) => setFontBody(e.target.value)}>
+                    {FONTS_OPTIONS.map((f, i) => (
+                      <option key={i} value={f.value}>{f.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
+
+            {/* TAB 2: DESTINATAIRE ET RÉFÉRENCES */}
+            {activeTab === "destinataire" && (
+              <>
+                <div className="input-group">
+                  <label>Numéro de Référence</label>
+                  <input type="text" value={data.reference} onChange={setField("reference")} placeholder="ex: 002/COMAFA/AMAF/FIMA-PN/2026" />
+                </div>
+
+                <div className="input-group">
+                  <label>Lieu et Date</label>
+                  <input type="text" value={data.villeDate} onChange={setField("villeDate")} placeholder="ex: Porto-Novo, le 15 juillet 2026" />
+                </div>
+
+                <div className="input-group">
+                  <label>Destinataire (Lignes séparées par un retour à la ligne)</label>
+                  <textarea
+                    rows={4}
+                    value={Array.isArray(data.destinataire) ? data.destinataire.join("\n") : (data.destinataireEntreprise ? `${data.destinataireNom}\n${data.destinataireEntreprise}` : data.destinataireNom)}
+                    onChange={(e) => setData(prev => ({ ...prev, destinataire: e.target.value.split("\n") }))}
+                    placeholder="Monsieur le Président...\nde la Chambre des Métiers..."
+                  />
+                </div>
+
+                <div className="input-group">
+                  <label>Mention "Fait à..." (Pied de signature)</label>
+                  <input type="text" value={data.faitA || ""} onChange={setField("faitA")} placeholder="ex: Fait à Porto-Novo le 15 juillet 2026" />
+                </div>
+
+                <div className="grid-2">
+                  <div className="input-group">
+                    <label>Nom du Signataire</label>
+                    <input type="text" value={data.signataireNom} onChange={setField("signataireNom")} placeholder="ex: TOSSA Afiavi G. Honorine" />
+                  </div>
+                  <div className="input-group">
+                    <label>Titre / Fonction</label>
+                    <input type="text" value={data.signataireTitre} onChange={setField("signataireTitre")} placeholder="ex: La Coordonnatrice" />
                   </div>
                 </div>
 
-                {courrierType === "letterhead" && (
-                  <div className="presets-box" style={{ background: "#FEF3C7", borderColor: "#F59E0B" }}>
-                    <label style={{ color: "#B45309" }}>🖼️ Image du Papier En-Tête</label>
-                    <input type="file" accept="image/*" onChange={handleImageUpload(setLetterheadImg)} style={{ padding: "6px" }} />
-                  </div>
-                )}
+                <div className="input-group">
+                  <label>Filigrane texte (Fond de page)</label>
+                  <input type="text" value={watermarkText} onChange={(e) => setWatermarkText(e.target.value)} placeholder="ex: CONFIDENTIEL / URGENT" />
+                </div>
+              </>
+            )}
 
-                {courrierType === "standard" && (
-                  <div className="presets-box">
-                    <label>🏢 Expéditeur</label>
-                    <div className="input-group" style={{ marginBottom: "8px" }}>
-                      <label>Nom / Organisation</label>
-                      <input type="text" value={data.expediteurNom} onChange={setField("expediteurNom")} />
-                    </div>
-                    <div className="input-group" style={{ marginBottom: "8px" }}>
-                      <label>Adresse</label>
-                      <input type="text" value={data.expediteurAdresse} onChange={setField("expediteurAdresse")} />
-                    </div>
-                    <div className="input-group" style={{ marginBottom: "8px" }}>
-                      <label>Téléphone & Email</label>
-                      <input type="text" value={data.expediteurContact} onChange={setField("expediteurContact")} />
-                    </div>
-                    <div className="input-group">
-                      <label>Mentions Légales (Pied de page)</label>
-                      <input type="text" value={data.expediteurLegal} onChange={setField("expediteurLegal")} />
-                    </div>
-                  </div>
-                )}
-
+            {/* TAB 3: DOUBLE LOGOS & SIGNATURES */}
+            {activeTab === "logos" && (
+              <>
                 <div className="presets-box">
-                  <label>👤 Destinataire & Entête</label>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Destinataire (Nom/Fonction)</label>
-                    <input type="text" value={data.destinataireNom} onChange={setField("destinataireNom")} />
-                  </div>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Organisation / Ville Destinataire</label>
-                    <input type="text" value={data.destinataireEntreprise} onChange={setField("destinataireEntreprise")} />
-                  </div>
-                  <div className="grid-2" style={{ marginBottom: "8px" }}>
-                    <div className="input-group">
-                      <label>Lieu & Date (À droite)</label>
-                      <input type="text" value={data.villeDate} onChange={setField("villeDate")} />
-                    </div>
-                    <div className="input-group">
-                      <label>N° Référence</label>
-                      <input type="text" value={data.reference} onChange={setField("reference")} />
-                    </div>
+                  <label>🖼️ Double Logos d'En-tête</label>
+                  <div className="input-group" style={{ marginBottom: "10px" }}>
+                    <label>Logo Haut-Gauche (Organisme Émetteur)</label>
+                    <input type="file" accept="image/*" onChange={handleImageUpload(setLogoLeftImg)} />
                   </div>
                   <div className="input-group">
-                    <label>Objet du Courrier (À droite)</label>
-                    <input type="text" value={data.objet} onChange={setField("objet")} />
+                    <label>Logo Haut-Droit (Ministère / Partenaire)</label>
+                    <input type="file" accept="image/*" onChange={handleImageUpload(setLogoRightImg)} />
                   </div>
                 </div>
 
                 <div className="presets-box">
-                  <label>📜 Texte du Courrier (Justifié)</label>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Formule d'appel</label>
-                    <input type="text" value={data.salutation} onChange={setField("salutation")} />
+                  <label>✍️ Signature & Cachet Officiel</label>
+                  <div className="input-group" style={{ marginBottom: "10px" }}>
+                    <label>Image de Signature Manuscrite</label>
+                    <input type="file" accept="image/*" onChange={handleImageUpload(setSignatureImg)} />
                   </div>
                   <div className="input-group">
-                    <label>Corps de la lettre</label>
-                    <textarea rows={10} value={data.corps} onChange={setField("corps")} />
+                    <label>Image de Cachet / Tampon Officiel</label>
+                    <input type="file" accept="image/*" onChange={handleImageUpload(setStampImg)} />
                   </div>
                 </div>
               </>
             )}
 
-            {/* TAB 2: PRESETS */}
+            {/* TAB 4: PIED DE PAGE & DRAPEAU */}
+            {activeTab === "footer" && (
+              <>
+                <div className="presets-box">
+                  <label>🏢 Mentions Légales Pied de Page</label>
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Ligne 1 (Raison Sociale, RCCM, IFU)</label>
+                    <input type="text" value={footer.ligne1} onChange={setFooterField("ligne1")} />
+                  </div>
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Ligne 2 (Adresse Physiques & Siège)</label>
+                    <input type="text" value={footer.ligne2} onChange={setFooterField("ligne2")} />
+                  </div>
+                  <div className="input-group">
+                    <label>Ligne 3 (Téléphones & Emails)</label>
+                    <input type="text" value={footer.ligne3} onChange={setFooterField("ligne3")} />
+                  </div>
+                </div>
+
+                <div className="presets-box">
+                  <label>🎨 Bandeau de Couleurs Bas de Page</label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
+                    {BANDEAU_PRESETS.map((p, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className="chip"
+                        onClick={() => setBandeauCouleurs(p.colors)}
+                      >
+                        {p.name}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="grid-3">
+                    <div className="input-group">
+                      <label>Couleur 1</label>
+                      <input type="color" value={bandeauCouleurs[0] || "#0f9b4f"} onChange={(e) => setBandeauCouleurs([e.target.value, bandeauCouleurs[1], bandeauCouleurs[2]])} />
+                    </div>
+                    <div className="input-group">
+                      <label>Couleur 2</label>
+                      <input type="color" value={bandeauCouleurs[1] || "#f4d02c"} onChange={(e) => setBandeauCouleurs([bandeauCouleurs[0], e.target.value, bandeauCouleurs[2]])} />
+                    </div>
+                    <div className="input-group">
+                      <label>Couleur 3</label>
+                      <input type="color" value={bandeauCouleurs[2] || "#d61a2c"} onChange={(e) => setBandeauCouleurs([bandeauCouleurs[0], bandeauCouleurs[1], e.target.value])} />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* TAB 5: PRESETS ET MODÈLES */}
             {activeTab === "presets" && (
               <div className="presets-box">
-                <label>⭐ Modèles prédéfinis prêts à l'emploi</label>
-                <div className="grid-1 gap-2" style={{ marginTop: "8px" }}>
+                <label>⭐ Modèles de Lettres Officielle Prêtes à l'Emploi</label>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "6px" }}>
                   {PRESETS_LIST.map((preset, idx) => (
                     <button
                       key={idx}
                       type="button"
-                      className="chip hover-glow"
+                      className="chip"
+                      style={{ textAlign: "left", padding: "10px 12px", borderRadius: "8px" }}
                       onClick={() => setData({ ...preset.data })}
-                      style={{ textAlign: "left", padding: "10px 12px", width: "100%", borderRadius: "8px" }}
                     >
-                      <div style={{ fontWeight: "700", color: "#0F172A", fontSize: "12px" }}>{preset.name}</div>
-                      <div style={{ fontSize: "10.5px", color: "#64748B", marginTop: "2px" }}>
-                        {preset.data.objet.slice(0, 50)}...
-                      </div>
+                      {preset.name}
                     </button>
                   ))}
                 </div>
               </div>
             )}
-
-            {/* TAB 3: STYLE & FORMATS */}
-            {activeTab === "style" && (
-              <>
-                <div className="presets-box">
-                  <label style={{ color: "#2563EB" }}>📐 Format de la Page (Orientation)</label>
-                  <div className="grid-2" style={{ marginTop: "4px" }}>
-                    <button
-                      type="button"
-                      className={`chip ${pageFormat === "portrait" ? "active" : ""}`}
-                      onClick={() => setPageFormat("portrait")}
-                      style={{ padding: "8px", fontWeight: "700" }}
-                    >
-                      📱 Portrait (A4)
-                    </button>
-                    <button
-                      type="button"
-                      className={`chip ${pageFormat === "landscape" ? "active" : ""}`}
-                      onClick={() => setPageFormat("landscape")}
-                      style={{ padding: "8px", fontWeight: "700" }}
-                    >
-                      📐 Paysage (A4)
-                    </button>
-                  </div>
-                </div>
-
-                <div className="presets-box">
-                  <label style={{ color: "#2563EB" }}>📐 Largeur du Menu Latéral ({sidebarWidth}px)</label>
-                  <div className="input-group" style={{ marginTop: "4px" }}>
-                    <input
-                      type="range"
-                      min="260"
-                      max="600"
-                      step="10"
-                      value={sidebarWidth}
-                      onChange={(e) => setSidebarWidth(parseInt(e.target.value))}
-                    />
-                  </div>
-                </div>
-
-                <div className="presets-box">
-                  <label>🎨 Thème Graphique</label>
-                  <div className="theme-grid">
-                    {THEMES.map((th) => (
-                      <button
-                        key={th.id}
-                        type="button"
-                        className={`theme-card ${activeTheme.id === th.id ? "active" : ""}`}
-                        onClick={() => setActiveTheme(th)}
-                        style={{ width: "100%", textAlign: "left" }}
-                      >
-                        <div className="theme-swatch" style={{ background: th.border }} />
-                        <span style={{ fontSize: "11.5px", fontWeight: "700", color: "#0F172A" }}>{th.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="presets-box">
-                  <label>🔤 Typographie & Espace Logo</label>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Police du texte (Par défaut Times New Roman)</label>
-                    <select value={fontBody} onChange={(e) => setFontBody(e.target.value)}>
-                      {FONTS_OPTIONS.map((f) => (
-                        <option key={f.value} value={f.value}>{f.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Taille de la police ({fontSize}pt / px)</label>
-                    <input
-                      type="range"
-                      min="10"
-                      max="18"
-                      step="0.5"
-                      value={fontSize}
-                      onChange={(e) => setFontSize(parseFloat(e.target.value))}
-                    />
-                  </div>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Espace libre en haut pour Logos ({headerLogoSpace}px)</label>
-                    <input
-                      type="range"
-                      min="40"
-                      max="200"
-                      step="10"
-                      value={headerLogoSpace}
-                      onChange={(e) => setHeaderLogoSpace(parseInt(e.target.value))}
-                    />
-                  </div>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Filigrane texte</label>
-                    <input
-                      type="text"
-                      placeholder="ex: CONFIDENTIEL / URGENT"
-                      value={watermarkText}
-                      onChange={(e) => setWatermarkText(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="waxToggle"
-                      checked={showWaxSeal}
-                      onChange={(e) => setShowWaxSeal(e.target.checked)}
-                    />
-                    <label htmlFor="waxToggle" style={{ fontSize: "11.5px", fontWeight: "600", cursor: "pointer" }}>
-                      Sceau de cire officiel (Rouge 💮)
-                    </label>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* TAB 4: SIGNATURES */}
-            {activeTab === "signatures" && (
-              <>
-                <div className="presets-box">
-                  <label>🖼️ Logo & Tampon Officiel</label>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Logo de l'Entête (Haut de page)</label>
-                    <input type="file" accept="image/*" onChange={handleImageUpload(setLogoImg)} />
-                  </div>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Signature Manuscrite</label>
-                    <input type="file" accept="image/*" onChange={handleImageUpload(setSignatureImg)} />
-                  </div>
-                  <div className="input-group">
-                    <label>Tampon / Cachet Officiel</label>
-                    <input type="file" accept="image/*" onChange={handleImageUpload(setStampImg)} />
-                  </div>
-                </div>
-
-                <div className="presets-box">
-                  <label>✍️ Signataire</label>
-                  <div className="input-group" style={{ marginBottom: "8px" }}>
-                    <label>Titre / Fonction</label>
-                    <input type="text" value={data.signataireTitre} onChange={setField("signataireTitre")} />
-                  </div>
-                  <div className="input-group">
-                    <label>Nom Complet (Optionnel)</label>
-                    <input type="text" value={data.signataireNom} onChange={setField("signataireNom")} />
-                  </div>
-                </div>
-              </>
-            )}
           </div>
-            </>
-          )}
         </aside>
 
-        {/* ================= PREVIEW AREA 100% CLONED FROM ATTESTATION FORMATION ================= */}
+        {/* PREVIEW AREA */}
         <main className={`preview-area ${isMobile && mobileView === "editor" ? "mobile-hide-preview" : ""}`}>
           <div className="action-bar">
-            {/* COLLAPSED RE-OPEN BUTTON */}
             {isSidebarCollapsed && (
               <button
                 type="button"
@@ -733,25 +560,16 @@ export default function CourrierGenerator({ onBack }) {
               </button>
             )}
 
-            {/* ORIENTATION TOGGLE BAR CLONED EXACTLY FROM ATTESTATION FORMATION */}
             <div className="format-selector-bar">
-              <button
-                type="button"
-                className={`format-bar-btn ${pageFormat === "landscape" ? "active" : ""}`}
-                onClick={() => setPageFormat("landscape")}
-              >
-                📐 Paysage
-              </button>
               <button
                 type="button"
                 className={`format-bar-btn ${pageFormat === "portrait" ? "active" : ""}`}
                 onClick={() => setPageFormat("portrait")}
               >
-                📱 Portrait
+                📱 Portrait A4
               </button>
             </div>
 
-            {/* RESPONSIVE ZOOM CONTROLS CLONED EXACTLY FROM ATTESTATION FORMATION */}
             <div className="zoom-controls">
               <span style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", marginRight: "4px" }}>Zoom :</span>
               <button type="button" className={`zoom-btn ${zoomScale === 0.5 ? "active" : ""}`} onClick={() => setZoomScale(0.5)}>50%</button>
@@ -761,7 +579,6 @@ export default function CourrierGenerator({ onBack }) {
               <button type="button" className={`zoom-btn ${zoomScale === 1.2 ? "active" : ""}`} onClick={() => setZoomScale(1.2)}>120%</button>
             </div>
 
-            {/* ACTION BUTTONS CLONED EXACTLY FROM ATTESTATION FORMATION */}
             <div className="btn-group">
               {onBack && (
                 <button type="button" className="btn btn-secondary" onClick={onBack}>
@@ -775,298 +592,36 @@ export default function CourrierGenerator({ onBack }) {
             </div>
           </div>
 
-          {/* CERT-SCROLL & CERT-SCALE-WRAPPER CLONED EXACTLY FROM ATTESTATION FORMATION */}
           <div className="cert-scroll">
             <div className="cert-scale-wrapper" style={{ transform: `scale(${zoomScale})` }}>
-              <div
-                ref={previewRef}
-                className={`certificate-sheet format-${pageFormat}`}
-                style={{
-                  backgroundColor: activeTheme.bg,
-                  borderColor: activeTheme.border,
-                  borderWidth: "1px",
-                  fontFamily: fontBody,
-                  fontSize: `${fontSize}px`,
-                  lineHeight: "1.6"
-                }}
-              >
-                {/* Background Image if Papier En-Tête Uploaded */}
-                {courrierType === "letterhead" && letterheadImg && (
-                  <img
-                    src={letterheadImg}
-                    alt="Papier en-tête d'entreprise"
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      zIndex: 0
-                    }}
-                  />
-                )}
-
-                {/* Watermark Overlay */}
-                {watermarkText && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%) rotate(-45deg)",
-                      fontSize: "55px",
-                      fontWeight: "900",
-                      color: "rgba(15, 23, 42, 0.05)",
-                      letterSpacing: "0.2em",
-                      pointerEvents: "none",
-                      whiteSpace: "nowrap",
-                      textTransform: "uppercase",
-                      zIndex: 1
-                    }}
-                  >
-                    {watermarkText}
-                  </div>
-                )}
-
-                <div style={{ position: "relative", zIndex: 2, paddingTop: `${headerLogoSpace}px`, flex: 1, display: "flex", flexDirection: "column", justifyBetween: "space-between" }}>
-                  <div>
-                    {/* Lieu et Date positionnés TOUT EN HAUT À DROITE */}
-                    <div className="text-right font-sans font-bold text-xs text-slate-900 mb-6">
-                      {data.villeDate}
-                    </div>
-
-                    {/* TYPE A: COURRIER STANDARD (Génération d'en-tête) */}
-                    {courrierType === "standard" && (
-                      <>
-                        <div className="flex justify-between items-start mb-6">
-                          <div className="w-1/2 pr-4">
-                            {logoImg ? (
-                              <img src={logoImg} alt="Logo" className="h-16 max-w-[200px] object-contain mb-3" />
-                            ) : (
-                              <h2 className="text-lg font-extrabold uppercase tracking-wide mb-1" style={{ color: activeTheme.primary, fontFamily: activeTheme.fontHeader }}>
-                                {data.expediteurNom}
-                              </h2>
-                            )}
-                            <p className="text-xs text-slate-600 font-sans">{data.expediteurAdresse}</p>
-                            <p className="text-xs text-slate-500 font-sans">{data.expediteurContact}</p>
-                            {data.reference && (
-                              <p className="text-xs font-bold text-slate-900 font-sans mt-3">{data.reference}</p>
-                            )}
-                          </div>
-
-                          {/* Official Recipient Block ("À Monsieur...") */}
-                          <div className="w-[95mm] text-left font-sans">
-                            <div className="bg-slate-50/90 p-4 rounded-lg border border-slate-300 shadow-sm backdrop-blur-sm">
-                              <p className="text-xs font-bold text-slate-700 uppercase mb-1">À</p>
-                              <p className="font-bold text-sm text-slate-950">{data.destinataireNom}</p>
-                              <p className="text-xs font-bold text-slate-800 uppercase">{data.destinataireEntreprise}</p>
-                              {data.destinataireAdresse && (
-                                <p className="text-xs text-slate-600 mt-1">{data.destinataireAdresse}</p>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="w-full h-0.5 mb-8" style={{ backgroundColor: activeTheme.primary }}></div>
-                      </>
-                    )}
-
-                    {/* TYPE B: COURRIER SUR PAPIER EN-TÊTE D'ENTREPRISE */}
-                    {courrierType === "letterhead" && (
-                      <div className="flex justify-between items-start mb-8 font-sans text-xs">
-                        <div className="w-1/2">
-                          {data.reference && <p className="font-bold text-slate-900">{data.reference}</p>}
-                        </div>
-                        <div className="w-[95mm] text-left">
-                          <div className="bg-slate-50/90 p-4 rounded-lg border border-slate-300 shadow-sm backdrop-blur-sm">
-                            <p className="text-xs font-bold text-slate-700 uppercase mb-1">À</p>
-                            <p className="font-bold text-sm text-slate-950">{data.destinataireNom}</p>
-                            <p className="text-xs font-bold text-slate-800 uppercase">{data.destinataireEntreprise}</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Objet : POSITIONNÉ À DROITE */}
-                    <div className="mb-8 text-right font-sans font-bold text-sm">
-                      <span className="inline-block p-3 rounded border-r-4 text-slate-900 shadow-sm text-right max-w-xl" style={{ backgroundColor: "rgba(241, 245, 249, 0.9)", borderColor: activeTheme.accent }}>
-                        {data.objet}
-                      </span>
-                    </div>
-
-                    {/* Salutation */}
-                    <p className="font-bold mb-4">{data.salutation}</p>
-
-                    {/* Body Text: TEXTE STRICTEMENT JUSTIFIÉ */}
-                    <div className="space-y-4 whitespace-pre-line text-justify text-slate-800 leading-relaxed" style={{ textAlign: "justify", textJustify: "inter-word" }}>
-                      {data.corps}
-                    </div>
-                  </div>
-
-                  {/* Bottom Signature & Signatory Block */}
-                  <div className="pt-8 mt-12 border-t border-slate-200 font-sans">
-                    <div className="flex justify-between items-end mb-4">
-                      <div className="w-1/2 flex items-center gap-4">
-                        {showWaxSeal && (
-                          <div className="wax-seal-badge">
-                            <span>OFFICIEL<br/>SCEAU</span>
-                          </div>
-                        )}
-                        {stampImg && (
-                          <div>
-                            <p className="text-[10px] uppercase tracking-wider text-slate-400 mb-1">Cachet Officiel</p>
-                            <img src={stampImg} alt="Cachet" className="h-20 object-contain" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="w-1/2 text-right">
-                        {data.villeDate && (
-                          <p className="text-xs text-slate-600 mb-2 italic">
-                            Fait à {data.villeDate.toLowerCase().startsWith("fait à") ? data.villeDate.slice(7) : data.villeDate}
-                          </p>
-                        )}
-                        <p className="text-sm font-bold uppercase tracking-wider mb-2" style={{ color: activeTheme.primary }}>
-                          {data.signataireTitre}
-                        </p>
-                        {signatureImg ? (
-                          <img src={signatureImg} alt="Signature" className="h-16 ml-auto object-contain mb-2" />
-                        ) : (
-                          <div className="h-16 flex items-center justify-end">
-                            <span style={{ fontFamily: "'Great Vibes', cursive", fontSize: "28px", color: activeTheme.primary }}>
-                              {data.signataireNom || data.signataireTitre}
-                            </span>
-                          </div>
-                        )}
-                        {data.signataireNom && (
-                          <p className="text-sm font-semibold text-slate-900">{data.signataireNom}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Legal Footer Notice if Standard Type */}
-                    {courrierType === "standard" && data.expediteurLegal && (
-                      <div className="text-center text-[10px] text-slate-400 border-t border-slate-200 pt-3">
-                        {data.expediteurLegal}
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div ref={previewRef}>
+                <LettreOfficielle
+                  fontFamily={fontBody}
+                  data={{
+                    logoUrl: logoLeftImg,
+                    logoLeftUrl: logoLeftImg,
+                    logoRightUrl: logoRightImg,
+                    reference: data.reference,
+                    lieuDate: data.villeDate,
+                    destinataire: Array.isArray(data.destinataire) ? data.destinataire : (typeof data.destinataire === "string" ? data.destinataire.split("\n") : [data.destinataireNom, data.destinataireEntreprise].filter(Boolean)),
+                    objetLabel: data.objetLabel || "Objet",
+                    objet: data.objet ? data.objet.replace(/^Objet\s*:\s*/i, "") : "Information et sollicitation",
+                    formuleAppel: data.salutation,
+                    paragraphes: data.corps ? data.corps.split("\n\n") : [],
+                    faitA: data.faitA || `Fait à ${data.villeDate}`,
+                    signataireNom: data.signataireNom,
+                    signataireTitre: data.signataireTitre,
+                    signatureUrl: signatureImg,
+                    stampUrl: stampImg,
+                    watermarkText: watermarkText,
+                    footer: footer,
+                    bandeauCouleurs: bandeauCouleurs
+                  }}
+                />
               </div>
             </div>
           </div>
         </main>
-      </div>
-
-      {/* MOBILE QUICK EDIT BOTTOM SHEET */}
-      {selectedElement && (
-        <div className="mobile-quick-sheet no-print">
-          <div className="quick-sheet-header">
-            <span className="quick-sheet-title">
-              Éditer {selectedElement === "objet" ? "l'Objet" : selectedElement === "destinataire" ? "le Destinataire" : selectedElement === "signataire" ? "le Signataire" : "le Document"}
-            </span>
-            <button className="quick-sheet-close" onClick={() => setSelectedElement(null)}>✕</button>
-          </div>
-
-          <div className="quick-sheet-content">
-            {selectedElement === "objet" && (
-              <div className="input-group">
-                <label>Objet du Courrier</label>
-                <input 
-                  type="text" 
-                  value={data.objet} 
-                  onChange={setField("objet")}
-                  autoFocus
-                />
-              </div>
-            )}
-
-            {selectedElement === "destinataire" && (
-              <div className="input-group">
-                <label>Destinataire</label>
-                <input 
-                  type="text" 
-                  value={data.destinataireNom} 
-                  onChange={setField("destinataireNom")}
-                  autoFocus
-                />
-              </div>
-            )}
-
-            {selectedElement === "signataire" && (
-              <div className="grid-2">
-                <div className="input-group">
-                  <label>Nom du Signataire</label>
-                  <input 
-                    type="text" 
-                    value={data.signataireNom} 
-                    onChange={setField("signataireNom")}
-                  />
-                </div>
-                <div className="input-group">
-                  <label>Titre / Fonction</label>
-                  <input 
-                    type="text" 
-                    value={data.signataireTitre} 
-                    onChange={setField("signataireTitre")}
-                  />
-                </div>
-              </div>
-            )}
-
-            <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
-              <button 
-                className="btn btn-primary" 
-                style={{ flex: 1, padding: "10px" }}
-                onClick={() => setSelectedElement(null)}
-              >
-                Appliquer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MOBILE FLOATING BOTTOM ACTION BAR */}
-      <div className="mobile-bottom-bar no-print">
-        <button 
-          className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
-          onClick={() => { setMobileView("editor"); setSelectedElement(null); }}
-        >
-          <span>Saisie</span>
-        </button>
-
-        <button 
-          className={`mobile-bottom-btn ${mobileView === "preview" && !dragMode ? "active" : ""}`}
-          onClick={() => { setMobileView("preview"); setDragMode(false); }}
-        >
-          <span>Aperçu</span>
-        </button>
-
-        <button 
-          className={`mobile-bottom-btn ${dragMode ? "active" : ""}`}
-          onClick={() => { setMobileView("preview"); setDragMode(!dragMode); }}
-        >
-          <span>{dragMode ? "Posé" : "Déplacer"}</span>
-        </button>
-
-        <button 
-          className="mobile-bottom-btn"
-          onClick={() => {
-            const nextIdx = (THEMES.indexOf(activeTheme) + 1) % THEMES.length;
-            setActiveTheme(THEMES[nextIdx]);
-          }}
-        >
-          <span>Thème</span>
-        </button>
-
-        <button 
-          className="mobile-bottom-btn"
-          onClick={handleExportPDF}
-        >
-          <span>Export PDF</span>
-        </button>
       </div>
     </div>
   );
