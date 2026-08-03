@@ -3,109 +3,172 @@ import React from "react";
 /**
  * CoverPagePrestige
  * Style de couverture "Institutionnelle & Cadre Prestige" pour RapportGenerator.
- * Dessins d'angles (volutes) et bordures ornementales vectorielles nettes et haute visibilité.
+ * Architecture Full-Page SVG Overlay pour garantie absolue du rendu des 4 coins lors de l'export PDF HD html2canvas.
  */
 
-function CornerOrnament({ position = "top-left", color = "#8f7bc4", inset = 26 }) {
-  let style = { position: "absolute", zIndex: 3, width: "130px", height: "130px", pointerEvents: "none" };
-
-  if (position === "top-left") {
-    style.top = `${inset - 16}px`;
-    style.left = `${inset - 16}px`;
-  } else if (position === "top-right") {
-    style.top = `${inset - 16}px`;
-    style.right = `${inset - 16}px`;
-    style.transform = "scaleX(-1)";
-  } else if (position === "bottom-right") {
-    style.bottom = `${inset - 16}px`;
-    style.right = `${inset - 16}px`;
-    style.transform = "scale(-1, -1)";
-  } else if (position === "bottom-left") {
-    style.bottom = `${inset - 16}px`;
-    style.left = `${inset - 16}px`;
-    style.transform = "scaleY(-1)";
-  }
+// Cadre Prestige Global SVG (Bordures + 4 Volutes d'Angles en 1 seul élément SVG 794x1123)
+function PrestigeCoverFrame({ color = "#8f7bc4", inset = 26, showVolutes = true, borderStyle = "double", borderWidth = 2 }) {
+  const w = 794;
+  const h = 1123;
+  const outerInset = inset;
+  const innerInset = inset + 6;
+  const tripleInset = inset + 12;
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 160 160"
-      style={style}
-      width="130"
-      height="130"
-      fill="none"
+      viewBox={`0 0 ${w} ${h}`}
+      width={`${w}px`}
+      height={`${h}px`}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: `${w}px`,
+        height: `${h}px`,
+        pointerEvents: "none",
+        zIndex: 3
+      }}
     >
-      <path d="M6 60 V6 H60" stroke={color} strokeWidth="2.8" />
-      <path d="M14 60 V14 H60" stroke={color} strokeWidth="1.8" />
-      <path
-        d="M10 55
-           C 10 30, 30 10, 55 10
-           C 75 10, 85 22, 80 36
-           C 76 47, 62 48, 58 38
-           C 55 30, 63 24, 70 30"
-        stroke={color}
-        strokeWidth="3.2"
-        strokeLinecap="round"
-      />
-      <circle cx="70" cy="30" r="5" fill={color} />
-      <path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill={color} />
-      <path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 14 40 Z" fill={color} />
-      <path
-        d="M46 46 C 40 52, 30 52, 25 45 C 32 40, 42 40, 46 46 Z"
-        fill={color}
-        opacity="0.9"
-      />
-      <circle cx="26" cy="26" r="3.5" fill={color} />
+      {/* Cadres & Bordures Vectorielles */}
+      {borderStyle !== "none" && borderStyle !== "art_deco" && borderStyle !== "guilloche" && borderStyle !== "baroque" && (
+        <g stroke={color} fill="none">
+          {/* Outer Border */}
+          <rect
+            x={outerInset}
+            y={outerInset}
+            width={w - outerInset * 2}
+            height={h - outerInset * 2}
+            strokeWidth={borderStyle === "double" ? borderWidth + 1 : borderWidth}
+            strokeDasharray={borderStyle === "dashed" ? "8 5" : "none"}
+          />
+          {/* Inner Border (Double / Triple) */}
+          {(borderStyle === "double" || borderStyle === "triple") && (
+            <rect
+              x={innerInset}
+              y={innerInset}
+              width={w - innerInset * 2}
+              height={h - innerInset * 2}
+              strokeWidth="1.2"
+              opacity="0.85"
+            />
+          )}
+          {/* Triple Border */}
+          {borderStyle === "triple" && (
+            <rect
+              x={tripleInset}
+              y={tripleInset}
+              width={w - tripleInset * 2}
+              height={h - tripleInset * 2}
+              strokeWidth="1"
+              opacity="0.6"
+            />
+          )}
+        </g>
+      )}
+
+      {/* 4 VOLUTES D'ANGLES EN RENDU VECTORIEL NATIVEMENT INTÉGRÉ (TOP-LEFT, TOP-RIGHT, BOTTOM-LEFT, BOTTOM-RIGHT) */}
+      {showVolutes && (
+        <g stroke={color} fill="none">
+          {/* 1. TOP-LEFT CORNER */}
+          <g transform={`translate(${outerInset - 16}, ${outerInset - 16})`}>
+            <path d="M6 60 V6 H60" strokeWidth="2.8" />
+            <path d="M14 60 V14 H60" strokeWidth="1.8" />
+            <path d="M10 55 C 10 30, 30 10, 55 10 C 75 10, 85 22, 80 36 C 76 47, 62 48, 58 38 C 55 30, 63 24, 70 30" strokeWidth="3.2" strokeLinecap="round" />
+            <circle cx="70" cy="30" r="5" fill={color} />
+            <path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill={color} />
+            <path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 14 40 Z" fill={color} />
+            <path d="M46 46 C 40 52, 30 52, 25 45 C 32 40, 42 40, 46 46 Z" fill={color} opacity="0.9" />
+            <circle cx="26" cy="26" r="3.5" fill={color} />
+          </g>
+
+          {/* 2. TOP-RIGHT CORNER */}
+          <g transform={`translate(${w - outerInset + 16}, ${outerInset - 16}) scale(-1, 1)`}>
+            <path d="M6 60 V6 H60" strokeWidth="2.8" />
+            <path d="M14 60 V14 H60" strokeWidth="1.8" />
+            <path d="M10 55 C 10 30, 30 10, 55 10 C 75 10, 85 22, 80 36 C 76 47, 62 48, 58 38 C 55 30, 63 24, 70 30" strokeWidth="3.2" strokeLinecap="round" />
+            <circle cx="70" cy="30" r="5" fill={color} />
+            <path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill={color} />
+            <path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 14 40 Z" fill={color} />
+            <path d="M46 46 C 40 52, 30 52, 25 45 C 32 40, 42 40, 46 46 Z" fill={color} opacity="0.9" />
+            <circle cx="26" cy="26" r="3.5" fill={color} />
+          </g>
+
+          {/* 3. BOTTOM-LEFT CORNER */}
+          <g transform={`translate(${outerInset - 16}, ${h - outerInset + 16}) scale(1, -1)`}>
+            <path d="M6 60 V6 H60" strokeWidth="2.8" />
+            <path d="M14 60 V14 H60" strokeWidth="1.8" />
+            <path d="M10 55 C 10 30, 30 10, 55 10 C 75 10, 85 22, 80 36 C 76 47, 62 48, 58 38 C 55 30, 63 24, 70 30" strokeWidth="3.2" strokeLinecap="round" />
+            <circle cx="70" cy="30" r="5" fill={color} />
+            <path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill={color} />
+            <path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 14 40 Z" fill={color} />
+            <path d="M46 46 C 40 52, 30 52, 25 45 C 32 40, 42 40, 46 46 Z" fill={color} opacity="0.9" />
+            <circle cx="26" cy="26" r="3.5" fill={color} />
+          </g>
+
+          {/* 4. BOTTOM-RIGHT CORNER */}
+          <g transform={`translate(${w - outerInset + 16}, ${h - outerInset + 16}) scale(-1, -1)`}>
+            <path d="M6 60 V6 H60" strokeWidth="2.8" />
+            <path d="M14 60 V14 H60" strokeWidth="1.8" />
+            <path d="M10 55 C 10 30, 30 10, 55 10 C 75 10, 85 22, 80 36 C 76 47, 62 48, 58 38 C 55 30, 63 24, 70 30" strokeWidth="3.2" strokeLinecap="round" />
+            <circle cx="70" cy="30" r="5" fill={color} />
+            <path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill={color} />
+            <path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 14 40 Z" fill={color} />
+            <path d="M46 46 C 40 52, 30 52, 25 45 C 32 40, 42 40, 46 46 Z" fill={color} opacity="0.9" />
+            <circle cx="26" cy="26" r="3.5" fill={color} />
+          </g>
+        </g>
+      )}
     </svg>
   );
 }
 
-// Cadre Art Déco 1920 SVG
+// Cadre Art Déco 1920 SVG (Full-Page Overlay 794x1123)
 function ArtDecoFrame({ color = "#8f7bc4", inset = 24 }) {
-  const w = 794 - inset * 2;
-  const h = 1123 - inset * 2;
+  const w = 794;
+  const h = 1123;
+  const innerInset = inset + 10;
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      style={{ position: "absolute", inset: `${inset}px`, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
-      width={w}
-      height={h}
-      viewBox="0 0 740 1060"
-      fill="none"
+      viewBox={`0 0 ${w} ${h}`}
+      width={`${w}px`}
+      height={`${h}px`}
+      style={{ position: "absolute", top: 0, left: 0, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
     >
-      <rect x="8" y="8" width="724" height="1044" stroke={color} strokeWidth="2.5" />
-      <rect x="18" y="18" width="704" height="1024" stroke={color} strokeWidth="1.2" strokeDasharray="6 4" />
+      <rect x={inset} y={inset} width={w - inset * 2} height={h - inset * 2} stroke={color} strokeWidth="2.5" fill="none" />
+      <rect x={innerInset} y={innerInset} width={w - innerInset * 2} height={h - innerInset * 2} stroke={color} strokeWidth="1.2" strokeDasharray="6 4" fill="none" />
 
       {/* Coins Art Déco */}
-      <g stroke={color} strokeWidth="2.8">
-        <path d="M8 50 L50 8 M8 70 L70 8 M8 90 L90 8" />
-        <path d="M732 50 L690 8 M732 70 L670 8 M732 90 L650 8" />
-        <path d="M8 1010 L50 1052 M8 990 L70 1052 M8 970 L90 1052" />
-        <path d="M732 1010 L690 1052 M732 990 L670 1052 M732 970 L650 1052" />
+      <g stroke={color} strokeWidth="2.8" fill="none">
+        <path d={`M${inset} ${inset + 40} L${inset + 40} ${inset} M${inset} ${inset + 60} L${inset + 60} ${inset} M${inset} ${inset + 80} L${inset + 80} ${inset}`} />
+        <path d={`M${w - inset} ${inset + 40} L${w - inset - 40} ${inset} M${w - inset} ${inset + 60} L${w - inset - 60} ${inset} M${w - inset} ${inset + 80} L${w - inset - 80} ${inset}`} />
+        <path d={`M${inset} ${h - inset - 40} L${inset + 40} ${h - inset} M${inset} ${h - inset - 60} L${inset + 60} ${h - inset} M${inset} ${h - inset - 80} L${inset + 80} ${h - inset}`} />
+        <path d={`M${w - inset} ${h - inset - 40} L${w - inset - 40} ${h - inset} M${w - inset} ${h - inset - 60} L${w - inset - 60} ${h - inset} M${w - inset} ${h - inset - 80} L${w - inset - 80} ${h - inset}`} />
       </g>
     </svg>
   );
 }
 
-// Cadre Guilloché Banque Gravure SVG
+// Cadre Guilloché Banque Gravure SVG (Full-Page Overlay 794x1123)
 function GuillocheFrame({ color = "#8f7bc4", inset = 24 }) {
-  const w = 794 - inset * 2;
-  const h = 1123 - inset * 2;
+  const w = 794;
+  const h = 1123;
+  const innerInset = inset + 10;
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      style={{ position: "absolute", inset: `${inset}px`, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
-      width={w}
-      height={h}
-      viewBox="0 0 740 1060"
-      fill="none"
+      viewBox={`0 0 ${w} ${h}`}
+      width={`${w}px`}
+      height={`${h}px`}
+      style={{ position: "absolute", top: 0, left: 0, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
     >
-      <rect x="10" y="10" width="720" height="1040" stroke={color} strokeWidth="3" />
-      <rect x="20" y="20" width="700" height="1020" stroke={color} strokeWidth="1.5" />
+      <rect x={inset} y={inset} width={w - inset * 2} height={h - inset * 2} stroke={color} strokeWidth="3" fill="none" />
+      <rect x={innerInset} y={innerInset} width={w - innerInset * 2} height={h - innerInset * 2} stroke={color} strokeWidth="1.5" fill="none" />
       
       {/* Rosaces Guillochées */}
-      {[[30, 30], [710, 30], [30, 1030], [710, 1030]].map(([cx, cy], i) => (
-        <g key={i}>
+      {[[inset + 20, inset + 20], [w - inset - 20, inset + 20], [inset + 20, h - inset - 20], [w - inset - 20, h - inset - 20]].map(([cx, cy], i) => (
+        <g key={i} fill="none">
           <circle cx={cx} cy={cy} r="18" stroke={color} strokeWidth="1.5" />
           <circle cx={cx} cy={cy} r="12" stroke={color} strokeWidth="1" strokeDasharray="3 3" />
           <circle cx={cx} cy={cy} r="5" fill={color} />
@@ -115,27 +178,29 @@ function GuillocheFrame({ color = "#8f7bc4", inset = 24 }) {
   );
 }
 
-// Cadre Baroque Sculpté SVG
+// Cadre Baroque Sculpté SVG (Full-Page Overlay 794x1123)
 function BaroqueFrame({ color = "#8f7bc4", inset = 24 }) {
-  const w = 794 - inset * 2;
-  const h = 1123 - inset * 2;
+  const w = 794;
+  const h = 1123;
+  const innerInset = inset + 12;
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      style={{ position: "absolute", inset: `${inset}px`, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
-      width={w}
-      height={h}
-      viewBox="0 0 740 1060"
-      fill="none"
+      viewBox={`0 0 ${w} ${h}`}
+      width={`${w}px`}
+      height={`${h}px`}
+      style={{ position: "absolute", top: 0, left: 0, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
     >
-      <rect x="12" y="12" width="716" height="1036" stroke={color} strokeWidth="3" rx="8" />
-      <rect x="24" y="24" width="692" height="1012" stroke={color} strokeWidth="1.5" rx="6" />
+      <rect x={inset} y={inset} width={w - inset * 2} height={h - inset * 2} stroke={color} strokeWidth="3" rx="8" fill="none" />
+      <rect x={innerInset} y={innerInset} width={w - innerInset * 2} height={h - innerInset * 2} stroke={color} strokeWidth="1.5" rx="6" fill="none" />
 
       {/* Fleurots d'angle */}
-      <path d="M12 40 C 30 40, 40 30, 40 12" stroke={color} strokeWidth="3" fill="none" />
-      <path d="M728 40 C 710 40, 700 30, 700 12" stroke={color} strokeWidth="3" fill="none" />
-      <path d="M12 1020 C 30 1020, 40 1030, 40 1048" stroke={color} strokeWidth="3" fill="none" />
-      <path d="M728 1020 C 710 1020, 700 1030, 700 1048" stroke={color} strokeWidth="3" fill="none" />
+      <g stroke={color} strokeWidth="3" fill="none">
+        <path d={`M${inset} ${inset + 30} C ${inset + 20} ${inset + 20}, ${inset + 20} ${inset + 20}, ${inset + 30} ${inset}`} />
+        <path d={`M${w - inset} ${inset + 30} C ${w - inset - 20} ${inset + 20}, ${w - inset - 20} ${inset + 20}, ${w - inset - 30} ${inset}`} />
+        <path d={`M${inset} ${h - inset - 30} C ${inset + 20} ${h - inset - 20}, ${inset + 20} ${h - inset - 20}, ${inset + 30} ${h - inset}`} />
+        <path d={`M${w - inset} ${h - inset - 30} C ${w - inset - 20} ${h - inset - 20}, ${w - inset - 20} ${h - inset - 20}, ${w - inset - 30} ${h - inset}`} />
+      </g>
     </svg>
   );
 }
@@ -236,64 +301,21 @@ export default function CoverPagePrestige({
         />
       )}
 
-      {/* Formes et Styles de Bordures Graphiques */}
-      {borderStyle === "art_deco" && <ArtDecoFrame color={ornamentColor} inset={borderInset} />}
-      {borderStyle === "guilloche" && <GuillocheFrame color={ornamentColor} inset={borderInset} />}
-      {borderStyle === "baroque" && <BaroqueFrame color={ornamentColor} inset={borderInset} />}
-
-      {/* Bordures CSS Standard & Multiples Filets */}
-      {borderStyle !== "none" && borderStyle !== "art_deco" && borderStyle !== "guilloche" && borderStyle !== "baroque" && (
-        <>
-          <div
-            style={{
-              position: "absolute",
-              inset: `${borderInset}px`,
-              borderStyle: borderStyle === "dashed" ? "dashed" : borderStyle === "groove" ? "groove" : borderStyle === "ridge" ? "ridge" : borderStyle === "triple" ? "solid" : "solid",
-              borderWidth: `${borderStyle === "double" ? borderWidth + 2 : borderStyle === "triple" ? borderWidth + 3 : borderWidth}px`,
-              borderColor: ornamentColor,
-              pointerEvents: "none",
-              zIndex: 2
-            }}
-          />
-          {(borderStyle === "double" || borderStyle === "triple") && (
-            <div
-              style={{
-                position: "absolute",
-                inset: `${borderInset + 6}px`,
-                borderStyle: "solid",
-                borderWidth: "1px",
-                borderColor: ornamentColor,
-                pointerEvents: "none",
-                zIndex: 2,
-                opacity: 0.8
-              }}
-            />
-          )}
-          {borderStyle === "triple" && (
-            <div
-              style={{
-                position: "absolute",
-                inset: `${borderInset + 12}px`,
-                borderStyle: "solid",
-                borderWidth: "1px",
-                borderColor: ornamentColor,
-                pointerEvents: "none",
-                zIndex: 2,
-                opacity: 0.6
-              }}
-            />
-          )}
-        </>
-      )}
-
-      {/* Volutes Ornementales aux 4 Coins (SVG Natively Rendered) */}
-      {showVolutes && (
-        <>
-          <CornerOrnament position="top-left" color={ornamentColor} inset={borderInset} />
-          <CornerOrnament position="top-right" color={ornamentColor} inset={borderInset} />
-          <CornerOrnament position="bottom-left" color={ornamentColor} inset={borderInset} />
-          <CornerOrnament position="bottom-right" color={ornamentColor} inset={borderInset} />
-        </>
+      {/* CADRE & 4 VOLUTES D'ANGLES INTEGRES EN UN SEUL SVG OVERLAY FULL PAGE (Garantie Rendu 4/4 dans html2canvas PDF Export) */}
+      {borderStyle === "art_deco" ? (
+        <ArtDecoFrame color={ornamentColor} inset={borderInset} />
+      ) : borderStyle === "guilloche" ? (
+        <GuillocheFrame color={ornamentColor} inset={borderInset} />
+      ) : borderStyle === "baroque" ? (
+        <BaroqueFrame color={ornamentColor} inset={borderInset} />
+      ) : (
+        <PrestigeCoverFrame
+          color={ornamentColor}
+          inset={borderInset}
+          showVolutes={showVolutes}
+          borderStyle={borderStyle}
+          borderWidth={borderWidth}
+        />
       )}
 
       {/* Contenu de la Couverture */}
