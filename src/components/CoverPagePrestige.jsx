@@ -294,11 +294,11 @@ export default function CoverPagePrestige({
         {/* TOP ROW : LOGO GAUCHE, INSTITUTION, LOGO DROIT */}
         <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
           {/* Rangée supérieure avec Logos Gauche et Droit */}
-          <div style={{ width: "100%", display: "grid", gridTemplateColumns: "120px 1fr 120px", alignItems: "center" }}>
+          <div style={{ width: "100%", display: "grid", gridTemplateColumns: `${Math.max(120, logoSize + 20)}px 1fr ${Math.max(120, logoSize + 20)}px`, alignItems: "center" }}>
             {/* Logo Gauche */}
             <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
               {d.logoLeftUrl ? (
-                <img src={d.logoLeftUrl} alt="Logo Gauche" style={{ height: `${logoSize}px`, objectFit: "contain" }} />
+                <img src={d.logoLeftUrl} alt="Logo Gauche" style={{ height: `${logoSize}px`, maxMaxHeight: "350px", objectFit: "contain" }} />
               ) : (
                 hasHeaderLogos && <GenericLogoPlaceholder label="LOGO G" />
               )}
@@ -308,7 +308,7 @@ export default function CoverPagePrestige({
             {!hasHeaderLogos && (
               <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "center", marginBottom: "8px" }}>
                 {d.logoUrl ? (
-                  <img src={d.logoUrl} alt="Logo" style={{ height: `${logoSize}px`, objectFit: "contain" }} />
+                  <img src={d.logoUrl} alt="Logo" style={{ height: `${logoSize}px`, maxMaxHeight: "350px", objectFit: "contain" }} />
                 ) : (
                   <GenericLogoPlaceholder label="LOGO" />
                 )}
@@ -318,7 +318,7 @@ export default function CoverPagePrestige({
             {/* Logo Droit */}
             <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gridColumn: "3" }}>
               {d.logoRightUrl ? (
-                <img src={d.logoRightUrl} alt="Logo Droit" style={{ height: `${logoSize}px`, objectFit: "contain" }} />
+                <img src={d.logoRightUrl} alt="Logo Droit" style={{ height: `${logoSize}px`, maxMaxHeight: "350px", objectFit: "contain" }} />
               ) : (
                 hasHeaderLogos && <GenericLogoPlaceholder label="LOGO D" />
               )}
@@ -338,6 +338,11 @@ export default function CoverPagePrestige({
               {" : "}
               {d.speciality || "1ᵉʳ année ASSP"}
             </p>
+          </div>
+
+          {/* LIGNE DE SÉPARATION ÉLÉGANTE ENTRE SPÉCIALITÉ ET THÈME */}
+          <div style={{ width: "70%", height: "2px", background: `linear-gradient(90deg, transparent 0%, ${ornamentColor} 30%, ${ornamentColor} 70%, transparent 100%)`, margin: "18px auto 8px auto", position: "relative", opacity: 0.85 }}>
+            <span style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "8px", height: "8px", borderRadius: "50%", backgroundColor: ornamentColor, border: "2px solid #ffffff" }} />
           </div>
         </div>
 

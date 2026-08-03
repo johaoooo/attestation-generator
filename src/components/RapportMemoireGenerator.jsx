@@ -442,7 +442,27 @@ export default function RapportMemoireGenerator({ onBack }) {
 
                   <div className="input-group">
                     <label>Taille des Logos ({logoSize}px)</label>
-                    <input type="range" min={50} max={150} value={logoSize} onChange={(e) => setLogoSize(Number(e.target.value))} />
+                    <input type="range" min={50} max={280} value={logoSize} onChange={(e) => setLogoSize(Number(e.target.value))} />
+                    
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "6px" }}>
+                      {[
+                        { label: "Moyen", size: 80 },
+                        { label: "Grand", size: 130 },
+                        { label: "Géant", size: 180 },
+                        { label: "XXL", size: 230 },
+                        { label: "Maxi XL", size: 280 }
+                      ].map((preset) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          className={`chip ${logoSize === preset.size ? "active" : ""}`}
+                          onClick={() => setLogoSize(preset.size)}
+                          style={{ padding: "3px 8px", fontSize: "11px" }}
+                        >
+                          {preset.label} ({preset.size}px)
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
