@@ -3,35 +3,10 @@ import React from "react";
 /**
  * CoverPagePrestige
  * Style de couverture "Institutionnelle & Cadre Prestige" pour RapportGenerator.
- * Conversion Data URI des éléments SVG pour garantie de rendu 100% parfait lors de l'export PDF HD html2canvas.
+ * Dessins d'angles (volutes) et bordures ornementales vectorielles nettes et haute visibilité.
  */
 
-function getCornerOrnamentDataUri(color = "#8f7bc4") {
-  const enc = encodeURIComponent(color);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="140" height="140" fill="none"><path d="M6 60 V6 H60" stroke="${enc}" stroke-width="2.4"/><path d="M14 60 V14 H60" stroke="${enc}" stroke-width="1.6"/><path d="M10 55 C 10 30, 30 10, 55 10 C 75 10, 85 22, 80 36 C 76 47, 62 48, 58 38 C 55 30, 63 24, 70 30" stroke="${enc}" stroke-width="3" stroke-linecap="round"/><circle cx="70" cy="30" r="4.5" fill="${enc}"/><path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill="${enc}"/><path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 14 40 Z" fill="${enc}"/><path d="M46 46 C 40 52, 30 52, 25 45 C 32 40, 42 40, 46 46 Z" fill="${enc}" opacity="0.85"/><circle cx="26" cy="26" r="3" fill="${enc}" opacity="0.85"/></svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
-
-function getArtDecoFrameDataUri(color = "#8f7bc4") {
-  const enc = encodeURIComponent(color);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 1060" width="740" height="1060" fill="none"><rect x="8" y="8" width="724" height="1044" stroke="${enc}" stroke-width="2"/><rect x="18" y="18" width="704" height="1024" stroke="${enc}" stroke-width="1" stroke-dasharray="6 4"/><g stroke="${enc}" stroke-width="2.5"><path d="M8 50 L50 8 M8 70 L70 8 M8 90 L90 8"/><path d="M732 50 L690 8 M732 70 L670 8 M732 90 L650 8"/><path d="M8 1010 L50 1052 M8 990 L70 1052 M8 970 L90 1052"/><path d="M732 1010 L690 1052 M732 990 L670 1052 M732 970 L650 1052"/></g></svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
-
-function getGuillocheFrameDataUri(color = "#8f7bc4") {
-  const enc = encodeURIComponent(color);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 1060" width="740" height="1060" fill="none"><rect x="10" y="10" width="720" height="1040" stroke="${enc}" stroke-width="3"/><rect x="20" y="20" width="700" height="1020" stroke="${enc}" stroke-width="1.5"/><g stroke="${enc}" stroke-width="1.5"><circle cx="30" cy="30" r="18"/><circle cx="710" cy="30" r="18"/><circle cx="30" cy="1030" r="18"/><circle cx="710" cy="1030" r="18"/><circle cx="30" cy="30" r="12" stroke-dasharray="3 3"/><circle cx="710" cy="30" r="12" stroke-dasharray="3 3"/><circle cx="30" cy="1030" r="12" stroke-dasharray="3 3"/><circle cx="710" cy="1030" r="12" stroke-dasharray="3 3"/><circle cx="30" cy="30" r="5" fill="${enc}"/><circle cx="710" cy="30" r="5" fill="${enc}"/><circle cx="30" cy="1030" r="5" fill="${enc}"/><circle cx="710" cy="1030" r="5" fill="${enc}"/></g></svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
-
-function getBaroqueFrameDataUri(color = "#8f7bc4") {
-  const enc = encodeURIComponent(color);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 1060" width="740" height="1060" fill="none"><rect x="12" y="12" width="716" height="1036" stroke="${enc}" stroke-width="3" rx="8"/><rect x="24" y="24" width="692" height="1012" stroke="${enc}" stroke-width="1.5" rx="6"/><path d="M12 40 C 30 40, 40 30, 40 12" stroke="${enc}" stroke-width="3" fill="none"/><path d="M728 40 C 710 40, 700 30, 700 12" stroke="${enc}" stroke-width="3" fill="none"/><path d="M12 1020 C 30 1020, 40 1030, 40 1048" stroke="${enc}" stroke-width="3" fill="none"/><path d="M728 1020 C 710 1020, 700 1030, 700 1048" stroke="${enc}" stroke-width="3" fill="none"/></svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
-
 function CornerOrnament({ position = "top-left", color = "#8f7bc4", inset = 26 }) {
-  const src = getCornerOrnamentDataUri(color);
   let style = { position: "absolute", zIndex: 3, width: "130px", height: "130px", pointerEvents: "none" };
 
   if (position === "top-left") {
@@ -52,50 +27,116 @@ function CornerOrnament({ position = "top-left", color = "#8f7bc4", inset = 26 }
   }
 
   return (
-    <img
-      src={src}
-      alt="Volute"
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 160 160"
       style={style}
-    />
+      width="130"
+      height="130"
+      fill="none"
+    >
+      <path d="M6 60 V6 H60" stroke={color} strokeWidth="2.8" />
+      <path d="M14 60 V14 H60" stroke={color} strokeWidth="1.8" />
+      <path
+        d="M10 55
+           C 10 30, 30 10, 55 10
+           C 75 10, 85 22, 80 36
+           C 76 47, 62 48, 58 38
+           C 55 30, 63 24, 70 30"
+        stroke={color}
+        strokeWidth="3.2"
+        strokeLinecap="round"
+      />
+      <circle cx="70" cy="30" r="5" fill={color} />
+      <path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill={color} />
+      <path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 14 40 Z" fill={color} />
+      <path
+        d="M46 46 C 40 52, 30 52, 25 45 C 32 40, 42 40, 46 46 Z"
+        fill={color}
+        opacity="0.9"
+      />
+      <circle cx="26" cy="26" r="3.5" fill={color} />
+    </svg>
   );
 }
 
+// Cadre Art Déco 1920 SVG
 function ArtDecoFrame({ color = "#8f7bc4", inset = 24 }) {
-  const src = getArtDecoFrameDataUri(color);
   const w = 794 - inset * 2;
   const h = 1123 - inset * 2;
   return (
-    <img
-      src={src}
-      alt="Cadre Art Déco"
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
       style={{ position: "absolute", inset: `${inset}px`, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
-    />
+      width={w}
+      height={h}
+      viewBox="0 0 740 1060"
+      fill="none"
+    >
+      <rect x="8" y="8" width="724" height="1044" stroke={color} strokeWidth="2.5" />
+      <rect x="18" y="18" width="704" height="1024" stroke={color} strokeWidth="1.2" strokeDasharray="6 4" />
+
+      {/* Coins Art Déco */}
+      <g stroke={color} strokeWidth="2.8">
+        <path d="M8 50 L50 8 M8 70 L70 8 M8 90 L90 8" />
+        <path d="M732 50 L690 8 M732 70 L670 8 M732 90 L650 8" />
+        <path d="M8 1010 L50 1052 M8 990 L70 1052 M8 970 L90 1052" />
+        <path d="M732 1010 L690 1052 M732 990 L670 1052 M732 970 L650 1052" />
+      </g>
+    </svg>
   );
 }
 
+// Cadre Guilloché Banque Gravure SVG
 function GuillocheFrame({ color = "#8f7bc4", inset = 24 }) {
-  const src = getGuillocheFrameDataUri(color);
   const w = 794 - inset * 2;
   const h = 1123 - inset * 2;
   return (
-    <img
-      src={src}
-      alt="Cadre Guilloché"
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
       style={{ position: "absolute", inset: `${inset}px`, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
-    />
+      width={w}
+      height={h}
+      viewBox="0 0 740 1060"
+      fill="none"
+    >
+      <rect x="10" y="10" width="720" height="1040" stroke={color} strokeWidth="3" />
+      <rect x="20" y="20" width="700" height="1020" stroke={color} strokeWidth="1.5" />
+      
+      {/* Rosaces Guillochées */}
+      {[[30, 30], [710, 30], [30, 1030], [710, 1030]].map(([cx, cy], i) => (
+        <g key={i}>
+          <circle cx={cx} cy={cy} r="18" stroke={color} strokeWidth="1.5" />
+          <circle cx={cx} cy={cy} r="12" stroke={color} strokeWidth="1" strokeDasharray="3 3" />
+          <circle cx={cx} cy={cy} r="5" fill={color} />
+        </g>
+      ))}
+    </svg>
   );
 }
 
+// Cadre Baroque Sculpté SVG
 function BaroqueFrame({ color = "#8f7bc4", inset = 24 }) {
-  const src = getBaroqueFrameDataUri(color);
   const w = 794 - inset * 2;
   const h = 1123 - inset * 2;
   return (
-    <img
-      src={src}
-      alt="Cadre Baroque"
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
       style={{ position: "absolute", inset: `${inset}px`, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
-    />
+      width={w}
+      height={h}
+      viewBox="0 0 740 1060"
+      fill="none"
+    >
+      <rect x="12" y="12" width="716" height="1036" stroke={color} strokeWidth="3" rx="8" />
+      <rect x="24" y="24" width="692" height="1012" stroke={color} strokeWidth="1.5" rx="6" />
+
+      {/* Fleurots d'angle */}
+      <path d="M12 40 C 30 40, 40 30, 40 12" stroke={color} strokeWidth="3" fill="none" />
+      <path d="M728 40 C 710 40, 700 30, 700 12" stroke={color} strokeWidth="3" fill="none" />
+      <path d="M12 1020 C 30 1020, 40 1030, 40 1048" stroke={color} strokeWidth="3" fill="none" />
+      <path d="M728 1020 C 710 1020, 700 1030, 700 1048" stroke={color} strokeWidth="3" fill="none" />
+    </svg>
   );
 }
 
@@ -245,7 +286,7 @@ export default function CoverPagePrestige({
         </>
       )}
 
-      {/* Volutes Ornementales aux 4 Coins (Data URI Image Tags - 100% Faithful Capture) */}
+      {/* Volutes Ornementales aux 4 Coins (SVG Natively Rendered) */}
       {showVolutes && (
         <>
           <CornerOrnament position="top-left" color={ornamentColor} inset={borderInset} />
