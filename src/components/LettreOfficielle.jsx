@@ -132,16 +132,16 @@ export default function LettreOfficielle({ data = {}, fontFamily = "'Georgia', '
       </div>
 
       {/* ===== CORPS DE LA LETTRE ===== */}
-      <div style={{ flex: 1, padding: "36px 56px 0 56px", fontSize: "14.5px", lineHeight: "1.55", zIndex: 2, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+      <div style={{ flex: 1, padding: "54px 56px 0 56px", fontSize: "14.5px", lineHeight: "1.55", zIndex: 2, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
         <div>
-          {/* Référence + Destinataire/Date sur la même ligne */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "32px" }}>
+          {/* Référence + Destinataire/Date sur la même ligne (Alignement Gauche sur la colonne de droite) */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "36px" }}>
             <p style={{ fontSize: "13px", fontWeight: "700", margin: 0 }}>RÉF. : {d.reference}</p>
-            <div style={{ textAlign: "right", maxWidth: "320px" }}>
-              <p style={{ margin: "0 0 4px 0", fontWeight: "600" }}>{d.lieuDate}</p>
-              <p style={{ textAlign: "left", margin: "4px 0 2px 0", fontWeight: "700" }}>A</p>
+            <div style={{ textAlign: "left", width: "320px", marginLeft: "auto" }}>
+              <p style={{ margin: "0 0 8px 0", fontWeight: "600" }}>{d.lieuDate}</p>
+              <p style={{ margin: "8px 0 2px 0", fontWeight: "700" }}>A</p>
               {d.destinataire.map((line, i) => (
-                <p key={i} style={{ textAlign: "left", margin: 0 }}>
+                <p key={i} style={{ margin: 0 }}>
                   {line}
                 </p>
               ))}
