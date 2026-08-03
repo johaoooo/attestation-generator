@@ -311,13 +311,13 @@ export default function CourrierGenerator({ onBack }) {
       <!-- RÉFÉRENCE ET DESTINATAIRE ALIGNÉS SUR LA MÊME LIGNE -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100.0%;">
         <tr>
-          <td width="48%" align="left" valign="top">
+          <td width="42%" align="left" valign="top">
             <p style="font-size:10.5pt; font-weight:bold; margin:0;">RÉF. : ${data.reference || "002/COMAFA/AMAF/FIMA-PN/2026"}</p>
           </td>
-          <td width="52%" align="left" valign="top" style="padding-left:25pt;">
+          <td width="58%" align="left" valign="top" style="padding-left:15pt; white-space:nowrap;">
             <p style="font-size:10.5pt; font-weight:bold; margin:0 0 4pt 0;">${data.villeDate || "Porto-Novo, le 15 juillet 2026"}</p>
             <p style="font-size:10.5pt; font-weight:bold; margin:4pt 0 2pt 0;">A</p>
-            ${destLines.map(line => `<p style="font-size:10.5pt; margin:0;">${line}</p>`).join('')}
+            ${destLines.map(line => `<p style="font-size:10.5pt; margin:0; white-space:nowrap;">${line}</p>`).join('')}
           </td>
         </tr>
       </table>
