@@ -384,8 +384,8 @@ export default function RapportMemoireGenerator({ onBack }) {
                 </div>
 
                 <div className="input-group">
-                  <label>Label du Sujet (ex: Exposé sur / Mémoire sur)</label>
-                  <input type="text" name="exposeLabel" value={data.exposeLabel || "Exposé sur"} onChange={handleChange} />
+                  <label>Label du Sujet / Titre (Centré)</label>
+                  <input type="text" name="exposeLabel" value={data.exposeLabel || "THÈME :"} onChange={handleChange} placeholder="ex: THÈME :" />
                 </div>
 
                 <div className="input-group">
@@ -500,13 +500,17 @@ export default function RapportMemoireGenerator({ onBack }) {
                   </div>
 
                   <div className="input-group">
-                    <label>Style de Bordure</label>
+                    <label>Style & Forme de Bordure Graphique</label>
                     <select value={borderStyle} onChange={(e) => setBorderStyle(e.target.value)}>
-                      <option value="double">Double Royal (Filet Double)</option>
+                      <option value="double">Double Royal (Filet Double + Volutes)</option>
+                      <option value="triple">Triple Prestige (Trois Filets D'Honneur)</option>
+                      <option value="art_deco">Art Déco 1920 (Angles Sculptés & Biseautés)</option>
+                      <option value="guilloche">Guilloché Banque (Gravure & Rosaces)</option>
+                      <option value="baroque">Baroque Sculpté (Fleurots d'Angle)</option>
                       <option value="solid">Simple Épuré</option>
-                      <option value="dashed">Pointillé Luxe</option>
-                      <option value="groove">Groove 3D</option>
-                      <option value="ridge">Ridge 3D</option>
+                      <option value="dashed">Pointillé Luxe (Rangée Perlée)</option>
+                      <option value="groove">Groove 3D Sculpté</option>
+                      <option value="ridge">Ridge 3D Relief</option>
                       <option value="none">Sans Bordure</option>
                     </select>
                   </div>

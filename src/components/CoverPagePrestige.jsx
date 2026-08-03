@@ -3,12 +3,12 @@ import React from "react";
 /**
  * CoverPagePrestige
  * Style de couverture "Institutionnelle & Cadre Prestige" pour RapportGenerator.
- * Supporte : 
- * - Logos haut-gauche et haut-droite (et logo central)
+ * Supporte :
+ * - Remplacement de "Exposé sur" par "THÈME :" Centré
+ * - Plusieurs formes et styles de bordures graphiques (Art Déco, Guilloché, Baroque, Triple Prestige, etc.)
+ * - Double logos haut-gauche et haut-droite (et logo central)
  * - Déplacement vers le bas du nom de l'établissement
  * - Agrandissement à volonté de l'espace du thème / bannière de titre
- * - Image de fond / Filigrane
- * - Styles de bordures & volutes ornementales
  */
 
 function CornerOrnament({ className, style, color = "#8f7bc4" }) {
@@ -35,13 +35,78 @@ function CornerOrnament({ className, style, color = "#8f7bc4" }) {
       />
       <circle cx="70" cy="30" r="4.5" fill={color} />
       <path d="M40 14 C 46 6, 56 6, 60 14 C 54 18, 46 18, 40 14 Z" fill={color} />
-      <path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 40 14 Z" fill={color} />
+      <path d="M14 40 C 6 46, 6 56, 14 60 C 54 18, 46 18, 14 40 Z" fill={color} />
       <path
         d="M46 46 C 40 52, 30 52, 25 45 C 32 40, 42 40, 46 46 Z"
         fill={color}
         opacity="0.85"
       />
       <circle cx="26" cy="26" r="3" fill={color} opacity="0.85" />
+    </svg>
+  );
+}
+
+// Cadre Art Déco 1920 SVG
+function ArtDecoFrame({ color = "#8f7bc4", inset = 24 }) {
+  return (
+    <svg
+      style={{ position: "absolute", inset: `${inset}px`, width: `calc(100% - ${inset * 2}px)`, height: `calc(100% - ${inset * 2}px)`, pointerEvents: "none", zIndex: 2 }}
+      viewBox="0 0 740 1060"
+      fill="none"
+    >
+      <rect x="8" y="8" width="724" height="1044" stroke={color} strokeWidth="2" />
+      <rect x="18" y="18" width="704" height="1024" stroke={color} strokeWidth="1" strokeDasharray="6 4" />
+
+      {/* Coins Art Déco */}
+      <g stroke={color} strokeWidth="2.5">
+        <path d="M8 50 L50 8 M8 70 L70 8 M8 90 L90 8" />
+        <path d="M732 50 L690 8 M732 70 L670 8 M732 90 L650 8" />
+        <path d="M8 1010 L50 1052 M8 990 L70 1052 M8 970 L90 1052" />
+        <path d="M732 1010 L690 1052 M732 990 L670 1052 M732 970 L650 1052" />
+      </g>
+    </svg>
+  );
+}
+
+// Cadre Guilloché Banque Gravure SVG
+function GuillocheFrame({ color = "#8f7bc4", inset = 24 }) {
+  return (
+    <svg
+      style={{ position: "absolute", inset: `${inset}px`, width: `calc(100% - ${inset * 2}px)`, height: `calc(100% - ${inset * 2}px)`, pointerEvents: "none", zIndex: 2 }}
+      viewBox="0 0 740 1060"
+      fill="none"
+    >
+      <rect x="10" y="10" width="720" height="1040" stroke={color} strokeWidth="3" />
+      <rect x="20" y="20" width="700" height="1020" stroke={color} strokeWidth="1.5" />
+      
+      {/* Rosaces Guillochées */}
+      {[[30, 30], [710, 30], [30, 1030], [710, 1030]].map(([cx, cy], i) => (
+        <g key={i}>
+          <circle cx={cx} cy={cy} r="18" stroke={color} strokeWidth="1.5" />
+          <circle cx={cx} cy={cy} r="12" stroke={color} strokeWidth="1" strokeDasharray="3 3" />
+          <circle cx={cx} cy={cy} r="5" fill={color} />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+// Cadre Baroque Sculpté SVG
+function BaroqueFrame({ color = "#8f7bc4", inset = 24 }) {
+  return (
+    <svg
+      style={{ position: "absolute", inset: `${inset}px`, width: `calc(100% - ${inset * 2}px)`, height: `calc(100% - ${inset * 2}px)`, pointerEvents: "none", zIndex: 2 }}
+      viewBox="0 0 740 1060"
+      fill="none"
+    >
+      <rect x="12" y="12" width="716" height="1036" stroke={color} strokeWidth="3" rx="8" />
+      <rect x="24" y="24" width="692" height="1012" stroke={color} strokeWidth="1.5" rx="6" />
+
+      {/* Fleurots d'angle */}
+      <path d="M12 40 C 30 40, 40 30, 40 12" stroke={color} strokeWidth="3" fill="none" />
+      <path d="M728 40 C 710 40, 700 30, 700 12" stroke={color} strokeWidth="3" fill="none" />
+      <path d="M12 1020 C 30 1020, 40 1030, 40 1048" stroke={color} strokeWidth="3" fill="none" />
+      <path d="M728 1020 C 710 1020, 700 1030, 700 1048" stroke={color} strokeWidth="3" fill="none" />
     </svg>
   );
 }
@@ -72,7 +137,7 @@ const defaultData = {
   instituteSubtitle: "SAHNOUNE LAKHDAR BECHAR",
   specialityLabel: "Spécialité",
   speciality: "1ᵉʳ année ASSP",
-  exposeLabel: "Exposé sur",
+  exposeLabel: "THÈME :",
   title: "La Planification familiale",
   preparedByLabel: "Préparé par",
   students: ["HAMADA ASMA", "HAIDAS MEBAREKA", "HAMIDAOUI MERIEM", "HOUCINI MOUNA"],
@@ -142,21 +207,26 @@ export default function CoverPagePrestige({
         />
       )}
 
-      {/* Cadres & Bordures */}
-      {borderStyle !== "none" && (
+      {/* Formes et Styles de Bordures Graphiques */}
+      {borderStyle === "art_deco" && <ArtDecoFrame color={ornamentColor} inset={borderInset} />}
+      {borderStyle === "guilloche" && <GuillocheFrame color={ornamentColor} inset={borderInset} />}
+      {borderStyle === "baroque" && <BaroqueFrame color={ornamentColor} inset={borderInset} />}
+
+      {/* Bordures CSS Standard & Multiples Filets */}
+      {borderStyle !== "none" && borderStyle !== "art_deco" && borderStyle !== "guilloche" && borderStyle !== "baroque" && (
         <>
           <div
             style={{
               position: "absolute",
               inset: `${borderInset}px`,
-              borderStyle: borderStyle === "dashed" ? "dashed" : borderStyle === "groove" ? "groove" : borderStyle === "ridge" ? "ridge" : "solid",
-              borderWidth: `${borderStyle === "double" ? borderWidth + 2 : borderWidth}px`,
+              borderStyle: borderStyle === "dashed" ? "dashed" : borderStyle === "groove" ? "groove" : borderStyle === "ridge" ? "ridge" : borderStyle === "triple" ? "solid" : "solid",
+              borderWidth: `${borderStyle === "double" ? borderWidth + 2 : borderStyle === "triple" ? borderWidth + 3 : borderWidth}px`,
               borderColor: ornamentColor,
               pointerEvents: "none",
               zIndex: 2
             }}
           />
-          {borderStyle === "double" && (
+          {(borderStyle === "double" || borderStyle === "triple") && (
             <div
               style={{
                 position: "absolute",
@@ -167,6 +237,20 @@ export default function CoverPagePrestige({
                 pointerEvents: "none",
                 zIndex: 2,
                 opacity: 0.8
+              }}
+            />
+          )}
+          {borderStyle === "triple" && (
+            <div
+              style={{
+                position: "absolute",
+                inset: `${borderInset + 12}px`,
+                borderStyle: "solid",
+                borderWidth: "1px",
+                borderColor: ornamentColor,
+                pointerEvents: "none",
+                zIndex: 2,
+                opacity: 0.6
               }}
             />
           )}
@@ -257,10 +341,22 @@ export default function CoverPagePrestige({
           </div>
         </div>
 
-        {/* TITLE BANNER GROUP (Espace du Thème agrandissable à volonté) */}
+        {/* TITLE BANNER GROUP (LABEL "THÈME :" CENTRÉ & BANNIÈRE AGRANDISSABLE) */}
         <div style={{ width: "100%", margin: `${verticalGap}px 0` }}>
-          <p style={{ fontSize: "16px", fontWeight: "700", textAlign: "left", marginLeft: "8px", marginBottom: "6px", margin: "0 0 6px 8px" }}>
-            : {d.exposeLabel || "Exposé sur"}
+          {/* LABEL THÈME CENTRÉ */}
+          <p
+            style={{
+              fontSize: "18px",
+              fontWeight: "800",
+              textAlign: "center",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              color: "#1e293b",
+              marginBottom: "8px",
+              margin: "0 0 8px 0"
+            }}
+          >
+            {d.exposeLabel || "THÈME :"}
           </p>
 
           <div
@@ -278,7 +374,7 @@ export default function CoverPagePrestige({
               transition: "all 0.2s ease"
             }}
           >
-            <h1 style={{ color: "#ffffff", fontWeight: "700", fontSize: `${titleFontSize}px`, lineHeight: "1.25", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif", margin: 0 }}>
+            <h1 style={{ color: "#ffffff", fontWeight: "700", fontSize: `${titleFontSize}px`, lineHeight: "1.25", fontFamily: "'Plus Jakarta Sans', Arial, sans-serif", margin: 0, textAlign: "center" }}>
               {d.title || d.titre}
             </h1>
           </div>
