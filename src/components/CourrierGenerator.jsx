@@ -232,6 +232,140 @@ export default function CourrierGenerator({ onBack }) {
     }
   };
 
+  // Export Word (.doc) 100% Éditable dans Microsoft Word
+  const handleExportWord = () => {
+    const htmlHeader = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>${data.objet || "Lettre Officielle"}</title>
+        <!--[if gte mso 9]>
+        <xml>
+          <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+          </w:WordDocument>
+        </xml>
+        <![endif]-->
+        <style>
+          @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+          }
+          body {
+            font-family: 'Times New Roman', 'Georgia', serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #1a1a1a;
+          }
+          p { margin: 0 0 10pt 0; }
+          .header-table { width: 100%; margin-bottom: 25pt; }
+          .ref-table { width: 100%; margin-bottom: 25pt; }
+          .objet-box { font-weight: bold; margin-bottom: 18pt; font-size: 12.5pt; }
+          .salutation { font-weight: bold; margin-bottom: 14pt; }
+          .corps-text { text-align: justify; text-justify: inter-word; margin-bottom: 14pt; }
+          .signature-box { border: 2pt solid #1b2a6b; padding: 4pt 12pt; display: inline-block; font-weight: bold; color: #1b2a6b; }
+          .footer-text { font-size: 9.5pt; color: #334155; text-align: center; border-top: 1pt solid #cbd5e1; padding-top: 12pt; }
+          .bandeau-table { width: 100%; height: 18pt; margin-top: 10pt; }
+        </style>
+      </head>
+      <body>
+    `;
+
+    const destLines = Array.isArray(data.destinataire)
+      ? data.destinataire
+      : (typeof data.destinataire === "string" ? data.destinataire.split("\n") : [data.destinataireNom]);
+
+    const paragraphes = data.corps ? data.corps.split("\n\n") : [];
+
+    let bodyContent = `
+      <table class="header-table">
+        <tr>
+          <td align="left" valign="top">
+            ${logoLeftImg ? `<img src="${logoLeftImg}" height="${logoSize}" />` : '<b>LOGO ORGANISME</b>'}
+          </td>
+          <td align="right" valign="top">
+            ${logoRightImg ? `<img src="${logoRightImg}" height="${logoSize}" />` : ''}
+          </td>
+        </tr>
+      </table>
+
+      <br/><br/>
+
+      <table class="ref-table">
+        <tr>
+          <td align="left" valign="top" width="45%">
+            <b>RÉF. : ${data.reference || "002/COMAFA/AMAF/FIMA-PN/2026"}</b>
+          </td>
+          <td align="left" valign="top" width="55%">
+            <p><b>${data.villeDate || "Porto-Novo, le 15 juillet 2026"}</b></p>
+            <p><b>A</b></p>
+            ${destLines.map(line => `<p style="margin:0;">${line}</p>`).join('')}
+          </td>
+        </tr>
+      </table>
+
+      <br/>
+
+      <div class="objet-box">
+        ${data.objetLabel || "Objet"} : ${data.objet || ""}
+      </div>
+
+      <div class="salutation">
+        ${data.salutation || "Monsieur le Président,"}
+      </div>
+
+      <div>
+        ${paragraphes.map(p => `<p class="corps-text">${p}</p>`).join('')}
+      </div>
+
+      <br/>
+
+      <div align="right">
+        <p><i>${data.faitA || `Fait à ${data.villeDate}`}</i></p>
+        <br/>
+        ${signatureImg ? `<img src="${signatureImg}" height="55" /><br/>` : ''}
+        <div class="signature-box">
+          ${data.signataireNom || "TOSSA Afiavi G. Honorine"}
+        </div>
+        <p><b>${data.signataireTitre || "La Coordonnatrice"}</b></p>
+      </div>
+
+      <br/><br/>
+
+      <div class="footer-text">
+        <p><b>${footer.ligne1 || ""}</b></p>
+        <p>${footer.ligne2 || ""}</p>
+        <p>${footer.ligne3 || ""}</p>
+      </div>
+
+      <table class="bandeau-table">
+        <tr>
+          <td style="background-color: ${bandeauCouleurs[0] || "#0f9b4f"}; width: 33%;"></td>
+          <td style="background-color: ${bandeauCouleurs[1] || "#f4d02c"}; width: 33%;"></td>
+          <td style="background-color: ${bandeauCouleurs[2] || "#d61a2c"}; width: 34%;"></td>
+        </tr>
+      </table>
+    `;
+
+    const htmlFooter = `</body></html>`;
+    const sourceHTML = htmlHeader + bodyContent + htmlFooter;
+
+    const blob = new Blob(['\ufeff', sourceHTML], {
+      type: 'application/msword'
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Lettre_Officielle_${(data.reference || "002_COMAFA").replace(/[^a-zA-Z0-9]/g, "_")}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="wrap">
       <style>{`
@@ -268,6 +402,8 @@ export default function CourrierGenerator({ onBack }) {
         .btn-secondary:hover { background: #E2E8F0; }
         .btn-pdf { background: #DC2626; color: #FFFFFF; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2); }
         .btn-pdf:hover { background: #B91C1C; transform: translateY(-1px); }
+        .btn-word { background: #1E40AF; color: #FFFFFF; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2); }
+        .btn-word:hover { background: #1E3A8A; transform: translateY(-1px); }
 
         .preview-area { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; min-width: 0; }
         .action-bar { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 8px 16px; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); flex-wrap: wrap; }
@@ -645,6 +781,10 @@ export default function CourrierGenerator({ onBack }) {
                   ← Accueil
                 </button>
               )}
+
+              <button type="button" className="btn btn-word" onClick={handleExportWord}>
+                📝 Télécharger Word (.doc)
+              </button>
 
               <button type="button" className="btn btn-pdf" onClick={handleExportPDF} disabled={isDownloadingPDF}>
                 {isDownloadingPDF ? "⏳ PDF..." : "📄 Télécharger PDF"}
