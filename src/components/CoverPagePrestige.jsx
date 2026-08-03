@@ -3,22 +3,39 @@ import React from "react";
 /**
  * CoverPagePrestige
  * Style de couverture "Institutionnelle & Cadre Prestige" pour RapportGenerator.
- * Supporte :
- * - Remplacement de "Exposé sur" par "THÈME :" Centré
- * - Plusieurs formes et styles de bordures graphiques (Art Déco, Guilloché, Baroque, Triple Prestige, etc.)
- * - Double logos haut-gauche et haut-droite (et logo central)
- * - Déplacement vers le bas du nom de l'établissement
- * - Agrandissement à volonté de l'espace du thème / bannière de titre
+ * Rendu SVG hyper-fidèle compatible html2canvas & export PDF HD sans perte de volutes ni bordures.
  */
 
-function CornerOrnament({ className, style, color = "#8f7bc4" }) {
+function CornerOrnament({ position = "top-left", color = "#8f7bc4", inset = 26 }) {
+  let style = { position: "absolute", zIndex: 3, width: "130px", height: "130px", pointerEvents: "none" };
+  let transform = "";
+
+  if (position === "top-left") {
+    style.top = `${inset - 16}px`;
+    style.left = `${inset - 16}px`;
+  } else if (position === "top-right") {
+    style.top = `${inset - 16}px`;
+    style.right = `${inset - 16}px`;
+    transform = "rotate(90deg)";
+  } else if (position === "bottom-right") {
+    style.bottom = `${inset - 16}px`;
+    style.right = `${inset - 16}px`;
+    transform = "rotate(180deg)";
+  } else if (position === "bottom-left") {
+    style.bottom = `${inset - 16}px`;
+    style.left = `${inset - 16}px`;
+    transform = "rotate(270deg)";
+  }
+
+  style.transform = transform;
+
   return (
     <svg
+      xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 160 160"
-      className={className}
       style={style}
-      width="140"
-      height="140"
+      width="130"
+      height="130"
       fill="none"
     >
       <path d="M6 60 V6 H60" stroke={color} strokeWidth="2.4" />
@@ -48,9 +65,14 @@ function CornerOrnament({ className, style, color = "#8f7bc4" }) {
 
 // Cadre Art Déco 1920 SVG
 function ArtDecoFrame({ color = "#8f7bc4", inset = 24 }) {
+  const w = 794 - inset * 2;
+  const h = 1123 - inset * 2;
   return (
     <svg
-      style={{ position: "absolute", inset: `${inset}px`, width: `calc(100% - ${inset * 2}px)`, height: `calc(100% - ${inset * 2}px)`, pointerEvents: "none", zIndex: 2 }}
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ position: "absolute", inset: `${inset}px`, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
+      width={w}
+      height={h}
       viewBox="0 0 740 1060"
       fill="none"
     >
@@ -70,9 +92,14 @@ function ArtDecoFrame({ color = "#8f7bc4", inset = 24 }) {
 
 // Cadre Guilloché Banque Gravure SVG
 function GuillocheFrame({ color = "#8f7bc4", inset = 24 }) {
+  const w = 794 - inset * 2;
+  const h = 1123 - inset * 2;
   return (
     <svg
-      style={{ position: "absolute", inset: `${inset}px`, width: `calc(100% - ${inset * 2}px)`, height: `calc(100% - ${inset * 2}px)`, pointerEvents: "none", zIndex: 2 }}
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ position: "absolute", inset: `${inset}px`, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
+      width={w}
+      height={h}
       viewBox="0 0 740 1060"
       fill="none"
     >
@@ -93,9 +120,14 @@ function GuillocheFrame({ color = "#8f7bc4", inset = 24 }) {
 
 // Cadre Baroque Sculpté SVG
 function BaroqueFrame({ color = "#8f7bc4", inset = 24 }) {
+  const w = 794 - inset * 2;
+  const h = 1123 - inset * 2;
   return (
     <svg
-      style={{ position: "absolute", inset: `${inset}px`, width: `calc(100% - ${inset * 2}px)`, height: `calc(100% - ${inset * 2}px)`, pointerEvents: "none", zIndex: 2 }}
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ position: "absolute", inset: `${inset}px`, width: `${w}px`, height: `${h}px`, pointerEvents: "none", zIndex: 2 }}
+      width={w}
+      height={h}
       viewBox="0 0 740 1060"
       fill="none"
     >
@@ -113,7 +145,7 @@ function BaroqueFrame({ color = "#8f7bc4", inset = 24 }) {
 
 function GenericLogoPlaceholder({ label = "LOGO" }) {
   return (
-    <svg viewBox="0 0 80 100" width="65" height="80">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" width="65" height="80">
       <path d="M40 6 L40 60" stroke="#0e9488" strokeWidth="3" />
       <path
         d="M40 20 C 26 24, 26 36, 40 40 C 54 44, 54 56, 40 60"
@@ -257,22 +289,13 @@ export default function CoverPagePrestige({
         </>
       )}
 
-      {/* Volutes Ornementales aux 4 Coins */}
+      {/* Volutes Ornementales aux 4 Coins (Positions relatives explicites) */}
       {showVolutes && (
         <>
-          <CornerOrnament color={ornamentColor} style={{ position: "absolute", top: 0, left: 0, zIndex: 3 }} />
-          <CornerOrnament
-            color={ornamentColor}
-            style={{ position: "absolute", top: 0, right: 0, transform: "scaleX(-1)", zIndex: 3 }}
-          />
-          <CornerOrnament
-            color={ornamentColor}
-            style={{ position: "absolute", bottom: 0, left: 0, transform: "scaleY(-1)", zIndex: 3 }}
-          />
-          <CornerOrnament
-            color={ornamentColor}
-            style={{ position: "absolute", bottom: 0, right: 0, transform: "scale(-1,-1)", zIndex: 3 }}
-          />
+          <CornerOrnament position="top-left" color={ornamentColor} inset={borderInset} />
+          <CornerOrnament position="top-right" color={ornamentColor} inset={borderInset} />
+          <CornerOrnament position="bottom-left" color={ornamentColor} inset={borderInset} />
+          <CornerOrnament position="bottom-right" color={ornamentColor} inset={borderInset} />
         </>
       )}
 
@@ -298,7 +321,7 @@ export default function CoverPagePrestige({
             {/* Logo Gauche */}
             <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
               {d.logoLeftUrl ? (
-                <img src={d.logoLeftUrl} alt="Logo Gauche" style={{ height: `${logoSize}px`, maxMaxHeight: "350px", objectFit: "contain" }} />
+                <img src={d.logoLeftUrl} alt="Logo Gauche" style={{ height: `${logoSize}px`, maxHeight: "350px", objectFit: "contain" }} />
               ) : (
                 hasHeaderLogos && <GenericLogoPlaceholder label="LOGO G" />
               )}
@@ -308,7 +331,7 @@ export default function CoverPagePrestige({
             {!hasHeaderLogos && (
               <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "center", marginBottom: "8px" }}>
                 {d.logoUrl ? (
-                  <img src={d.logoUrl} alt="Logo" style={{ height: `${logoSize}px`, maxMaxHeight: "350px", objectFit: "contain" }} />
+                  <img src={d.logoUrl} alt="Logo" style={{ height: `${logoSize}px`, maxHeight: "350px", objectFit: "contain" }} />
                 ) : (
                   <GenericLogoPlaceholder label="LOGO" />
                 )}
@@ -318,7 +341,7 @@ export default function CoverPagePrestige({
             {/* Logo Droit */}
             <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gridColumn: "3" }}>
               {d.logoRightUrl ? (
-                <img src={d.logoRightUrl} alt="Logo Droit" style={{ height: `${logoSize}px`, maxMaxHeight: "350px", objectFit: "contain" }} />
+                <img src={d.logoRightUrl} alt="Logo Droit" style={{ height: `${logoSize}px`, maxHeight: "350px", objectFit: "contain" }} />
               ) : (
                 hasHeaderLogos && <GenericLogoPlaceholder label="LOGO D" />
               )}

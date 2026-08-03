@@ -260,7 +260,15 @@ export default function RapportMemoireGenerator({ onBack }) {
         const canvas = await html2canvas(pageEl, {
           scale: 2,
           useCORS: true,
+          allowTaint: true,
+          logging: false,
           backgroundColor: "#ffffff",
+          onclone: (clonedDoc) => {
+            const svgs = clonedDoc.querySelectorAll("svg");
+            svgs.forEach((svg) => {
+              svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            });
+          }
         });
         const imgData = canvas.toDataURL("image/jpeg", 0.98);
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
