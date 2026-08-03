@@ -163,7 +163,7 @@ export default function LettreOfficielle({
           {/* Référence + Destinataire/Date sur la même ligne (Alignement Gauche sur la colonne de droite) */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "36px" }}>
             <p style={{ fontSize: "13px", fontWeight: "700", margin: 0 }}>RÉF. : {d.reference}</p>
-            <div style={{ textAlign: "left", width: "320px", marginLeft: "auto" }}>
+            <div style={{ textAlign: "left", width: "290px", marginLeft: "auto", paddingLeft: "15px" }}>
               <p style={{ margin: "0 0 8px 0", fontWeight: "600" }}>{d.lieuDate}</p>
               <p style={{ margin: "8px 0 2px 0", fontWeight: "700" }}>A</p>
               {d.destinataire.map((line, i) => (
