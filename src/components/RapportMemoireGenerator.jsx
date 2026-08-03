@@ -1,61 +1,72 @@
 import React, { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { Download, ArrowLeft, BookOpen, Plus, Trash2, RefreshCw, Layers, CheckCircle2 } from "./Icons.jsx";
+import { Download, ArrowLeft, BookOpen, Plus, Trash2, RefreshCw, Layers, CheckCircle2, User, Award } from "./Icons.jsx";
+import CoverPagePrestige from "./CoverPagePrestige.jsx";
 
 const RAPPORT_PRESETS = [
   {
-    name: "🎓 Mémoire de Master en Génie Logiciel",
+    name: "🩺 Exposé Paramédical & Santé (Planification Familiale)",
+    coverStyle: "prestige_institutional",
     data: {
-      institution: "UNIVERSITÉ D'ABOMEY-CALAVI (UAC)",
-      faculte: "Institut de Formation et de Recherche en Informatique (IFRI)",
-      titre: "CONCEPTION ET MISE EN ŒUVRE D'UNE PLATEFORME INTELLIGENTE DE GÉNÉRATION ET DE VALIDATION DE DOCUMENTS OFFICIELS",
-      soustitre: "Mémoire de fin de cycle pour l'obtention du diplôme de Master en Génie Logiciel",
-      auteur: "Présenté par : TOSSA Afiavi Gbessito Honorine",
-      encadrant: "Sous la direction de : Dr. Koffi MENSAH (Maître de Conférences)",
-      annee: "Année Académique : 2025 - 2026",
-      lieuDate: "Cotonou, Bénin",
+      instituteName: "Institut national de la formation supérieure paramédicale",
+      instituteSubtitle: "SAHNOUNE LAKHDAR BECHAR",
+      specialityLabel: "Spécialité",
+      speciality: "1ᵉʳ année ASSP",
+      exposeLabel: "Exposé sur",
+      title: "La Planification familiale",
+      preparedByLabel: "Préparé par",
+      students: ["HAMADA ASMA", "HAIDAS MEBAREKA", "HAMIDAOUI MERIEM", "HOUCINI MOUNA"],
+      professorLabel: "Prof",
+      professor: "BENYOUCEF",
+      yearLabel: "Année pédagogique",
+      year: "2023/2024",
     },
     chapters: [
       {
         id: 1,
-        title: "Chapitre 1 : Introduction Générale et Contexte",
-        content: `Dans le contexte de la transformation numérique moderne, la gestion sécurisée et automatisée des documents officiels est devenue un enjeu stratégique pour les institutions d'enseignement et les organisations d'Afrique de l'Ouest.\n\nCe mémoire examine les défis liés à l'émission rapide, l'authentification et l'archivage d'attestations de formation, de courriers administratifs et de rapports académiques. L'objectif principal est d'apporter une solution logicielle performante, intuitive et hautement personnalisable.`,
+        title: "Chapitre 1 : Introduction et Définition de la Planification Familiale",
+        content: `La planification familiale est l'ensemble des moyens et méthodes mis à la disposition des personnes et des couples pour leur permettre de choisir librement le moment d'avoir des enfants et d'espacer les naissances.\n\nDans le domaine paramédical et de la santé publique, la planification familiale joue un rôle crucial dans la réduction de la mortalité maternelle et infantile, l'amélioration de la santé des femmes et le bien-être économique des foyers.`,
       },
       {
         id: 2,
-        title: "Chapitre 2 : Analyse des Besoins et Architecture Système",
-        content: `L'analyse des besoins fonctionnels fait ressortir la nécessité d'une interface WYSIWYG (What You See Is What You Get) permettant la prévisualisation en temps réel de tous les types de documents.\n\nDu point de vue de l'architecture, la solution s'appuie sur React.js et Vite pour le rendu côté client, couplé à une suite d'exportation vectorielle et d'outils de manipulation HTML2Canvas et jsPDF pour une fidélité absolue des rendus A4.`,
+        title: "Chapitre 2 : Méthodes Contraceptives et Rôle des Soignants",
+        content: `Les méthodes contraceptives se divisent principalement en plusieurs catégories :\n- Les méthodes hormonales (pilules, implants, injections).\n- Les méthodes de barrière (préservatifs, stérilets / DIU).\n- Les méthodes naturelles (observation du cycle).\n\nLe rôle des professionnels paramédicaux (soignants, infirmiers, sages-femmes) réside dans la sensibilisation, l'écoute sans jugement et le suivi adapté à chaque patiente.`,
       },
       {
         id: 3,
-        title: "Chapitre 3 : Résultats, Tests et Perspectives",
-        content: `Les tests d'utilisabilité menés auprès d'un panel de directeurs de formation ont démontré une réduction de 85% du temps de traitement nécessaire à l'émission d'une attestation ou d'un rapport complet.\n\nEn perspective, l'intégration de puces NFC et de signatures numériques cryptographiques permettra d'offrir une traçabilité totale contre les falsifications.`,
+        title: "Chapitre 3 : Conclusion et Recommandations Sanitaires",
+        content: `En conclusion, la promotion de la planification familiale constitue un pilier fondamental des politiques de santé publique.\n\nRecommandations principales :\n1. Renforcer l'éducation sanitaire dans les établissements scolaires et centres de santé.\n2. Assurer la disponibilité continue des contraceptifs dans les structures paramédicales.\n3. Former régulièrement les agents de santé aux nouvelles directives internationales.`,
       },
     ]
   },
   {
-    name: "💼 Rapport de Stage de Fin d'Études",
+    name: "🎓 Mémoire de Master en Génie Logiciel",
+    coverStyle: "prestige_institutional",
     data: {
-      institution: "INSTITUT AFI COLLECTION DU BÉNIN",
-      faculte: "Département des Sciences Informatiques & Digitales",
-      titre: "RAPPORT DE STAGE : DÉVELOPPEMENT ET DÉPLOIEMENT D'UNE APPLICATION DE GESTION DES ATTESTATIONS",
-      soustitre: "Rapport de fin de stage professionnel effectué au sein du studio créatif DocStudio",
-      auteur: "Rédigé par : AFI Gbessito Honorine",
-      encadrant: "Maître de stage : M. Johao DOSSEH (Directeur Technique)",
-      annee: "Période du Stage : Février - Juillet 2026",
-      lieuDate: "Cotonou, Bénin",
+      instituteName: "UNIVERSITÉ D'ABOMEY-CALAVI (UAC)",
+      instituteSubtitle: "Institut de Formation et de Recherche en Informatique (IFRI)",
+      specialityLabel: "Spécialité",
+      speciality: "Master 2 Génie Logiciel & SI",
+      exposeLabel: "Mémoire de fin d'études sur",
+      title: "Conception d'une Plateforme de Génération de Documents Officiels",
+      preparedByLabel: "Présenté par",
+      students: ["TOSSA Afiavi Gbessito Honorine"],
+      professorLabel: "Sous la direction de",
+      professor: "Dr. Koffi MENSAH",
+      yearLabel: "Année Académique",
+      year: "2025/2026",
     },
     chapters: [
       {
         id: 1,
-        title: "Chapitre 1 : Présentation de la Structure d'Accueil",
-        content: `La Maison AFI COLLECTION est une entreprise spécialisée dans l'ingénierie numérique et l'accompagnement des organisations dans la gestion des processus administratifs.\n\nAu cours de ce stage de 6 mois, j'ai été intégrée au pôle Développement Web & UI/UX avec pour mission principale la création du module de génération dynamique d'attestations et de documents administratifs.`,
+        title: "Chapitre 1 : Contexte et Problématique",
+        content: `La gestion et la génération automatisée de documents officiels (attestations, certificats, factures, rapports) posent des défis majeurs d'authenticité et d'ergonomie.\n\nCe travail propose une architecture web moderne basée sur React 19 et Vite pour garantir une prévisualisation WYSIWYG en temps réel et un export PDF HD conforme aux normes internationales.`,
       },
       {
         id: 2,
-        title: "Chapitre 2 : Travaux Réalisés et Difficultés Rencontrées",
-        content: `Mes activités principales ont porté sur :\n1. Le développement des composants de prévisualisation A4 en direct avec React.js.\n2. La mise en place du système d'exportation PDF haute définition via HTML2Canvas.\n3. L'optimisation des performances de rendu pour garantir un affichage fluide à 60 FPS.`,
+        title: "Chapitre 2 : Déploiement et Résultats",
+        content: `L'implémentation du studio créatif DocStudio a permis d'accélérer la production des documents officiels de 85% tout en maintenant un niveau d'esthétique de haute distinction.`,
       },
     ]
   }
@@ -63,45 +74,57 @@ const RAPPORT_PRESETS = [
 
 const RAPPORT_THEMES = [
   {
-    id: "classic-navy",
-    name: "Académique Navy",
-    primaryColor: "#0F172A",
-    accentColor: "#2563EB",
-    fontHeader: "'Cinzel', serif",
+    id: "violet-prestige",
+    name: "⚜️ Violet Impérial & Volutes (#8f7bc4)",
+    primaryColor: "#4A7FC1",
+    accentColor: "#4A7FC1",
+    ornamentColor: "#8F7BC4",
+    fontHeader: "'Times New Roman', serif",
   },
   {
-    id: "prestige-bordeaux",
-    name: "Prestige Bordeaux & Or",
-    primaryColor: "#450A0A",
-    accentColor: "#B8860B",
-    fontHeader: "'Playfair Display', serif",
+    id: "classic-navy",
+    name: "👑 Bleu Exécutif & Or (#0b1f4b)",
+    primaryColor: "#0B1F4B",
+    accentColor: "#0B1F4B",
+    ornamentColor: "#D4AF37",
+    fontHeader: "'Times New Roman', serif",
   },
   {
     id: "emerald-univ",
-    name: "Universitaire Émeraude",
+    name: "🌲 Émeraude Royale (#064e3b)",
     primaryColor: "#064E3B",
-    accentColor: "#059669",
-    fontHeader: "'Cinzel', serif",
+    accentColor: "#064E3B",
+    ornamentColor: "#10B981",
+    fontHeader: "'Times New Roman', serif",
+  },
+  {
+    id: "bordeaux-royal",
+    name: "🍷 Bordeaux Prestige (#581820)",
+    primaryColor: "#581820",
+    accentColor: "#581820",
+    ornamentColor: "#B8860B",
+    fontHeader: "'Times New Roman', serif",
   }
 ];
 
 export default function RapportMemoireGenerator({ onBack }) {
   const [data, setData] = useState({ ...RAPPORT_PRESETS[0].data });
   const [chapters, setChapters] = useState([ ...RAPPORT_PRESETS[0].chapters ]);
+  const [newStudent, setNewStudent] = useState("");
 
-  const [activeTab, setActiveTab] = useState("presets");
+  const [activeTab, setActiveTab] = useState("cover");
   const [activeTheme, setActiveTheme] = useState(RAPPORT_THEMES[0]);
-  const [showOrnaments, setShowOrnaments] = useState(true);
-  const [watermarkText, setWatermarkText] = useState("");
+  const [customAccentColor, setCustomAccentColor] = useState("");
+  const [customOrnamentColor, setCustomOrnamentColor] = useState("");
+  const [logoImg, setLogoImg] = useState(null);
+  
   const [zoomScale, setZoomScale] = useState(0.75);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
   const [mobileView, setMobileView] = useState("editor");
   const isMobile = windowWidth < 860;
-
-  const [logoImg, setLogoImg] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Auto zoom based on viewport width
   useEffect(() => {
     const updateAutoZoom = () => {
       const w = window.innerWidth;
@@ -121,6 +144,9 @@ export default function RapportMemoireGenerator({ onBack }) {
 
   const previewContainerRef = useRef(null);
 
+  const accentColor = customAccentColor || activeTheme.accentColor;
+  const ornamentColor = customOrnamentColor || activeTheme.ornamentColor;
+
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
@@ -137,6 +163,19 @@ export default function RapportMemoireGenerator({ onBack }) {
       reader.onload = (uploadEvent) => setLogoImg(uploadEvent.target.result);
       reader.readAsDataURL(file);
     }
+  };
+
+  const addStudent = () => {
+    if (newStudent.trim()) {
+      const current = Array.isArray(data.students) ? data.students : [];
+      setData({ ...data, students: [...current, newStudent.trim()] });
+      setNewStudent("");
+    }
+  };
+
+  const removeStudent = (idx) => {
+    const current = Array.isArray(data.students) ? data.students : [];
+    setData({ ...data, students: current.filter((_, i) => i !== idx) });
   };
 
   const addChapter = () => {
@@ -181,15 +220,16 @@ export default function RapportMemoireGenerator({ onBack }) {
         pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
       }
 
-      pdf.save(`Memoire_${data.titre.slice(0, 20).replace(/\s+/g, "_")}.pdf`);
+      pdf.save(`Rapport_${(data.title || "Document").slice(0, 20).replace(/\s+/g, "_")}.pdf`);
     } catch (err) {
       console.error("Erreur PDF Rapport:", err);
+      alert("Erreur lors de la génération du PDF.");
     } finally {
       setIsExporting(false);
     }
   };
 
-  const totalPages = 2 + chapters.length;
+  const studentsList = Array.isArray(data.students) ? data.students : [data.auteur || "Étudiant"];
 
   return (
     <div className="wrap">
@@ -207,378 +247,330 @@ export default function RapportMemoireGenerator({ onBack }) {
           className={`mobile-view-btn ${mobileView === "preview" ? "active" : ""}`}
           onClick={() => setMobileView("preview")}
         >
-          Aperçu ({Math.round(zoomScale * 100)}%)
+          Aperçu Rapport ({Math.round(zoomScale * 100)}%)
         </button>
       </div>
 
-      <div className="container">
-        {/* Left Sidebar Editor Panel */}
-        <div className={`editor-panel no-print ${isMobile && mobileView === "preview" ? "mobile-hide-editor" : ""}`}>
-          <div className="editor-header">
-            <h1>
-              <span>Générateur de Rapport & Mémoire</span>
-            </h1>
-            <p>Documents académiques multi-pages modifiables</p>
+      <div className={`workspace ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+        {/* LEFT SIDEBAR CONTROLS */}
+        <aside className={`sidebar ${isMobile && mobileView !== "editor" ? "mobile-hidden" : ""}`}>
+          <div className="sidebar-header">
+            <button className="btn btn-secondary btn-sm" onClick={onBack}>
+              <ArrowLeft className="w-4 h-4" /> Hub
+            </button>
+            <h2 style={{ fontSize: "16px", fontWeight: "800", color: "#1e293b", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
+              <BookOpen style={{ width: "20px", height: "20px", color: "#2563eb" }} /> Studio Rapports Multi-Pages
+            </h2>
           </div>
 
-          <div className="tabs">
-            <button
-              onClick={() => setActiveTab("presets")}
-              className={`tab-btn ${activeTab === "presets" ? "active" : ""}`}
-            >
-              Modèles
+          {/* TABS HEADER */}
+          <div className="sidebar-tabs">
+            <button className={`tab-btn ${activeTab === "presets" ? "active" : ""}`} onClick={() => setActiveTab("presets")}>
+              ✨ Presets
             </button>
-            <button
-              onClick={() => setActiveTab("garde")}
-              className={`tab-btn ${activeTab === "garde" ? "active" : ""}`}
-            >
-              Page de Garde
+            <button className={`tab-btn ${activeTab === "cover" ? "active" : ""}`} onClick={() => setActiveTab("cover")}>
+              🖼️ Couverture
             </button>
-            <button
-              onClick={() => setActiveTab("chapitres")}
-              className={`tab-btn ${activeTab === "chapitres" ? "active" : ""}`}
-            >
-              Chapitres
+            <button className={`tab-btn ${activeTab === "students" ? "active" : ""}`} onClick={() => setActiveTab("students")}>
+              👥 Équipe / Auteurs
             </button>
-            <button
-              onClick={() => setActiveTab("style")}
-              className={`tab-btn ${activeTab === "style" ? "active" : ""}`}
-            >
-              Thème & Ornements
+            <button className={`tab-btn ${activeTab === "chapters" ? "active" : ""}`} onClick={() => setActiveTab("chapters")}>
+              📑 Chapitres
+            </button>
+            <button className={`tab-btn ${activeTab === "style" ? "active" : ""}`} onClick={() => setActiveTab("style")}>
+              🎨 Thèmes & Style
             </button>
           </div>
 
-          <div className="tab-content">
-            {/* TAB 0: Presets */}
+          <div className="sidebar-content">
+            {/* TAB 1: PRESETS */}
             {activeTab === "presets" && (
               <div className="presets-box">
-                <label>⭐ Modèles de Mémoires & Rapports</label>
-                <div className="grid-1 gap-2" style={{ marginTop: "8px" }}>
-                  {RAPPORT_PRESETS.map((preset, idx) => (
+                <label style={{ color: "#2563eb", fontWeight: "700" }}>🚀 Modèles & Exposés Prêts à l'Emploi</label>
+                <p style={{ fontSize: "12px", color: "#64748b", margin: "4px 0 12px 0" }}>
+                  Sélectionnez un modèle pré-rempli pour vous inspirer et générer votre rapport avec page de garde.
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  {RAPPORT_PRESETS.map((p, idx) => (
                     <button
                       key={idx}
-                      onClick={() => loadPreset(preset)}
-                      className="chip hover-glow"
-                      style={{ textAlign: "left", padding: "10px 12px", width: "100%", borderRadius: "8px" }}
+                      type="button"
+                      className="chip"
+                      onClick={() => loadPreset(p)}
+                      style={{ textAlign: "left", padding: "10px 14px", fontWeight: "700", display: "flex", justifyContent: "space-between", alignItems: "center" }}
                     >
-                      <div style={{ fontWeight: "700", color: "#0F172A", fontSize: "12px" }}>{preset.name}</div>
-                      <div style={{ fontSize: "10.5px", color: "#64748B", marginTop: "2px" }}>
-                        {preset.data.titre.slice(0, 50)}...
-                      </div>
+                      <span>{p.name}</span>
+                      <span style={{ fontSize: "10px", color: "#2563eb" }}>Charger</span>
                     </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* TAB 1: Page de garde */}
-            {activeTab === "garde" && (
-              <div className="presets-box">
-                <label>🎓 Entête & Titre Académique</label>
-                <div className="input-group" style={{ marginBottom: "8px" }}>
-                  <label>Logo Établissement</label>
-                  <input type="file" accept="image/*" onChange={handleLogoUpload} />
-                </div>
-                <div className="input-group" style={{ marginBottom: "8px" }}>
-                  <label>Université / Institution</label>
-                  <input type="text" name="institution" value={data.institution} onChange={handleChange} />
-                </div>
-                <div className="input-group" style={{ marginBottom: "8px" }}>
-                  <label>Faculté / Département</label>
-                  <input type="text" name="faculte" value={data.faculte} onChange={handleChange} />
-                </div>
-                <div className="input-group" style={{ marginBottom: "8px" }}>
-                  <label>Titre du Mémoire</label>
-                  <textarea rows={3} name="titre" value={data.titre} onChange={handleChange} style={{ fontWeight: "700" }} />
-                </div>
-                <div className="input-group" style={{ marginBottom: "8px" }}>
-                  <label>Sous-titre / Diplôme</label>
-                  <input type="text" name="soustitre" value={data.soustitre} onChange={handleChange} />
-                </div>
-                <div className="grid-2" style={{ marginBottom: "8px" }}>
-                  <div className="input-group">
-                    <label>Auteur</label>
-                    <input type="text" name="auteur" value={data.auteur} onChange={handleChange} />
+            {/* TAB 2: COVER PAGE INFO */}
+            {activeTab === "cover" && (
+              <>
+                <div className="presets-box">
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🏛️ En-tête Institutionnel & Logo</label>
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Logo de l'Établissement (Optionnel)</label>
+                    <input type="file" accept="image/*" onChange={handleLogoUpload} />
                   </div>
-                  <div className="input-group">
-                    <label>Encadrement</label>
-                    <input type="text" name="encadrant" value={data.encadrant} onChange={handleChange} />
-                  </div>
-                </div>
-                <div className="input-group">
-                  <label>Année académique</label>
-                  <input type="text" name="annee" value={data.annee} onChange={handleChange} />
-                </div>
-              </div>
-            )}
-
-            {/* TAB 2: Chapitres */}
-            {activeTab === "chapitres" && (
-              <div className="presets-box">
-                <div className="flex items-center justify-between" style={{ marginBottom: "8px" }}>
-                  <label style={{ margin: 0 }}>Chapitres du Document</label>
-                  <button onClick={addChapter} className="btn btn-secondary" style={{ padding: "3px 8px", fontSize: "11px" }}>
-                    <span>Ajouter</span>
-                  </button>
-                </div>
-
-                {chapters.map((chap) => (
-                  <div key={chap.id} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: "8px", padding: "8px", marginBottom: "8px", position: "relative" }}>
-                    <button onClick={() => removeChapter(chap.id)} style={{ position: "absolute", top: "6px", right: "6px", border: "none", background: "none", color: "#EF4444", cursor: "pointer", fontSize: "14px" }}>
-                      ✕
-                    </button>
-                    <div className="input-group" style={{ marginBottom: "4px" }}>
-                      <input type="text" value={chap.title} onChange={(e) => updateChapter(chap.id, "title", e.target.value)} style={{ fontWeight: "700" }} />
-                    </div>
-                    <textarea rows={5} value={chap.content} onChange={(e) => updateChapter(chap.id, "content", e.target.value)} />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* TAB 3: Style & Ornements */}
-            {activeTab === "style" && (
-              <div className="presets-box">
-                <label>Thème Académique & Ornements</label>
-                <div className="theme-grid" style={{ marginBottom: "10px" }}>
-                  {RAPPORT_THEMES.map((th) => (
-                    <div
-                      key={th.id}
-                      onClick={() => setActiveTheme(th)}
-                      className={`theme-card ${activeTheme.id === th.id ? "active" : ""}`}
-                    >
-                      <div className="theme-swatch" style={{ background: th.primaryColor }} />
-                      <span style={{ fontSize: "11.5px", fontWeight: "700", color: "#0F172A" }}>{th.name}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="input-group" style={{ marginBottom: "10px" }}>
-                  <label>Filigrane de fond (Filigrane texte)</label>
-                  <input
-                    type="text"
-                    placeholder="ex: PROJET DE MÉMOIRE / CONFIDENTIEL"
-                    value={watermarkText}
-                    onChange={(e) => setWatermarkText(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="ornamentToggle"
-                    checked={showOrnaments}
-                    onChange={(e) => setShowOrnaments(e.target.checked)}
-                  />
-                  <label htmlFor="ornamentToggle" style={{ fontSize: "11.5px", fontWeight: "600", cursor: "pointer" }}>
-                    Afficher les coins ornementaux
-                  </label>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right Side Canvas Preview Area */}
-        <div className={`preview-area ${isMobile && mobileView === "editor" ? "mobile-hide-preview" : ""}`}>
-          {/* Zoom Control Bar */}
-          <div className="zoom-bar no-print">
-            {onBack && (
-              <button onClick={onBack} className="btn btn-secondary">
-                <span>Accueil</span>
-              </button>
-            )}
-            <div style={{ height: "16px", width: "1px", background: "#E2E8F0" }}></div>
-            <label>Zoom :</label>
-            <input
-              type="range"
-              min="0.4"
-              max="1.0"
-              step="0.05"
-              value={zoomScale}
-              onChange={(e) => setZoomScale(parseFloat(e.target.value))}
-            />
-            <span style={{ fontSize: "11.5px", fontWeight: "700", color: "#2563EB" }}>
-              {Math.round(zoomScale * 100)}%
-            </span>
-            <span className="font-mono text-xs text-slate-600">
-              Total : {totalPages} Pages A4
-            </span>
-            <div style={{ height: "16px", width: "1px", background: "#E2E8F0" }}></div>
-            <button onClick={exportPDF} disabled={isExporting} className="btn btn-primary">
-              <span>{isExporting ? "PDF..." : "Exporter PDF Multipages"}</span>
-            </button>
-          </div>
-
-          {/* Interactive Canvas Wrapper */}
-          <div className="canvas-wrapper">
-            <div style={{ transform: `scale(${zoomScale})`, transformOrigin: "top center" }} className="space-y-8" ref={previewContainerRef}>
-              {/* PAGE 1: Cover Page */}
-              <div className="report-page w-[210mm] min-h-[297mm] bg-white text-slate-900 p-16 shadow-2xl flex flex-col justify-between font-serif relative border-2 border-slate-300 mx-auto text-center shrink-0">
-                {showOrnaments && (
-                  <>
-                    <div className="corner-ornament corner-tl">⚜️</div>
-                    <div className="corner-ornament corner-tr">⚜️</div>
-                    <div className="corner-ornament corner-bl">⚜️</div>
-                    <div className="corner-ornament corner-br">⚜️</div>
-                  </>
-                )}
-
-                {watermarkText && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%) rotate(-45deg)",
-                      fontSize: "55px",
-                      fontWeight: "900",
-                      color: "rgba(15, 23, 42, 0.05)",
-                      letterSpacing: "0.2em",
-                      pointerEvents: "none",
-                      whiteSpace: "nowrap",
-                      textTransform: "uppercase"
-                    }}
-                  >
-                    {watermarkText}
-                  </div>
-                )}
-                <div>
                   {logoImg && (
-                    <img src={logoImg} alt="Logo" className="h-20 mx-auto object-contain mb-4" />
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setLogoImg(null)}>
+                      Supprimer le logo
+                    </button>
                   )}
-                  <h2 className="font-extrabold text-sm uppercase tracking-wider text-slate-900 mb-1" style={{ fontFamily: activeTheme.fontHeader }}>{data.institution}</h2>
-                  <p className="text-xs text-slate-600 font-sans tracking-wide uppercase mb-8">{data.faculte}</p>
-                  <div className="w-24 h-1 mx-auto mb-12" style={{ backgroundColor: activeTheme.primaryColor }}></div>
+                </div>
 
-                  <div className="my-12 px-6">
-                    <h1 className="text-2xl font-bold uppercase tracking-tight text-slate-950 leading-snug mb-6 border-y-2 py-6" style={{ borderColor: activeTheme.primaryColor, fontFamily: activeTheme.fontHeader }}>
-                      {data.titre}
-                    </h1>
-                    <p className="text-sm italic text-slate-700 font-sans max-w-lg mx-auto">
-                      {data.soustitre}
-                    </p>
+                <div className="input-group">
+                  <label>Nom de l'Établissement / Institut</label>
+                  <textarea rows={2} name="instituteName" value={data.instituteName || data.institution || ""} onChange={handleChange} placeholder="ex: Institut national de la formation supérieure paramédicale" />
+                </div>
+
+                <div className="input-group">
+                  <label>Sous-titre Établissement / Ville</label>
+                  <input type="text" name="instituteSubtitle" value={data.instituteSubtitle || data.faculte || ""} onChange={handleChange} placeholder="ex: SAHNOUNE LAKHDAR BECHAR" />
+                </div>
+
+                <div className="grid-2">
+                  <div className="input-group">
+                    <label>Label Spécialité</label>
+                    <input type="text" name="specialityLabel" value={data.specialityLabel || "Spécialité"} onChange={handleChange} />
+                  </div>
+                  <div className="input-group">
+                    <label>Nom de la Spécialité</label>
+                    <input type="text" name="speciality" value={data.speciality || "1ᵉʳ année ASSP"} onChange={handleChange} />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 text-left font-sans text-xs pt-8 border-t border-slate-300">
-                  <div>
-                    <p className="font-bold text-slate-900 uppercase tracking-wider mb-1">Auteur :</p>
-                    <p className="text-slate-800 font-medium">{data.auteur}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-slate-900 uppercase tracking-wider mb-1">Encadrement :</p>
-                    <p className="text-slate-800 font-medium">{data.encadrant}</p>
-                  </div>
+                <div className="input-group">
+                  <label>Label du Sujet (ex: Exposé sur / Mémoire sur)</label>
+                  <input type="text" name="exposeLabel" value={data.exposeLabel || "Exposé sur"} onChange={handleChange} />
                 </div>
 
-                <div className="font-sans text-xs text-slate-500 pt-6">
-                  <p className="font-semibold text-slate-700">{data.annee}</p>
-                  <p className="text-[11px]">{data.lieuDate}</p>
-                  <span className="absolute bottom-4 right-8 text-[10px] text-slate-400">Page 1 / {totalPages}</span>
+                <div className="input-group">
+                  <label>Titre Principal du Rapport / Exposé</label>
+                  <textarea rows={2} name="title" value={data.title || data.titre || ""} onChange={handleChange} placeholder="ex: La Planification familiale" style={{ fontWeight: "700" }} />
                 </div>
-              </div>
 
-              {/* PAGE 2: Sommaire */}
-              <div className="report-page w-[210mm] min-h-[297mm] bg-white text-slate-900 p-16 shadow-2xl flex flex-col justify-between font-serif relative border border-slate-200 mx-auto shrink-0">
-                <div>
-                  <h2 className="text-xl font-bold uppercase tracking-wider text-slate-900 border-b-2 pb-3 mb-8 text-center font-sans" style={{ borderColor: activeTheme.primaryColor }}>
-                    Sommaire / Table des Matières
-                  </h2>
+                <div className="grid-2">
+                  <div className="input-group">
+                    <label>Professeur / Encadrant</label>
+                    <input type="text" name="professor" value={data.professor || data.encadrant || ""} onChange={handleChange} placeholder="ex: BENYOUCEF" />
+                  </div>
+                  <div className="input-group">
+                    <label>Année Pédagogique</label>
+                    <input type="text" name="year" value={data.year || data.annee || ""} onChange={handleChange} placeholder="ex: 2023/2024" />
+                  </div>
+                </div>
+              </>
+            )}
 
-                  <div className="space-y-4 font-sans text-sm">
-                    <div className="flex justify-between items-baseline border-b border-dotted border-slate-300 pb-1">
-                      <span className="font-bold text-slate-900">Page de Garde & Entête Académique</span>
-                      <span className="font-semibold text-slate-600">Page 1</span>
-                    </div>
+            {/* TAB 3: STUDENTS & AUTHORS */}
+            {activeTab === "students" && (
+              <>
+                <div className="presets-box">
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>👥 Liste des Élèves / Rédacteurs ("Préparé par")</label>
+                  <div className="input-group" style={{ marginTop: "6px", marginBottom: "8px" }}>
+                    <label>Label de la section</label>
+                    <input type="text" name="preparedByLabel" value={data.preparedByLabel || "Préparé par"} onChange={handleChange} />
+                  </div>
 
-                    <div className="flex justify-between items-baseline border-b border-dotted border-slate-300 pb-1">
-                      <span className="font-bold text-slate-900">Sommaire</span>
-                      <span className="font-semibold text-slate-600">Page 2</span>
-                    </div>
+                  <div style={{ display: "flex", gap: "6px", marginBottom: "10px" }}>
+                    <input type="text" value={newStudent} onChange={(e) => setNewStudent(e.target.value)} placeholder="Nom et Prénom de l'élève..." onKeyDown={(e) => e.key === "Enter" && addStudent()} />
+                    <button type="button" className="btn btn-secondary" onClick={addStudent}>+ Ajouter</button>
+                  </div>
 
-                    {chapters.map((chap, idx) => (
-                      <div key={chap.id} className="flex justify-between items-baseline border-b border-dotted border-slate-300 pb-1">
-                        <span className="font-semibold text-slate-800">{chap.title}</span>
-                        <span className="font-semibold text-slate-600">Page {3 + idx}</span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    {studentsList.map((s, idx) => (
+                      <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#ffffff", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+                        <span style={{ fontWeight: "700", fontSize: "13px" }}>• {s}</span>
+                        <button type="button" onClick={() => removeStudent(idx)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}>
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     ))}
                   </div>
                 </div>
+              </>
+            )}
 
-                <div className="font-sans text-xs text-slate-400 flex justify-between border-t border-slate-200 pt-4">
-                  <span>{data.titre.slice(0, 45)}...</span>
-                  <span>Page 2 / {totalPages}</span>
-                </div>
-              </div>
-
-              {/* PAGES 3+: Chapters */}
-              {chapters.map((chap, idx) => {
-                const pageNum = 3 + idx;
-                return (
-                  <div
-                    key={chap.id}
-                    className="report-page w-[210mm] min-h-[297mm] bg-white text-slate-900 p-16 shadow-2xl flex flex-col justify-between font-serif relative border border-slate-200 mx-auto shrink-0"
-                  >
-                    <div>
-                      <div className="font-sans text-xs text-slate-400 border-b border-slate-200 pb-2 mb-8 flex justify-between">
-                        <span className="uppercase tracking-wider font-semibold text-slate-900">{data.institution}</span>
-                        <span>{chap.title}</span>
-                      </div>
-
-                      <h2 className="text-lg font-bold text-slate-950 mb-6 font-sans border-l-4 pl-3" style={{ borderColor: activeTheme.primaryColor }}>
-                        {chap.title}
-                      </h2>
-
-                      <div className="whitespace-pre-line text-sm text-slate-800 leading-relaxed text-justify">
-                        {chap.content}
-                      </div>
-                    </div>
-
-                    <div className="font-sans text-xs text-slate-400 flex justify-between border-t border-slate-200 pt-4">
-                      <span>Mémoire : {data.auteur}</span>
-                      <span className="font-bold text-slate-800">Page {pageNum} / {totalPages}</span>
-                    </div>
+            {/* TAB 4: CHAPTERS */}
+            {activeTab === "chapters" && (
+              <>
+                <div className="presets-box">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <label style={{ color: "#2563eb", fontWeight: "700" }}>📑 Chapitres & Contenu du Rapport</label>
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={addChapter}>
+                      <Plus className="w-3.5 h-3.5" /> Chapitre
+                    </button>
                   </div>
-                );
-              })}
+
+                  {chapters.map((ch) => (
+                    <div key={ch.id} style={{ backgroundColor: "#ffffff", padding: "10px", borderRadius: "8px", border: "1px solid #e2e8f0", marginBottom: "10px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", gap: "6px", marginBottom: "6px" }}>
+                        <input type="text" value={ch.title} onChange={(e) => updateChapter(ch.id, "title", e.target.value)} style={{ fontWeight: "700" }} placeholder="Titre du Chapitre" />
+                        <button type="button" onClick={() => removeChapter(ch.id)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}>
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <textarea rows={4} value={ch.content} onChange={(e) => updateChapter(ch.id, "content", e.target.value)} placeholder="Contenu du chapitre..." />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* TAB 5: STYLE & THEMES */}
+            {activeTab === "style" && (
+              <>
+                <div className="presets-box">
+                  <label style={{ color: "#2563eb", fontWeight: "700" }}>🎨 Palettes de Couleurs & Thèmes Institutionnels</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginTop: "8px", marginBottom: "12px" }}>
+                    {RAPPORT_THEMES.map((th) => (
+                      <button
+                        key={th.id}
+                        type="button"
+                        className={`chip ${activeTheme.id === th.id && !customAccentColor ? "active" : ""}`}
+                        onClick={() => { setActiveTheme(th); setCustomAccentColor(""); setCustomOrnamentColor(""); }}
+                        style={{ padding: "8px", display: "flex", alignItems: "center", gap: "6px" }}
+                      >
+                        <span style={{ width: "14px", height: "14px", borderRadius: "50%", backgroundColor: th.primaryColor, border: "1px solid #ffffff", display: "inline-block" }} />
+                        <span style={{ fontSize: "11px", fontWeight: "700" }}>{th.name}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Couleur du Cadre de Titre (Encadré Principal)</label>
+                    <input type="color" value={accentColor} onChange={(e) => setCustomAccentColor(e.target.value)} style={{ height: "36px", cursor: "pointer", width: "100%" }} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Couleur des Volutes / Ornements de coins</label>
+                    <input type="color" value={ornamentColor} onChange={(e) => setCustomOrnamentColor(e.target.value)} style={{ height: "36px", cursor: "pointer", width: "100%" }} />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div style={{ padding: "16px", borderTop: "1px solid #e2e8f0", backgroundColor: "#f8fafc" }}>
+            <button className="btn btn-primary" onClick={exportPDF} disabled={isExporting} style={{ width: "100%", justifyContent: "center" }}>
+              <Download className="w-4 h-4" /> Export PDF HD Multi-Pages
+            </button>
+          </div>
+        </aside>
+
+        {/* RIGHT PREVIEW CANVAS WORKSPACE */}
+        <main className={`preview-area ${isMobile && mobileView !== "preview" ? "mobile-hidden" : ""}`}>
+          <div className="preview-toolbar no-print">
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                style={{ fontSize: "11.5px", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px" }}
+              >
+                {sidebarCollapsed ? "▶ Déplier le Studio" : "◀ Plier le Studio"}
+              </button>
+
+              <div className="zoom-controls" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <span style={{ fontSize: "11.5px", fontWeight: "800", color: "#475569", marginRight: "4px" }}>Zoom:</span>
+                {[
+                  { label: "50%", scale: 0.50 },
+                  { label: "75%", scale: 0.75 },
+                  { label: "100%", scale: 1.00 },
+                  { label: "120%", scale: 1.20 }
+                ].map((z) => (
+                  <button
+                    key={z.label}
+                    type="button"
+                    className={`zoom-btn ${Math.abs(zoomScale - z.scale) < 0.02 ? "active" : ""}`}
+                    onClick={() => setZoomScale(z.scale)}
+                    style={{ padding: "4px 8px", fontSize: "11px" }}
+                  >
+                    {z.label}
+                  </button>
+                ))}
+                <button className="zoom-btn" onClick={() => setZoomScale(Math.max(0.3, Number((zoomScale - 0.05).toFixed(2))))}>-</button>
+                <button className="zoom-btn" onClick={() => setZoomScale(Math.min(1.4, Number((zoomScale + 0.05).toFixed(2))))}>+</button>
+              </div>
+            </div>
+
+            <div className="btn-group">
+              <button className="btn btn-primary btn-sm" onClick={exportPDF} disabled={isExporting}>
+                <Download className="w-4 h-4" /> PDF Multi-Pages
+              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* MOBILE FLOATING BOTTOM ACTION BAR */}
-      <div className="mobile-bottom-bar no-print">
-        <button 
-          className={`mobile-bottom-btn ${mobileView === "editor" ? "active" : ""}`}
-          onClick={() => setMobileView("editor")}
-        >
-          <span>Saisie</span>
-        </button>
+          {/* THE MULTI-PAGE REPORT PREVIEW CONTAINER */}
+          <div className="cert-scroll" ref={previewContainerRef}>
+            <div className="cert-scale-wrapper" style={{ transform: `scale(${zoomScale})`, transformOrigin: "top center", display: "flex", flexDirection: "column", gap: "32px" }}>
+              
+              {/* PAGE 1: COVER PAGE PRESTIGE */}
+              <div className="report-page">
+                <CoverPagePrestige
+                  data={{
+                    ...data,
+                    students: studentsList,
+                    logoUrl: logoImg || data.logoUrl
+                  }}
+                  accentColor={accentColor}
+                  ornamentColor={ornamentColor}
+                />
+              </div>
 
-        <button 
-          className={`mobile-bottom-btn ${mobileView === "preview" ? "active" : ""}`}
-          onClick={() => setMobileView("preview")}
-        >
-          <span>Aperçu</span>
-        </button>
+              {/* PAGES 2+: CHAPTERS & CONTENT */}
+              {chapters.map((ch, idx) => (
+                <div 
+                  key={ch.id}
+                  className="report-page"
+                  style={{
+                    width: "794px",
+                    minHeight: "1123px",
+                    backgroundColor: "#ffffff",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+                    borderRadius: "2px",
+                    padding: "60px 50px",
+                    fontFamily: "'Times New Roman', Times, serif",
+                    position: "relative",
+                    boxSizing: "border-box",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between"
+                  }}
+                >
+                  {/* Page Header */}
+                  <div style={{ borderBottom: `2px solid ${accentColor}`, paddingBottom: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "12px", fontStyle: "italic", color: "#64748b" }}>{data.title || data.titre}</span>
+                    <span style={{ fontSize: "11px", fontWeight: "700", color: accentColor }}>{data.instituteSubtitle || "Rapport Officiel"}</span>
+                  </div>
 
-        <button 
-          className="mobile-bottom-btn"
-          onClick={() => {
-            const nextIdx = (RAPPORT_THEMES.indexOf(activeTheme) + 1) % RAPPORT_THEMES.length;
-            setActiveTheme(RAPPORT_THEMES[nextIdx]);
-          }}
-        >
-          <span>Thème</span>
-        </button>
+                  {/* Chapter Body */}
+                  <div style={{ flex: 1, padding: "30px 0" }}>
+                    <h2 style={{ fontSize: "22px", fontWeight: "700", color: accentColor, marginBottom: "20px", borderLeft: `4px solid ${ornamentColor}`, paddingLeft: "12px" }}>
+                      {ch.title}
+                    </h2>
+                    <div style={{ fontSize: "14px", lineHeight: "1.8", color: "#334155", whitespace: "pre-wrap" }}>
+                      {ch.content}
+                    </div>
+                  </div>
 
-        <button 
-          className="mobile-bottom-btn"
-          onClick={exportPDF}
-        >
-          <span>Export PDF</span>
-        </button>
+                  {/* Page Footer */}
+                  <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "12px", display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#94a3b8" }}>
+                    <span>{data.instituteName ? data.instituteName.slice(0, 45) + "..." : "DocStudio"}</span>
+                    <span>Page {idx + 2} sur {chapters.length + 1}</span>
+                  </div>
+                </div>
+              ))}
+
+            </div>
+          </div>
+
+        </main>
       </div>
     </div>
   );
