@@ -15,7 +15,7 @@ function formatDateFR(iso) {
 }
 function renderFormattedText(text) {
   if (!text) return null;
-  const regex = /(<b>.*?<\/b>|TOSSA Afiavi Gbessito Honorine|Macramé|macrame|Teinture de pagne|teinture de pagne|ONG ESPOIR ET NATURE|ong espoir et nature|Maison AFI COLLECTION du Bénin|AFI COLLECTION|afi collection)/gi;
+  const regex = /(<b>.*?<\/b>|TOSSA Afiavi Gbessito Honorine|Macramé|macrame|Teinture de pagne|teinture de pagne|ONG ESPOIR ET NATURE|ong espoir et nature|Maison AFI COLLECTION du Bénin|Maison AFI COLLECTION du Benin|ONG Internationale ALIMEN-TERRE|ALIMEN-TERRE|ALIMEN-Terre|AJeDSAC|Association des Jeunes Dynamiques pour le Développement Socioéconomique de l’Arrondissement de Colli|AFI COLLECTION|afi collection)/gi;
   const parts = text.split(regex);
 
   return parts.map((part, index) => {
@@ -30,6 +30,8 @@ function renderFormattedText(text) {
       lower === "teinture de pagne" ||
       lower === "ong espoir et nature" ||
       lower === "maison afi collection du bénin" || lower === "maison afi collection du benin" ||
+      lower === "ong internationale alimen-terre" || lower === "alimen-terre" ||
+      lower === "ajedsac" ||
       lower === "afi collection"
     ) {
       return <b key={index}>{part}</b>;
@@ -43,15 +45,17 @@ const DEFAULT_DATA = {
   introText: "Je soussignée Mme <b>TOSSA Afiavi Gbessito Honorine</b>, atteste que le/la nommé(e) :",
   destinataire: "",
   bodyText: "a suivi avec succès et une assiduité le programme de formation en <b>Macramé</b> et <b>Teinture de pagne</b>,",
-  partnershipText: "organisée par l'<b>ONG ESPOIR ET NATURE</b> en partenariat avec la <b>Maison AFI COLLECTION du Bénin</b>.",
+  partnershipText: "Organisées par la <b>Maison AFI COLLECTION du Benin</b> en partenariat avec l’<b>ONG Internationale ALIMEN-TERRE</b> et l’<b>Association des Jeunes Dynamiques pour le Développement Socioéconomique de l’Arrondissement de Colli (AJeDSAC)</b>.",
   closingText: "En foi de quoi, la présente <b>attestation </b> lui est délivrée pour <b>servir et valoir ce que de droit</b>.",
-  villeDelivrance: "Houegbo",
+  villeDelivrance: "Colli",
   dateDelivrance: "2026-07-31",
   numero: "AP-2026-0104",
-  signataire: "Le Directeur",
-  fonction: "(ONG ESPOIR ET NATURE)",
-  signataire2: "La Directrice",
-  fonction2: "(Maison AFI COLLECTION du Bénin)",
+  signataire: "La Directrice",
+  fonction: "(Maison AFI COLLECTION du Bénin)",
+  signataire2: "La Présidente",
+  fonction2: "(ONG Internationale ALIMEN-Terre)",
+  signataire3: "Le Représentant",
+  fonction3: "(AJeDSAC)",
 };
 
 function ExcellenceShield() {
@@ -1511,13 +1515,13 @@ export default function AttestationFormation({ onBack }) {
           margin-bottom: 4px;
         }
 
-        /* FOOTER SECTION & DOUBLE SIGNATORIES IN LOWER LEFT & RIGHT CORNERS */
+        /* FOOTER SECTION & TRIPLE SIGNATORIES */
         .cert-footer {
           width: 100%;
-          display: grid;
-          grid-template-columns: 1fr 130px 1fr;
+          display: flex;
+          justify-content: space-between;
           align-items: flex-end;
-          gap: 16px;
+          gap: 12px;
           margin-top: auto;
           padding-bottom: 4px;
         }
@@ -1528,6 +1532,16 @@ export default function AttestationFormation({ onBack }) {
           align-items: flex-start;
           text-align: left;
           position: relative;
+          flex: 1;
+        }
+
+        .signature-corner-center {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          position: relative;
+          flex: 1;
         }
 
         .signature-corner-right {
@@ -1536,6 +1550,7 @@ export default function AttestationFormation({ onBack }) {
           align-items: flex-end;
           text-align: right;
           position: relative;
+          flex: 1;
         }
 
         .signature-display {
@@ -2911,9 +2926,9 @@ export default function AttestationFormation({ onBack }) {
                     </div>
                   </div>
 
-                  {/* FOOTER & SIGNATORIES IN LOWER LEFT & RIGHT CORNERS */}
+                  {/* FOOTER & SIGNATORIES */}
                   <footer className="cert-footer">
-                    {/* CORNER LOWER LEFT: SIGNATORY 1 */}
+                    {/* SIGNATORY 1 (LEFT) */}
                     <div 
                       className={`signature-corner-left interactive-tappable touch-movable ${selectedElement === "signataire" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("signataire")}
@@ -2939,42 +2954,13 @@ export default function AttestationFormation({ onBack }) {
                       </div>
 
                       <div className="signature-line-corner" />
-                      <div className="signatory-name">{data.signataire || "Le Directeur"}</div>
-                      <div className="signatory-title">{data.fonction || "(ONG ESPOIR ET NATURE)"}</div>
+                      <div className="signatory-name">{data.signataire || "La Directrice"}</div>
+                      <div className="signatory-title">{data.fonction || "(Maison AFI COLLECTION du Bénin)"}</div>
                     </div>
 
-                    {/* CENTER: OFFICIAL SEAL & AUTH NUMBER WITH CUSTOM SIZE */}
+                    {/* SIGNATORY 2 (CENTER) */}
                     <div 
-                      className={`seal-center-footer interactive-tappable touch-movable ${selectedElement === "seal" ? "active-selected" : ""}`}
-                      onClick={() => setSelectedElement("seal")}
-                      onTouchStart={(e) => handleTouchStart('seal', e)}
-                      onTouchMove={handleTouchMove}
-                      onTouchEnd={handleTouchEnd}
-                      style={{
-                        transform: `translate(${positions.seal?.x || 0}px, ${positions.seal?.y || 0}px)`
-                      }}
-                    >
-                      {customStampImg ? (
-                        <img
-                          src={customStampImg}
-                          alt="Cachet Officiel"
-                          className="custom-stamp-img"
-                          style={{ maxWidth: `${stampSize}px`, maxHeight: `${stampSize}px` }}
-                        />
-                      ) : (
-                        <div style={{ transform: `scale(${stampSize / 70})`, transformOrigin: "bottom center" }}>
-                          {sealType === "wax" && <WaxSeal sealBg={activeTheme.sealBg} goldColor={activeTheme.gold} />}
-                          {sealType === "star" && <StarBadge goldColor={activeTheme.gold} />}
-                          {sealType === "badge" && <SecurityBadge primaryColor={activeTheme.primary} goldColor={activeTheme.gold} />}
-                          {sealType === "qr" && <QrCodeStamp verifyUrl={`${verifyBaseUrl}${data.numero}`} />}
-                        </div>
-                      )}
-                      {data.numero ? <div className="auth-num-footer">N° {data.numero}</div> : null}
-                    </div>
-
-                    {/* CORNER LOWER RIGHT: SIGNATORY 2 */}
-                    <div 
-                      className={`signature-corner-right interactive-tappable touch-movable ${selectedElement === "signataire" ? "active-selected" : ""}`}
+                      className={`signature-corner-center interactive-tappable touch-movable ${selectedElement === "signataire" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("signataire")}
                       onTouchStart={(e) => handleTouchStart('sig2', e)}
                       onTouchMove={handleTouchMove}
@@ -2983,7 +2969,7 @@ export default function AttestationFormation({ onBack }) {
                         transform: `translate(${positions.sig2?.x || 0}px, ${positions.sig2?.y || 0}px)`
                       }}
                     >
-                      <div className="signature-display" style={{ height: "48px" }}>
+                      <div className="signature-display" style={{ height: "48px", justifyContent: "center" }}>
                         {showSig2 ? (
                           customSignatureImg2 ? (
                             <img src={customSignatureImg2} alt="Signature 2" className="signature-img" style={{ maxHeight: `${sig2Size}px` }} />
@@ -2995,9 +2981,33 @@ export default function AttestationFormation({ onBack }) {
                         ) : null}
                       </div>
 
+                      <div className="signature-line-corner" style={{ margin: "0 auto" }} />
+                      <div className="signatory-name">{data.signataire2 || "La Présidente"}</div>
+                      <div className="signatory-title">{data.fonction2 || "(ONG ALIMEN-Terre)"}</div>
+                    </div>
+
+                    {/* SIGNATORY 3 (RIGHT) */}
+                    <div 
+                      className={`signature-corner-right interactive-tappable touch-movable ${selectedElement === "signataire" ? "active-selected" : ""}`}
+                      onClick={() => setSelectedElement("signataire")}
+                      onTouchStart={(e) => handleTouchStart('sig3', e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                      style={{
+                        transform: `translate(${positions.sig3?.x || 0}px, ${positions.sig3?.y || 0}px)`
+                      }}
+                    >
+                      <div className="signature-display" style={{ height: "48px" }}>
+                        {showSig2 ? (
+                          <div className="signature-handwriting" style={{ fontSize: `${Math.round(sig2Size * 0.55 + 10)}px` }}>
+                            {data.signataire3 || "Signature 3"}
+                          </div>
+                        ) : null}
+                      </div>
+
                       <div className="signature-line-corner" />
-                      <div className="signatory-name">{data.signataire2 || "La Directrice"}</div>
-                      <div className="signatory-title">{data.fonction2 || "(Maison AFI COLLECTION du Bénin)"}</div>
+                      <div className="signatory-name">{data.signataire3 || "Le Représentant"}</div>
+                      <div className="signatory-title">{data.fonction3 || "(AJeDSAC)"}</div>
                     </div>
                   </footer>
                 </div>
