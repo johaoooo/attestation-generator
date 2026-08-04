@@ -402,11 +402,14 @@ export default function AttestationFormation({ onBack }) {
   const [rightLogoImg, setRightLogoImg] = useState(null);
   const [rightLogoSize, setRightLogoSize] = useState(75);
 
-  // Double Signatories & Visibility Toggles (Default: Empty spaces for physical signature)
+  // Triple Signatories & Visibility Toggles
   const [enableSecondSignatory, setEnableSecondSignatory] = useState(true);
   const [showSig1, setShowSig1] = useState(false);
   const [showSig2, setShowSig2] = useState(false);
+  const [showSig3, setShowSig3] = useState(false);
   const [customSignatureImg2, setCustomSignatureImg2] = useState(null);
+  const [customSignatureImg3, setCustomSignatureImg3] = useState(null);
+  const [sig3Size, setSig3Size] = useState(70);
 
   // Background Image & Opacity
   const [customBgImg, setCustomBgImg] = useState(null);
@@ -667,6 +670,18 @@ export default function AttestationFormation({ onBack }) {
       reader.onload = (evt) => {
         setCustomSignatureImg2(evt.target.result);
         setShowSig2(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSignature3Upload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        setCustomSignatureImg3(evt.target.result);
+        setShowSig3(true);
       };
       reader.readAsDataURL(file);
     }
@@ -2130,19 +2145,19 @@ export default function AttestationFormation({ onBack }) {
                   )}
                 </div>
 
-                {/* SIGNATORY 2 (DIRECTRICE) */}
+                {/* SIGNATORY 2 (PRÉSIDENTE ALIMEN-TERRE) */}
                 <div className="presets-box" style={{ marginTop: "12px" }}>
                   <label style={{ color: "#805AD5", fontWeight: "800", fontSize: "13px" }}>
-                    ✍️ Signature de la Directrice (Signataire Droit)
+                    ✍️ Signature 2 : La Présidente (ONG ALIMEN-Terre)
                   </label>
 
-                  {/* UPLOAD BOX DIRECTRICE */}
+                  {/* UPLOAD BOX PRÉSIDENTE */}
                   <div className="input-group" style={{ margin: "8px 0", padding: "10px", border: "1.5px dashed #805AD5", borderRadius: "8px", background: "#FAF5FF" }}>
-                    <label style={{ color: "#6B21A8", fontWeight: "700" }}>📥 Importer Signature PNG (Directrice)</label>
+                    <label style={{ color: "#6B21A8", fontWeight: "700" }}>📥 Importer Signature PNG (Présidente)</label>
                     <input type="file" accept="image/*" onChange={handleSignature2Upload} style={{ marginTop: "4px" }} />
                     {customSignatureImg2 && (
                       <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-                        <img src={customSignatureImg2} alt="Aperçu Directrice" style={{ height: "36px", objectFit: "contain", background: "#fff", padding: "2px", borderRadius: "4px", border: "1px solid #CBD5E1" }} />
+                        <img src={customSignatureImg2} alt="Aperçu Présidente" style={{ height: "36px", objectFit: "contain", background: "#fff", padding: "2px", borderRadius: "4px", border: "1px solid #CBD5E1" }} />
                         <button className="btn btn-secondary btn-sm" onClick={() => setCustomSignatureImg2(null)}>
                           Supprimer
                         </button>
@@ -2168,19 +2183,75 @@ export default function AttestationFormation({ onBack }) {
                       onClick={() => setShowSig2(!showSig2)}
                       style={{ padding: "6px 12px", fontSize: "11.5px", width: "100%", justifyContent: "center" }}
                     >
-                      {showSig2 ? "👁️ Signature Directrice : Affichée" : "🚫 Signature Directrice : Masquée (Espace manuscrit)"}
+                      {showSig2 ? "👁️ Signature Présidente : Affichée" : "🚫 Signature Présidente : Masquée (Espace manuscrit)"}
                     </button>
                   </div>
 
                   {showSig2 && (
                     <div className="input-group">
-                      <label style={{ color: "#805AD5" }}>📏 Taille Signature Directrice ({sig2Size}px)</label>
+                      <label style={{ color: "#805AD5" }}>📏 Taille Signature Présidente ({sig2Size}px)</label>
                       <input
                         type="range"
                         min={30}
                         max={160}
                         value={sig2Size}
                         onChange={(e) => setSig2Size(Number(e.target.value))}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* SIGNATORY 3 (REPRÉSENTANT AJEDSAC) */}
+                <div className="presets-box" style={{ marginTop: "12px" }}>
+                  <label style={{ color: "#2563EB", fontWeight: "800", fontSize: "13px" }}>
+                    ✍️ Signature 3 : Le Représentant (AJeDSAC)
+                  </label>
+
+                  {/* UPLOAD BOX REPRÉSENTANT */}
+                  <div className="input-group" style={{ margin: "8px 0", padding: "10px", border: "1.5px dashed #2563EB", borderRadius: "8px", background: "#EFF6FF" }}>
+                    <label style={{ color: "#1E40AF", fontWeight: "700" }}>📥 Importer Signature PNG (Représentant)</label>
+                    <input type="file" accept="image/*" onChange={handleSignature3Upload} style={{ marginTop: "4px" }} />
+                    {customSignatureImg3 && (
+                      <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
+                        <img src={customSignatureImg3} alt="Aperçu Représentant" style={{ height: "36px", objectFit: "contain", background: "#fff", padding: "2px", borderRadius: "4px", border: "1px solid #CBD5E1" }} />
+                        <button className="btn btn-secondary btn-sm" onClick={() => setCustomSignatureImg3(null)}>
+                          Supprimer
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid-2" style={{ marginBottom: "8px" }}>
+                    <div className="input-group">
+                      <label>Titre / Fonction</label>
+                      <input type="text" value={data.signataire3 || ""} onChange={setField("signataire3")} placeholder="Le Représentant" />
+                    </div>
+                    <div className="input-group">
+                      <label>Structure</label>
+                      <input type="text" value={data.fonction3 || ""} onChange={setField("fonction3")} placeholder="(AJeDSAC)" />
+                    </div>
+                  </div>
+
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <button
+                      type="button"
+                      className={`chip ${showSig3 ? "active" : ""}`}
+                      onClick={() => setShowSig3(!showSig3)}
+                      style={{ padding: "6px 12px", fontSize: "11.5px", width: "100%", justifyContent: "center" }}
+                    >
+                      {showSig3 ? "👁️ Signature Représentant : Affichée" : "🚫 Signature Représentant : Masquée (Espace manuscrit)"}
+                    </button>
+                  </div>
+
+                  {showSig3 && (
+                    <div className="input-group">
+                      <label style={{ color: "#2563EB" }}>📏 Taille Signature Représentant ({sig3Size}px)</label>
+                      <input
+                        type="range"
+                        min={30}
+                        max={160}
+                        value={sig3Size}
+                        onChange={(e) => setSig3Size(Number(e.target.value))}
                       />
                     </div>
                   )}
@@ -2917,12 +2988,46 @@ export default function AttestationFormation({ onBack }) {
                       {renderFormattedText(data.closingText || "En foi de quoi, la présente <b>attestation </b> lui est délivrée pour <b>servir et valoir ce que de droit</b>.")}
                     </p>
 
-                    {/* LOCATION & DATE */}
-                    <div 
-                      className={`date-place-tag interactive-tappable ${selectedElement === "datePlace" ? "active-selected" : ""}`}
-                      onClick={() => setSelectedElement("datePlace")}
-                    >
-                      Fait à <b>{data.villeDelivrance || "Houegbo"}</b> le <b>{formatDateFR(data.dateDelivrance) || "31 juillet 2026"}</b>
+                    {/* LOCATION, DATE & OFFICIAL SEAL */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
+                      <div 
+                        className={`date-place-tag interactive-tappable ${selectedElement === "datePlace" ? "active-selected" : ""}`}
+                        onClick={() => setSelectedElement("datePlace")}
+                      >
+                        Fait à <b>{data.villeDelivrance || "Colli"}</b> le <b>{formatDateFR(data.dateDelivrance) || "31 juillet 2026"}</b>
+                      </div>
+
+                      {/* OFFICIAL SEAL & AUTH NUMBER */}
+                      <div 
+                        className={`seal-center-footer interactive-tappable touch-movable ${selectedElement === "seal" ? "active-selected" : ""}`}
+                        onClick={() => setSelectedElement("seal")}
+                        onTouchStart={(e) => handleTouchStart('seal', e)}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
+                        style={{
+                          transform: `translate(${positions.seal?.x || 0}px, ${positions.seal?.y || 0}px)`,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center"
+                        }}
+                      >
+                        {customStampImg ? (
+                          <img
+                            src={customStampImg}
+                            alt="Cachet Officiel"
+                            className="custom-stamp-img"
+                            style={{ maxWidth: `${stampSize}px`, maxHeight: `${stampSize}px` }}
+                          />
+                        ) : (
+                          <div style={{ transform: `scale(${stampSize / 70})`, transformOrigin: "center center" }}>
+                            {sealType === "wax" && <WaxSeal sealBg={activeTheme.sealBg} goldColor={activeTheme.gold} />}
+                            {sealType === "star" && <StarBadge goldColor={activeTheme.gold} />}
+                            {sealType === "badge" && <SecurityBadge primaryColor={activeTheme.primary} goldColor={activeTheme.gold} />}
+                            {sealType === "qr" && <QrCodeStamp verifyUrl={`${verifyBaseUrl}${data.numero}`} />}
+                          </div>
+                        )}
+                        {data.numero ? <div className="auth-num-footer" style={{ marginTop: "2px" }}>N° {data.numero}</div> : null}
+                      </div>
                     </div>
                   </div>
 
@@ -2998,10 +3103,14 @@ export default function AttestationFormation({ onBack }) {
                       }}
                     >
                       <div className="signature-display" style={{ height: "48px" }}>
-                        {showSig2 ? (
-                          <div className="signature-handwriting" style={{ fontSize: `${Math.round(sig2Size * 0.55 + 10)}px` }}>
-                            {data.signataire3 || "Signature 3"}
-                          </div>
+                        {showSig3 ? (
+                          customSignatureImg3 ? (
+                            <img src={customSignatureImg3} alt="Signature 3" className="signature-img" style={{ maxHeight: `${sig3Size}px` }} />
+                          ) : (
+                            <div className="signature-handwriting" style={{ fontSize: `${Math.round(sig3Size * 0.55 + 10)}px` }}>
+                              {data.signataire3 || "Signature 3"}
+                            </div>
+                          )
                         ) : null}
                       </div>
 
