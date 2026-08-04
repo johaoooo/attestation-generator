@@ -409,6 +409,7 @@ export default function AttestationFormation({ onBack }) {
   const [showSig1, setShowSig1] = useState(false);
   const [showSig2, setShowSig2] = useState(false);
   const [showSig3, setShowSig3] = useState(false);
+  const [showStamp, setShowStamp] = useState(false);
   const [customSignatureImg2, setCustomSignatureImg2] = useState(null);
   const [customSignatureImg3, setCustomSignatureImg3] = useState(null);
   const [sig3Size, setSig3Size] = useState(70);
@@ -2316,9 +2317,21 @@ export default function AttestationFormation({ onBack }) {
                 {/* STAMP / CACHET SIZING CONTROL */}
                 <div className="presets-box" style={{ marginTop: "10px" }}>
                   <label style={{ color: "#10B981" }}>💮 Tampon / Cachet Officiel</label>
+
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <button
+                      type="button"
+                      className={`chip ${showStamp ? "active" : ""}`}
+                      onClick={() => setShowStamp(!showStamp)}
+                      style={{ padding: "6px 12px", fontSize: "11.5px", width: "100%", justifyContent: "center" }}
+                    >
+                      {showStamp ? "👁️ Tampon / Cachet : Affiché" : "🚫 Tampon / Cachet : Masqué"}
+                    </button>
+                  </div>
+
                   <div className="input-group" style={{ marginBottom: "8px" }}>
                     <label>Téléverser Tampon (PNG)</label>
-                    <input type="file" accept="image/*" onChange={handleStampUpload} />
+                    <input type="file" accept="image/*" onChange={(e) => { handleStampUpload(e); setShowStamp(true); }} />
                     {customStampImg && (
                       <button className="btn btn-secondary btn-sm" onClick={() => setCustomStampImg(null)} style={{ marginTop: "4px" }}>
                         Supprimer le tampon
@@ -3085,37 +3098,39 @@ export default function AttestationFormation({ onBack }) {
                         Fait à <b>{data.villeDelivrance || "Colli"}</b> le <b>{formatDateFR(data.dateDelivrance) || "31 juillet 2026"}</b>
                       </div>
 
-                      {/* OFFICIAL SEAL & AUTH NUMBER */}
-                      <div 
-                        className={`seal-center-footer interactive-tappable touch-movable ${selectedElement === "seal" ? "active-selected" : ""}`}
-                        onClick={() => setSelectedElement("seal")}
-                        onTouchStart={(e) => handleTouchStart('seal', e)}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
-                        style={{
-                          transform: `translate(${positions.seal?.x || 0}px, ${positions.seal?.y || 0}px)`,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center"
-                        }}
-                      >
-                        {customStampImg ? (
-                          <img
-                            src={customStampImg}
-                            alt="Cachet Officiel"
-                            className="custom-stamp-img"
-                            style={{ maxWidth: `${stampSize}px`, maxHeight: `${stampSize}px` }}
-                          />
-                        ) : (
-                          <div style={{ transform: `scale(${stampSize / 70})`, transformOrigin: "center center" }}>
-                            {sealType === "wax" && <WaxSeal sealBg={activeTheme.sealBg} goldColor={activeTheme.gold} />}
-                            {sealType === "star" && <StarBadge goldColor={activeTheme.gold} />}
-                            {sealType === "badge" && <SecurityBadge primaryColor={activeTheme.primary} goldColor={activeTheme.gold} />}
-                            {sealType === "qr" && <QrCodeStamp verifyUrl={`${verifyBaseUrl}${data.numero}`} />}
-                          </div>
-                        )}
-                        {data.numero ? <div className="auth-num-footer" style={{ marginTop: "2px" }}>N° {data.numero}</div> : null}
-                      </div>
+                      {/* OFFICIAL SEAL & AUTH NUMBER (HIDDEN BY DEFAULT AS REQUESTED) */}
+                      {showStamp && (
+                        <div 
+                          className={`seal-center-footer interactive-tappable touch-movable ${selectedElement === "seal" ? "active-selected" : ""}`}
+                          onClick={() => setSelectedElement("seal")}
+                          onTouchStart={(e) => handleTouchStart('seal', e)}
+                          onTouchMove={handleTouchMove}
+                          onTouchEnd={handleTouchEnd}
+                          style={{
+                            transform: `translate(${positions.seal?.x || 0}px, ${positions.seal?.y || 0}px)`,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center"
+                          }}
+                        >
+                          {customStampImg ? (
+                            <img
+                              src={customStampImg}
+                              alt="Cachet Officiel"
+                              className="custom-stamp-img"
+                              style={{ maxWidth: `${stampSize}px`, maxHeight: `${stampSize}px` }}
+                            />
+                          ) : (
+                            <div style={{ transform: `scale(${stampSize / 70})`, transformOrigin: "center center" }}>
+                              {sealType === "wax" && <WaxSeal sealBg={activeTheme.sealBg} goldColor={activeTheme.gold} />}
+                              {sealType === "star" && <StarBadge goldColor={activeTheme.gold} />}
+                              {sealType === "badge" && <SecurityBadge primaryColor={activeTheme.primary} goldColor={activeTheme.gold} />}
+                              {sealType === "qr" && <QrCodeStamp verifyUrl={`${verifyBaseUrl}${data.numero}`} />}
+                            </div>
+                          )}
+                          {data.numero ? <div className="auth-num-footer" style={{ marginTop: "2px" }}>N° {data.numero}</div> : null}
+                        </div>
+                      )}
                     </div>
                   </div>
 
