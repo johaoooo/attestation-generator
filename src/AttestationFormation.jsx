@@ -2969,46 +2969,58 @@ export default function AttestationFormation({ onBack }) {
                 {/* INNER CONTENT WITH FULL DYNAMIC TYPOGRAPHY */}
                 <div className="cert-inner-content">
                   {/* TOP 3 PARTNER LOGOS ROW */}
-                  <div className="cert-header-logos-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "0 10px", marginBottom: "12px" }}>
+                  <div className="cert-header-logos-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "0 14px", marginBottom: "18px", minHeight: "80px" }}>
                     {/* LOGO 1 (GAUCHE - MAISON AFI) */}
-                    <div className="header-logo-box left" style={{ flex: 1, display: "flex", justifyContent: "flex-start" }}>
-                      {leftLogoImg && (
+                    <div className="header-logo-box left" style={{ flex: 1, display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                      {leftLogoImg ? (
                         <img
                           src={leftLogoImg}
                           alt="Logo 1 (Maison AFI)"
                           className="header-logo-img-left"
-                          style={{ maxHeight: `${leftLogoSize}px`, maxWidth: "160px", objectFit: "contain" }}
+                          style={{ maxHeight: `${leftLogoSize}px`, maxWidth: "170px", objectFit: "contain" }}
                         />
+                      ) : (
+                        <div style={{ border: "1.5px dashed #CBD5E1", borderRadius: "8px", padding: "6px 12px", fontSize: "11px", color: "#64748B", fontWeight: "600", background: "#F8FAFC", textAlign: "center" }}>
+                          🖼️ Logo 1 (Maison AFI)
+                        </div>
                       )}
                     </div>
 
                     {/* LOGO 2 (CENTRE - ONG ALIMEN-TERRE) */}
-                    <div className="header-logo-box center" style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-                      {centerLogoImg && (
+                    <div className="header-logo-box center" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                      {centerLogoImg ? (
                         <img
                           src={centerLogoImg}
                           alt="Logo 2 (ALIMEN-TERRE)"
                           className="header-logo-img-center"
-                          style={{ maxHeight: `${centerLogoSize}px`, maxWidth: "160px", objectFit: "contain" }}
+                          style={{ maxHeight: `${centerLogoSize}px`, maxWidth: "170px", objectFit: "contain" }}
                         />
+                      ) : (
+                        <div style={{ border: "1.5px dashed #805AD5", borderRadius: "8px", padding: "6px 12px", fontSize: "11px", color: "#6B21A8", fontWeight: "600", background: "#FAF5FF", textAlign: "center" }}>
+                          🏛️ Logo 2 (ALIMEN-TERRE)
+                        </div>
                       )}
                     </div>
 
                     {/* LOGO 3 (DROIT - AJEDSAC) */}
-                    <div className="header-logo-box right" style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                      {rightLogoImg && (
+                    <div className="header-logo-box right" style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                      {rightLogoImg ? (
                         <img
                           src={rightLogoImg}
                           alt="Logo 3 (AJeDSAC)"
                           className="header-logo-img-right"
-                          style={{ maxHeight: `${rightLogoSize}px`, maxWidth: "160px", objectFit: "contain" }}
+                          style={{ maxHeight: `${rightLogoSize}px`, maxWidth: "170px", objectFit: "contain" }}
                         />
+                      ) : (
+                        <div style={{ border: "1.5px dashed #2563EB", borderRadius: "8px", padding: "6px 12px", fontSize: "11px", color: "#1E40AF", fontWeight: "600", background: "#EFF6FF", textAlign: "center" }}>
+                          👉 Logo 3 (AJeDSAC)
+                        </div>
                       )}
                     </div>
                   </div>
 
                   {/* MAIN TITLE ATTESTATION */}
-                  <header className="cert-header-layout" style={{ justifyContent: "center" }}>
+                  <header className="cert-header-layout" style={{ justifyContent: "center", marginTop: "10px", marginBottom: "14px" }}>
                     <div 
                       className={`cert-header-center interactive-tappable ${selectedElement === "title" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("title")}
@@ -3019,13 +3031,14 @@ export default function AttestationFormation({ onBack }) {
                           fontSize: activeTheme.id === "navy-gold-excellence" ? "clamp(36px, 5.5vw, 56px)" : `clamp(28px, 5vw, ${customTitleSize}px)`,
                           letterSpacing: activeTheme.id === "navy-gold-excellence" ? "0.08em" : "normal",
                           fontWeight: 800,
-                          textTransform: "uppercase"
+                          textTransform: "uppercase",
+                          margin: 0
                         }}
                       >
                         {data.title || "ATTESTATION"}
                       </h1>
                       
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "6px 0", justifyContent: "center" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "8px 0 0 0", justifyContent: "center" }}>
                         <span style={{ width: "40px", height: "1px", background: "#d4af37" }} />
                         <span style={{ width: "6px", height: "6px", transform: "rotate(45deg)", backgroundColor: "#0b1f4b", display: "inline-block" }} />
                         <span style={{ width: "8px", height: "8px", transform: "rotate(45deg)", backgroundColor: "#d4af37", display: "inline-block" }} />
