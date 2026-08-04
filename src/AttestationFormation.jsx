@@ -3032,11 +3032,12 @@ export default function AttestationFormation({ onBack }) {
                     </div>
                   </div>
 
-                  {/* MAIN TITLE ATTESTATION */}
-                  <header className="cert-header-layout" style={{ justifyContent: "center", marginTop: "10px", marginBottom: "14px" }}>
+                  {/* MAIN TITLE ATTESTATION (PERFECTLY CENTERED) */}
+                  <header className="cert-header-layout" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginTop: "16px", marginBottom: "20px" }}>
                     <div 
                       className={`cert-header-center interactive-tappable ${selectedElement === "title" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("title")}
+                      style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", width: "100%" }}
                     >
                       <h1 
                         className="main-title"
@@ -3045,18 +3046,20 @@ export default function AttestationFormation({ onBack }) {
                           letterSpacing: activeTheme.id === "navy-gold-excellence" ? "0.08em" : "normal",
                           fontWeight: 800,
                           textTransform: "uppercase",
-                          margin: 0
+                          textAlign: "center",
+                          margin: "0 auto",
+                          width: "100%"
                         }}
                       >
                         {data.title || "ATTESTATION"}
                       </h1>
                       
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "8px 0 0 0", justifyContent: "center" }}>
-                        <span style={{ width: "40px", height: "1px", background: "#d4af37" }} />
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "10px auto 0 auto", justifyContent: "center" }}>
+                        <span style={{ width: "45px", height: "1.5px", background: "#d4af37" }} />
                         <span style={{ width: "6px", height: "6px", transform: "rotate(45deg)", backgroundColor: "#0b1f4b", display: "inline-block" }} />
                         <span style={{ width: "8px", height: "8px", transform: "rotate(45deg)", backgroundColor: "#d4af37", display: "inline-block" }} />
                         <span style={{ width: "6px", height: "6px", transform: "rotate(45deg)", backgroundColor: "#0b1f4b", display: "inline-block" }} />
-                        <span style={{ width: "40px", height: "1px", background: "#d4af37" }} />
+                        <span style={{ width: "45px", height: "1.5px", background: "#d4af37" }} />
                       </div>
                     </div>
                   </header>
