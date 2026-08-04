@@ -3085,7 +3085,7 @@ export default function AttestationFormation({ onBack }) {
                     </p>
 
                     <p className="partnership-phrase">
-                      {renderFormattedText(data.partnershipText || "organisée par l'<b>ONG ESPOIR ET NATURE</b> en partenariat avec la <b>Maison AFI COLLECTION du Bénin</b>.")}
+                      {renderFormattedText(data.partnershipText || "Organisées par la <b>Maison AFI COLLECTION du Benin</b> en partenariat avec l’<b>ONG Internationale ALIMEN-TERRE</b> et l’<b>Association des Jeunes Dynamiques pour le Développement Socioéconomique de l’Arrondissement de Colli (AJeDSAC)</b>.")}
                     </p>
 
                     <p className="closing-phrase">
