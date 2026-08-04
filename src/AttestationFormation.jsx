@@ -396,9 +396,11 @@ export default function AttestationFormation({ onBack }) {
   // Save Toast Feedback
   const [showSaveToast, setShowSaveToast] = useState(false);
 
-  // Logos (Haut gauche & droit)
+  // Logos (Haut Gauche, Centre & Droit)
   const [leftLogoImg, setLeftLogoImg] = useState(null);
   const [leftLogoSize, setLeftLogoSize] = useState(75);
+  const [centerLogoImg, setCenterLogoImg] = useState(null);
+  const [centerLogoSize, setCenterLogoSize] = useState(75);
   const [rightLogoImg, setRightLogoImg] = useState(null);
   const [rightLogoSize, setRightLogoSize] = useState(75);
 
@@ -638,6 +640,15 @@ export default function AttestationFormation({ onBack }) {
     if (file) {
       const reader = new FileReader();
       reader.onload = (evt) => setRightLogoImg(evt.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCenterLogoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => setCenterLogoImg(evt.target.result);
       reader.readAsDataURL(file);
     }
   };
@@ -1985,8 +1996,54 @@ export default function AttestationFormation({ onBack }) {
                   )}
                 </div>
 
+                {/* LOGO 2 CENTRE (ONG ALIMEN-TERRE) */}
                 <div className="presets-box" style={{ marginTop: "10px" }}>
-                  <label style={{ color: "#2563EB" }}>👉 Logo Haut-Droit (ex: Maison AFI COLLECTION)</label>
+                  <label style={{ color: "#805AD5" }}>🏛️ Logo 2 : Haut-Centre (ex: ONG ALIMEN-TERRE)</label>
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Téléverser Logo Centre (PNG / JPEG)</label>
+                    <input type="file" accept="image/*" onChange={handleCenterLogoUpload} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Taille du Logo Centre ({centerLogoSize}px)</label>
+                    <input
+                      type="range"
+                      min={30}
+                      max={380}
+                      value={centerLogoSize}
+                      onChange={(e) => setCenterLogoSize(Number(e.target.value))}
+                    />
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
+                      {[
+                        { label: "Petit", size: 60 },
+                        { label: "Moyen", size: 100 },
+                        { label: "Grand", size: 160 },
+                        { label: "Géant", size: 220 },
+                        { label: "XXL", size: 280 }
+                      ].map((p) => (
+                        <button
+                          key={p.label}
+                          type="button"
+                          className={`chip ${centerLogoSize === p.size ? "active" : ""}`}
+                          onClick={() => setCenterLogoSize(p.size)}
+                          style={{ padding: "3px 8px", fontSize: "10px" }}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {centerLogoImg && (
+                    <button className="btn btn-secondary btn-sm" onClick={() => setCenterLogoImg(null)} style={{ marginTop: "6px" }}>
+                      Supprimer logo centre
+                    </button>
+                  )}
+                </div>
+
+                {/* LOGO 3 DROIT (AJEDSAC) */}
+                <div className="presets-box" style={{ marginTop: "10px" }}>
+                  <label style={{ color: "#2563EB" }}>👉 Logo 3 : Haut-Droit (ex: AJeDSAC)</label>
                   <div className="input-group" style={{ marginBottom: "8px" }}>
                     <label>Téléverser Logo Droit (PNG / JPEG)</label>
                     <input type="file" accept="image/*" onChange={handleRightLogoUpload} />
@@ -2007,8 +2064,7 @@ export default function AttestationFormation({ onBack }) {
                         { label: "Moyen", size: 100 },
                         { label: "Grand", size: 160 },
                         { label: "Géant", size: 220 },
-                        { label: "XXL", size: 280 },
-                        { label: "Maxi XL", size: 350 }
+                        { label: "XXL", size: 280 }
                       ].map((p) => (
                         <button
                           key={p.label}
@@ -2912,18 +2968,47 @@ export default function AttestationFormation({ onBack }) {
 
                 {/* INNER CONTENT WITH FULL DYNAMIC TYPOGRAPHY */}
                 <div className="cert-inner-content">
-                  {/* HEADER & LOGOS WITH BALANCED 3-COLUMN LAYOUT */}
-                  <header className="cert-header-layout">
-                    <div className="header-logo-box left">
+                  {/* TOP 3 PARTNER LOGOS ROW */}
+                  <div className="cert-header-logos-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "0 10px", marginBottom: "12px" }}>
+                    {/* LOGO 1 (GAUCHE - MAISON AFI) */}
+                    <div className="header-logo-box left" style={{ flex: 1, display: "flex", justifyContent: "flex-start" }}>
                       {leftLogoImg && (
                         <img
                           src={leftLogoImg}
-                          alt="Logo Gauche"
+                          alt="Logo 1 (Maison AFI)"
                           className="header-logo-img-left"
+                          style={{ maxHeight: `${leftLogoSize}px`, maxWidth: "160px", objectFit: "contain" }}
                         />
                       )}
                     </div>
 
+                    {/* LOGO 2 (CENTRE - ONG ALIMEN-TERRE) */}
+                    <div className="header-logo-box center" style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+                      {centerLogoImg && (
+                        <img
+                          src={centerLogoImg}
+                          alt="Logo 2 (ALIMEN-TERRE)"
+                          className="header-logo-img-center"
+                          style={{ maxHeight: `${centerLogoSize}px`, maxWidth: "160px", objectFit: "contain" }}
+                        />
+                      )}
+                    </div>
+
+                    {/* LOGO 3 (DROIT - AJEDSAC) */}
+                    <div className="header-logo-box right" style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+                      {rightLogoImg && (
+                        <img
+                          src={rightLogoImg}
+                          alt="Logo 3 (AJeDSAC)"
+                          className="header-logo-img-right"
+                          style={{ maxHeight: `${rightLogoSize}px`, maxWidth: "160px", objectFit: "contain" }}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* MAIN TITLE ATTESTATION */}
+                  <header className="cert-header-layout" style={{ justifyContent: "center" }}>
                     <div 
                       className={`cert-header-center interactive-tappable ${selectedElement === "title" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("title")}
@@ -2940,23 +3025,13 @@ export default function AttestationFormation({ onBack }) {
                         {data.title || "ATTESTATION"}
                       </h1>
                       
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "6px 0" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "6px 0", justifyContent: "center" }}>
                         <span style={{ width: "40px", height: "1px", background: "#d4af37" }} />
                         <span style={{ width: "6px", height: "6px", transform: "rotate(45deg)", backgroundColor: "#0b1f4b", display: "inline-block" }} />
                         <span style={{ width: "8px", height: "8px", transform: "rotate(45deg)", backgroundColor: "#d4af37", display: "inline-block" }} />
                         <span style={{ width: "6px", height: "6px", transform: "rotate(45deg)", backgroundColor: "#0b1f4b", display: "inline-block" }} />
                         <span style={{ width: "40px", height: "1px", background: "#d4af37" }} />
                       </div>
-                    </div>
-
-                    <div className="header-logo-box right">
-                      {rightLogoImg && (
-                        <img
-                          src={rightLogoImg}
-                          alt="Logo Droit"
-                          className="header-logo-img-right"
-                        />
-                      )}
                     </div>
                   </header>
 
