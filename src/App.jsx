@@ -10,10 +10,12 @@ import AfficheGenerator from "./components/AfficheGenerator.jsx";
 import CvGenerator from "./components/CvGenerator.jsx";
 import RapportMemoireGenerator from "./components/RapportMemoireGenerator.jsx";
 import BrandKitModal from "./components/BrandKitModal.jsx";
+import PdfAttestationEditor from "./components/PdfAttestationEditor.jsx";
 
 export default function App() {
   const [activeDocType, setActiveDocType] = useState("home");
   const [isBrandKitOpen, setIsBrandKitOpen] = useState(false);
+  const [importedPdfData, setImportedPdfData] = useState(null);
 
   return (
     <div className="min-h-screen bg-[#F1F5F9] text-slate-900 font-sans selection:bg-blue-500 selection:text-white">
@@ -48,7 +50,21 @@ export default function App() {
         )}
 
         {activeDocType === "attestation" && (
-          <AttestationFormation onBack={() => setActiveDocType("home")} />
+          <AttestationFormation
+            onBack={() => setActiveDocType("home")}
+            initialData={importedPdfData}
+            onOpenPdfEditor={() => setActiveDocType("pdf_editor")}
+          />
+        )}
+
+        {activeDocType === "pdf_editor" && (
+          <PdfAttestationEditor
+            onBack={() => setActiveDocType("home")}
+            onApplyToForm={(extractedData) => {
+              setImportedPdfData(extractedData);
+              setActiveDocType("attestation");
+            }}
+          />
         )}
 
         {activeDocType === "courrier" && (

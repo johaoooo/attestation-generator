@@ -69,6 +69,17 @@ export default function Navbar({ activeDocType, setActiveDocType, onOpenBrandKit
             <span>Accueil</span>
           </button>
 
+          {/* 1b. Modifier un PDF */}
+          <button
+            onClick={() => handleNavClick("pdf_editor")}
+            className={`nav-item ${activeDocType === "pdf_editor" ? "active" : ""}`}
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            <FileText className="w-4 h-4 text-red-600" />
+            <span>Modifier un PDF</span>
+            <span style={{ fontSize: "9px", background: "#DC2626", color: "#FFFFFF", padding: "1px 5px", borderRadius: "4px", fontWeight: "800" }}>PDF</span>
+          </button>
+
           {/* 2. Studio Marketing Dropdown */}
           <div
             ref={studioRef}

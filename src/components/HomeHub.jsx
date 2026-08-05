@@ -16,6 +16,14 @@ export default function HomeHub({ setActiveDocType, onOpenBrandKit }) {
 
   const documentTypes = [
     {
+      id: "pdf_editor",
+      title: "Uploader & Modifier un PDF",
+      badge: "Nouveau — Import PDF",
+      icon: FileText,
+      iconColor: "#DC2626",
+      description: "Importez une attestation ou document en PDF pour modifier ses textes, masquer les anciennes données et ré-exporter en PDF HD."
+    },
+    {
       id: "canva_studio",
       title: "Canva & Photoshop Studio PME",
       badge: "Nouveau — Marketing",

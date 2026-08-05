@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDFModule, { jsPDF as jsPDFNamed } from "jspdf";
+import CertificateAFI, { CertificateCorner } from "./components/CertificateAFI.jsx";
+import CertificateOfAchievement from "./components/CertificateOfAchievement.jsx";
+import SideBorders from "./components/SideBorders.jsx";
+import PlacableMotifs from "./components/PlacableMotifs.jsx";
+import "./components/CertificateAFI.css";
 
 const MOIS = [
   "janvier", "février", "mars", "avril", "mai", "juin",
@@ -52,10 +57,14 @@ const DEFAULT_DATA = {
   numero: "AP-2026-0104",
   signataire: "La Directrice",
   fonction: "(Maison AFI COLLECTION du Bénin)",
+  nomSignataire1: "Mme TOSSA Afiavi G. H.",
   signataire2: "La Présidente",
   fonction2: "(ONG Internationale ALIMEN-Terre)",
+  nomSignataire2: "Mme la Présidente ALIMEN-TERRE",
   signataire3: "Le Représentant",
   fonction3: "(AJeDSAC)",
+  nomSignataire3: "M. le Représentant AJeDSAC",
+  legalFooterText: "AFI COLLECTION DU BÉNIN | RCCM RB/ABC/15 A 2297 | IFU 12013190056803",
 };
 
 function ExcellenceShield() {
@@ -78,6 +87,34 @@ function ExcellenceShield() {
 }
 
 const THEMES = [
+  {
+    id: "certificate-achievement-navy-gold",
+    name: "🏆 Certificate of Achievement (Bleu Nuit, Or & Lauriers SVG)",
+    bg: "#ffffff",
+    border: "#F5A93B",
+    borderSoft: "#dedede",
+    primary: "#1B2A6B",
+    accent: "#F5A93B",
+    gold: "#F5A93B",
+    sealBg: "#16225a",
+    fontHeader: "'Montserrat', sans-serif",
+    fontBody: "'Montserrat', sans-serif",
+    cardBg: "#ffffff",
+  },
+  {
+    id: "afi-participation-waves",
+    name: "🌿 Maison AFI COLLECTION (Participation - Vert & Or Vagues)",
+    bg: "#fdfaf3",
+    border: "#d4a017",
+    borderSoft: "#f0c95a",
+    primary: "#0a2f1a",
+    accent: "#1a6b3c",
+    gold: "#d4a017",
+    sealBg: "#1a6b3c",
+    fontHeader: "'Playfair Display', serif",
+    fontBody: "'Playfair Display', serif",
+    cardBg: "#fdfaf3",
+  },
   {
     id: "navy-gold-excellence",
     name: "👑 Certificate of Excellence (Bleu & Or)",
@@ -374,8 +411,23 @@ const FONTS_OPTIONS = [
   { label: "Monospace (Police Chiffrée)", value: "monospace" },
 ];
 
-export default function AttestationFormation({ onBack }) {
+export default function AttestationFormation({ onBack, initialData, onOpenPdfEditor }) {
   const [data, setData] = useState({ ...DEFAULT_DATA });
+
+  useEffect(() => {
+    if (initialData) {
+      setData((prev) => ({
+        ...prev,
+        title: initialData.title || prev.title,
+        destinataire: initialData.destinataire || prev.destinataire,
+        bodyText: initialData.formation
+          ? `a suivi avec succès et une assiduité le programme de formation en <b>${initialData.formation}</b>,`
+          : prev.bodyText,
+        dateDelivrance: initialData.dateDelivrance || prev.dateDelivrance,
+        numero: initialData.numero || prev.numero
+      }));
+    }
+  }, [initialData]);
 
   const [activeTheme, setActiveTheme] = useState(THEMES[0]);
   const [activeTab, setActiveTab] = useState("content");
@@ -424,38 +476,52 @@ export default function AttestationFormation({ onBack }) {
   const [borderInset, setBorderInset] = useState(16);
   const [customBorderColor, setCustomBorderColor] = useState("");
   const [cornerStyle, setCornerStyle] = useState("classic");
+  const [sideDesignStyle, setSideDesignStyle] = useState("none");
+  const [customMotifs, setCustomMotifs] = useState([
+    { id: "m1", enabled: false, type: "afi-wave", size: 240, rotation: 0, opacity: 1, corner: "top-right" },
+    { id: "m2", enabled: false, type: "afi-gold-ribbon-curved", size: 240, rotation: 180, opacity: 1, corner: "bottom-left" },
+    { id: "m3", enabled: false, type: "luxury-guilloche-filigree", size: 220, rotation: 0, opacity: 0.95, corner: "top-left" },
+    { id: "m4", enabled: false, type: "art-deco-corner", size: 200, rotation: 0, opacity: 0.9, corner: "bottom-right" },
+  ]);
 
   // INDIVIDUAL FONT & SIZE CONTROLS FOR ALL ELEMENTS
   const [customTitleFont, setCustomTitleFont] = useState("'Times New Roman', Times, serif");
-  const [customTitleSize, setCustomTitleSize] = useState(52);
+  const [customTitleSize, setCustomTitleSize] = useState(46);
   const [customTitleColor, setCustomTitleColor] = useState("");
 
   const [introFont, setIntroFont] = useState("'Times New Roman', Times, serif");
-  const [introSize, setIntroSize] = useState(20);
+  const [introSize, setIntroSize] = useState(16);
 
   const [customNameFont, setCustomNameFont] = useState("'Times New Roman', Times, serif");
-  const [customNameSize, setCustomNameSize] = useState(34);
+  const [customNameSize, setCustomNameSize] = useState(30);
   const [customNameColor, setCustomNameColor] = useState("");
   const [isNameBold, setIsNameBold] = useState(true);
   const [isNameItalic, setIsNameItalic] = useState(false);
 
   const [bodyFont, setBodyFont] = useState("'Times New Roman', Times, serif");
-  const [bodySize, setBodySize] = useState(20);
+  const [bodySize, setBodySize] = useState(16);
 
   const [partnershipFont, setPartnershipFont] = useState("'Times New Roman', Times, serif");
-  const [partnershipSize, setPartnershipSize] = useState(20);
+  const [partnershipSize, setPartnershipSize] = useState(14.5);
 
   const [closingFont, setClosingFont] = useState("'Times New Roman', Times, serif");
-  const [closingSize, setClosingSize] = useState(20);
+  const [closingSize, setClosingSize] = useState(14.5);
 
   const [datePlaceFont, setDatePlaceFont] = useState("'Times New Roman', Times, serif");
-  const [datePlaceSize, setDatePlaceSize] = useState(20);
+  const [datePlaceSize, setDatePlaceSize] = useState(15);
+
+  const [legalFooterFont, setLegalFooterFont] = useState("'Times New Roman', Times, serif");
+  const [legalFooterSize, setLegalFooterSize] = useState(11);
 
   const [signatoryFont, setSignatoryFont] = useState("'Times New Roman', Times, serif");
   const [signatorySize, setSignatorySize] = useState(14);
 
   const [numeroFont, setNumeroFont] = useState("monospace");
   const [numeroSize, setNumeroSize] = useState(9.5);
+
+  // ZOOM / ÉCHELLE DU CONTENU TEXTE POUR ÉVITER LES DÉBORDEMENTS
+  const [contentScale, setContentScale] = useState(1.0);
+  const [contentWidthPercent, setContentWidthPercent] = useState(88);
 
   // DYNAMIC SIZING CONTROLS FOR SIGNATURES & STAMPS
   const [sig1Size, setSig1Size] = useState(55);
@@ -500,13 +566,26 @@ export default function AttestationFormation({ onBack }) {
     seal: { x: 0, y: 0 },
     sig1: { x: 0, y: 0 },
     sig2: { x: 0, y: 0 },
+    sig3: { x: 0, y: 0 },
+    sigHeader1: { x: 0, y: 0 },
+    sigHeader2: { x: 0, y: 0 },
+    sigHeader3: { x: 0, y: 0 },
+    sigImg1: { x: 0, y: 0 },
+    sigImg2: { x: 0, y: 0 },
+    sigImg3: { x: 0, y: 0 },
+    sigName1: { x: 0, y: 0 },
+    sigName2: { x: 0, y: 0 },
+    sigName3: { x: 0, y: 0 },
+    legalFooter: { x: 0, y: 0 },
     stamp: { x: 0, y: 0 },
     logoLeft: { x: 0, y: 0 },
+    logoCenter: { x: 0, y: 0 },
     logoRight: { x: 0, y: 0 },
   });
   const [dragState, setDragState] = useState(null);
 
   const handleTouchStart = (key, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
     const touch = e.touches ? e.touches[0] : e;
     const currentPos = positions[key] || { x: 0, y: 0 };
     setDragState({
@@ -529,6 +608,226 @@ export default function AttestationFormation({ onBack }) {
 
   const handleTouchEnd = () => {
     setDragState(null);
+  };
+
+  useEffect(() => {
+    if (!dragState) return;
+    const onMove = (e) => {
+      const touch = e.touches ? e.touches[0] : e;
+      const newX = touch.clientX - dragState.startX;
+      const newY = touch.clientY - dragState.startY;
+      setPositions(prev => ({
+        ...prev,
+        [dragState.key]: { x: newX, y: newY }
+      }));
+    };
+    const onEnd = () => setDragState(null);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onEnd);
+    window.addEventListener("touchmove", onMove);
+    window.addEventListener("touchend", onEnd);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onEnd);
+      window.removeEventListener("touchmove", onMove);
+      window.removeEventListener("touchend", onEnd);
+    };
+  }, [dragState]);
+
+  // Saved Models / Templates Manager State
+  const [savedModels, setSavedModels] = useState(() => {
+    try {
+      const stored = localStorage.getItem("attestation_saved_models");
+      return stored ? JSON.parse(stored) : [
+        { id: "model_default_1", name: "Modèle 1 : Attestation de Formation (ONG ESPOIR ET NATURE & AFI)" },
+        { id: "model_afi_participation", name: "Modèle 2 : Attestation de Participation (Maison AFI COLLECTION)" },
+        { id: "model_certificate_achievement", name: "Nouveau Modèle : Certificate of Achievement (Navy & Gold SVG)" }
+      ];
+    } catch {
+      return [
+        { id: "model_default_1", name: "Modèle 1 : Attestation de Formation (ONG ESPOIR ET NATURE & AFI)" },
+        { id: "model_afi_participation", name: "Modèle 2 : Attestation de Participation (Maison AFI COLLECTION)" },
+        { id: "model_certificate_achievement", name: "Nouveau Modèle : Certificate of Achievement (Navy & Gold SVG)" }
+      ];
+    }
+  });
+  const [currentModelId, setCurrentModelId] = useState("model_default_1");
+  const [newModelNameInput, setNewModelNameInput] = useState("");
+  const [isCreatingModel, setIsCreatingModel] = useState(false);
+
+  const buildCurrentSnapshot = () => ({
+    data,
+    activeTheme,
+    leftLogoImg,
+    leftLogoSize,
+    centerLogoImg,
+    centerLogoSize,
+    rightLogoImg,
+    rightLogoSize,
+    enableSecondSignatory,
+    showSig1,
+    showSig2,
+    showSig3,
+    showStamp,
+    customSignatureImg,
+    customSignatureImg2,
+    customSignatureImg3,
+    customStampImg,
+    sig1Size,
+    sig2Size,
+    sig3Size,
+    stampSize,
+    borderStyle,
+    borderWidth,
+    borderInset,
+    customBorderColor,
+    sideDesignStyle,
+    customMotifs,
+    customTitleFont,
+    customTitleSize,
+    customTitleColor,
+    introFont,
+    introSize,
+    customNameFont,
+    customNameSize,
+    customNameColor,
+    isNameBold,
+    isNameItalic,
+    bodyFont,
+    bodySize,
+    partnershipFont,
+    partnershipSize,
+    closingFont,
+    closingSize,
+    datePlaceFont,
+    datePlaceSize,
+    signatoryFont,
+    signatorySize,
+    positions,
+  });
+
+  const applySnapshot = (snap) => {
+    if (!snap) return;
+    if (snap.data) setData(snap.data);
+    if (snap.activeTheme) setActiveTheme(snap.activeTheme);
+    if (snap.leftLogoImg !== undefined) setLeftLogoImg(snap.leftLogoImg);
+    if (snap.leftLogoSize !== undefined) setLeftLogoSize(snap.leftLogoSize);
+    if (snap.centerLogoImg !== undefined) setCenterLogoImg(snap.centerLogoImg);
+    if (snap.centerLogoSize !== undefined) setCenterLogoSize(snap.centerLogoSize);
+    if (snap.rightLogoImg !== undefined) setRightLogoImg(snap.rightLogoImg);
+    if (snap.rightLogoSize !== undefined) setRightLogoSize(snap.rightLogoSize);
+    if (snap.enableSecondSignatory !== undefined) setEnableSecondSignatory(snap.enableSecondSignatory);
+    if (snap.showSig1 !== undefined) setShowSig1(snap.showSig1);
+    if (snap.showSig2 !== undefined) setShowSig2(snap.showSig2);
+    if (snap.showSig3 !== undefined) setShowSig3(snap.showSig3);
+    if (snap.showStamp !== undefined) setShowStamp(snap.showStamp);
+    if (snap.customSignatureImg !== undefined) setCustomSignatureImg(snap.customSignatureImg);
+    if (snap.customSignatureImg2 !== undefined) setCustomSignatureImg2(snap.customSignatureImg2);
+    if (snap.customSignatureImg3 !== undefined) setCustomSignatureImg3(snap.customSignatureImg3);
+    if (snap.customStampImg !== undefined) setCustomStampImg(snap.customStampImg);
+    if (snap.sig1Size !== undefined) setSig1Size(snap.sig1Size);
+    if (snap.sig2Size !== undefined) setSig2Size(snap.sig2Size);
+    if (snap.sig3Size !== undefined) setSig3Size(snap.sig3Size);
+    if (snap.stampSize !== undefined) setStampSize(snap.stampSize);
+    if (snap.borderStyle !== undefined) setBorderStyle(snap.borderStyle);
+    if (snap.borderWidth !== undefined) setBorderWidth(snap.borderWidth);
+    if (snap.borderInset !== undefined) setBorderInset(snap.borderInset);
+    if (snap.customBorderColor !== undefined) setCustomBorderColor(snap.customBorderColor);
+    if (snap.sideDesignStyle !== undefined) setSideDesignStyle(snap.sideDesignStyle);
+    if (snap.customMotifs !== undefined) setCustomMotifs(snap.customMotifs);
+    if (snap.customTitleFont !== undefined) setCustomTitleFont(snap.customTitleFont);
+    if (snap.customTitleSize !== undefined) setCustomTitleSize(snap.customTitleSize);
+    if (snap.customTitleColor !== undefined) setCustomTitleColor(snap.customTitleColor);
+    if (snap.introFont !== undefined) setIntroFont(snap.introFont);
+    if (snap.introSize !== undefined) setIntroSize(snap.introSize);
+    if (snap.customNameFont !== undefined) setCustomNameFont(snap.customNameFont);
+    if (snap.customNameSize !== undefined) setCustomNameSize(snap.customNameSize);
+    if (snap.customNameColor !== undefined) setCustomNameColor(snap.customNameColor);
+    if (snap.isNameBold !== undefined) setIsNameBold(snap.isNameBold);
+    if (snap.isNameItalic !== undefined) setIsNameItalic(snap.isNameItalic);
+    if (snap.bodyFont !== undefined) setBodyFont(snap.bodyFont);
+    if (snap.bodySize !== undefined) setBodySize(snap.bodySize);
+    if (snap.partnershipFont !== undefined) setPartnershipFont(snap.partnershipFont);
+    if (snap.partnershipSize !== undefined) setPartnershipSize(snap.partnershipSize);
+    if (snap.closingFont !== undefined) setClosingFont(snap.closingFont);
+    if (snap.closingSize !== undefined) setClosingSize(snap.closingSize);
+    if (snap.datePlaceFont !== undefined) setDatePlaceFont(snap.datePlaceFont);
+    if (snap.datePlaceSize !== undefined) setDatePlaceSize(snap.datePlaceSize);
+    if (snap.signatoryFont !== undefined) setSignatoryFont(snap.signatoryFont);
+    if (snap.signatorySize !== undefined) setSignatorySize(snap.signatorySize);
+    if (snap.positions) setPositions(snap.positions);
+  };
+
+  const handleSaveActiveModel = () => {
+    try {
+      const snap = buildCurrentSnapshot();
+      localStorage.setItem(`attestation_model_snap_${currentModelId}`, JSON.stringify(snap));
+      setShowSaveToast(true);
+      setTimeout(() => setShowSaveToast(false), 2500);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleSwitchModel = (newModelId) => {
+    try {
+      const snap = buildCurrentSnapshot();
+      localStorage.setItem(`attestation_model_snap_${currentModelId}`, JSON.stringify(snap));
+    } catch (e) {
+      console.error(e);
+    }
+
+    try {
+      const storedSnap = localStorage.getItem(`attestation_model_snap_${newModelId}`);
+      if (storedSnap) {
+        applySnapshot(JSON.parse(storedSnap));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    setCurrentModelId(newModelId);
+  };
+
+  const handleConfirmCreateNewModel = () => {
+    const name = newModelNameInput.trim() || `Modèle ${savedModels.length + 1}`;
+    const newId = `model_${Date.now()}`;
+
+    try {
+      const currentSnap = buildCurrentSnapshot();
+      localStorage.setItem(`attestation_model_snap_${currentModelId}`, JSON.stringify(currentSnap));
+    } catch (e) {
+      console.error(e);
+    }
+
+    const updatedModels = [...savedModels, { id: newId, name }];
+    setSavedModels(updatedModels);
+    try {
+      localStorage.setItem("attestation_saved_models", JSON.stringify(updatedModels));
+      const newSnap = buildCurrentSnapshot();
+      localStorage.setItem(`attestation_model_snap_${newId}`, JSON.stringify(newSnap));
+    } catch (e) {
+      console.error(e);
+    }
+
+    setCurrentModelId(newId);
+    setNewModelNameInput("");
+    setIsCreatingModel(false);
+    setShowSaveToast(true);
+    setTimeout(() => setShowSaveToast(false), 2500);
+  };
+
+  const handleDeleteCurrentModel = () => {
+    if (savedModels.length <= 1) return;
+    const remaining = savedModels.filter(m => m.id !== currentModelId);
+    setSavedModels(remaining);
+    try {
+      localStorage.setItem("attestation_saved_models", JSON.stringify(remaining));
+      localStorage.removeItem(`attestation_model_snap_${currentModelId}`);
+    } catch (e) {
+      console.error(e);
+    }
+    handleSwitchModel(remaining[0].id);
   };
 
   // Adjust zoom automatically based on screen width
@@ -1387,20 +1686,31 @@ export default function AttestationFormation({ onBack }) {
         }
 
         /* HEADER SECTION WITH PERFECT BALANCED GRID & ADAPTIVE TITLE */
-        .cert-header-layout {
+        .cert-logos-row,
+        .cert-header-logos-row {
           width: 100%;
-          display: grid;
-          grid-template-columns: minmax(120px, 1fr) auto minmax(120px, 1fr);
+          height: 44px;
+          min-height: 44px;
+          max-height: 44px;
+          display: flex;
+          justify-content: space-between;
           align-items: center;
-          padding-top: 2px;
+          margin-top: -4px;
+          margin-bottom: 0px;
           gap: 16px;
           position: relative;
+          z-index: 20;
+          overflow: visible;
+          flex-shrink: 0;
         }
 
         .header-logo-box {
           display: flex;
           align-items: center;
           justify-content: center;
+          position: relative;
+          overflow: visible;
+          height: 100%;
         }
 
         .header-logo-box.left {
@@ -1412,15 +1722,30 @@ export default function AttestationFormation({ onBack }) {
         }
 
         .header-logo-img-left {
-          max-width: ${leftLogoSize}px;
+          position: absolute;
+          height: ${leftLogoSize}px;
           max-height: ${leftLogoSize}px;
+          max-width: 320px;
           object-fit: contain;
+          transition: all 0.15s ease;
+        }
+
+        .header-logo-img-center {
+          position: absolute;
+          height: ${centerLogoSize}px;
+          max-height: ${centerLogoSize}px;
+          max-width: 320px;
+          object-fit: contain;
+          transition: all 0.15s ease;
         }
 
         .header-logo-img-right {
-          max-width: ${rightLogoSize}px;
+          position: absolute;
+          height: ${rightLogoSize}px;
           max-height: ${rightLogoSize}px;
+          max-width: 320px;
           object-fit: contain;
+          transition: all 0.15s ease;
         }
 
         .cert-header-center {
@@ -1438,9 +1763,12 @@ export default function AttestationFormation({ onBack }) {
           font-weight: 700;
           color: ${customTitleColor || activeTheme.primary};
           line-height: 1.1;
-          margin-top: 2px;
+          margin-top: -18px;
           margin-bottom: 2px;
-          white-space: nowrap;
+          max-width: 95%;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          text-align: center;
         }
 
         .divider-ornament {
@@ -1464,15 +1792,19 @@ export default function AttestationFormation({ onBack }) {
 
         /* BODY SECTION - DYNAMIC FONTS & SIZES FOR ALL ELEMENTS */
         .cert-body-flow {
-          width: 100%;
-          max-width: 840px;
+          width: ${contentWidthPercent}%;
+          max-width: 820px;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 3px;
-          margin: -4px 0 2px 0;
+          margin: -4px auto 2px auto;
           flex-grow: 1;
           justify-content: flex-start;
+          transform: scale(${contentScale});
+          transform-origin: top center;
+          transition: transform 0.15s ease;
+          box-sizing: border-box;
         }
 
         .intro-phrase {
@@ -1480,14 +1812,20 @@ export default function AttestationFormation({ onBack }) {
           font-size: ${introSize}px;
           color: ${activeTheme.primary};
           line-height: 1.3;
+          max-width: 100%;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          text-align: center;
         }
 
         .recipient-name-block {
           width: 100%;
+          max-width: 100%;
           display: flex;
           justify-content: center;
           align-items: center;
           margin: 2px 0;
+          box-sizing: border-box;
         }
 
         .recipient-name {
@@ -1497,9 +1835,12 @@ export default function AttestationFormation({ onBack }) {
           font-style: ${isNameItalic ? "italic" : "normal"};
           color: ${customNameColor || activeTheme.primary};
           line-height: 1.2;
-          padding: 2px 28px;
+          padding: 2px 18px;
           border-bottom: 2px solid ${activeTheme.primary};
-          min-width: 440px;
+          min-width: min(440px, 90%);
+          max-width: 95%;
+          word-break: break-word;
+          overflow-wrap: break-word;
           text-align: center;
           letter-spacing: 0.03em;
         }
@@ -1509,7 +1850,9 @@ export default function AttestationFormation({ onBack }) {
           font-size: ${bodySize}px;
           color: ${activeTheme.primary};
           line-height: 1.35;
-          max-width: 800px;
+          max-width: 100%;
+          word-break: break-word;
+          overflow-wrap: break-word;
           text-align: center;
           font-weight: 400;
         }
@@ -1519,16 +1862,23 @@ export default function AttestationFormation({ onBack }) {
           font-size: ${partnershipSize}px;
           font-style: normal;
           color: ${activeTheme.primary};
-          max-width: 760px;
-          line-height: 1.3;
+          max-width: 100%;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          line-height: 1.35;
           opacity: 0.95;
+          text-align: center;
         }
 
         .closing-phrase {
           font-family: ${closingFont};
           font-size: ${closingSize}px;
           color: ${activeTheme.primary};
-          line-height: 1.3;
+          line-height: 1.35;
+          max-width: 100%;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          text-align: center;
         }
 
         /* FAIT À HOUEGBO LE 31 JUILLET 2026 */
@@ -1544,13 +1894,20 @@ export default function AttestationFormation({ onBack }) {
 
         /* FOOTER SECTION & TRIPLE SIGNATORIES */
         .cert-footer {
-          width: 100%;
+          width: 84%;
+          max-width: 760px;
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
-          gap: 12px;
+          gap: 16px;
           margin-top: auto;
-          padding-bottom: 4px;
+          margin-left: auto;
+          margin-right: auto;
+          margin-bottom: 24px;
+          transform: translateY(-20px);
+          flex-shrink: 0;
+          position: relative;
+          z-index: 10;
         }
 
         .signature-corner-left {
@@ -1582,23 +1939,23 @@ export default function AttestationFormation({ onBack }) {
 
         .signature-display {
           display: flex;
-          align-items: flex-end;
-          margin-bottom: 6px;
-          height: 48px;
+          align-items: center;
+          justify-content: center;
+          margin: 6px 0;
+          min-height: 52px;
           width: 100%;
           position: relative;
         }
 
         .signature-img {
-          position: absolute;
-          bottom: -5px;
+          position: relative;
           object-fit: contain;
           transform: rotate(-2deg);
           z-index: 5;
           pointer-events: none;
+          margin: 0 auto;
+          display: block;
         }
-        .signature-corner-left .signature-img { left: 0; }
-        .signature-corner-right .signature-img { right: 0; }
 
         .signature-handwriting {
           font-family: 'Great Vibes', cursive;
@@ -1608,11 +1965,15 @@ export default function AttestationFormation({ onBack }) {
         }
 
         .signature-line-corner {
-          width: 160px;
-          height: 1px;
-          background: ${activeTheme.primary};
-          opacity: 0.4;
-          margin-bottom: 4px;
+          display: none;
+        }
+
+        .signatory-header-block {
+          display: flex;
+          flex-direction: column;
+          align-items: inherit;
+          margin-bottom: 2px;
+          transform: translateY(-0.5cm);
         }
 
         .signatory-name {
@@ -1620,12 +1981,17 @@ export default function AttestationFormation({ onBack }) {
           font-size: ${signatorySize}px;
           font-weight: 700;
           color: ${activeTheme.primary};
+          line-height: 1.2;
+          margin: 0 0 2px 0;
         }
 
         .signatory-title {
           font-family: ${signatoryFont};
           font-size: ${signatorySize - 2}px;
           color: ${activeTheme.primary};
+          line-height: 1.2;
+          margin: 0;
+          opacity: 0.9;
         }
 
         /* SEAL AREA AT CENTER */
@@ -1800,10 +2166,157 @@ export default function AttestationFormation({ onBack }) {
                 </button>
               </div>
 
+              {/* GESTIONNAIRE DE MODÈLES ATTESTATION (MULTI-PRESETS) */}
+              <div style={{ background: "#F1F5F9", padding: "10px 12px", borderRadius: "10px", margin: "10px 0 12px 0", border: "1px solid #CBD5E1" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                  <label style={{ fontSize: "11px", fontWeight: "700", color: "#334155" }}>
+                    📂 Modèle d'Attestation Actuel :
+                  </label>
+                  <span style={{ fontSize: "10px", background: "#DBEAFE", color: "#1E40AF", padding: "2px 6px", borderRadius: "4px", fontWeight: "700" }}>
+                    {savedModels.length} modèle{savedModels.length > 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <select
+                    value={currentModelId}
+                    onChange={(e) => handleSwitchModel(e.target.value)}
+                    style={{ flex: 1, padding: "6px 8px", fontSize: "12px", fontWeight: "600", borderRadius: "6px", border: "1px solid #94A3B8", background: "#FFFFFF", color: "#0F172A" }}
+                  >
+                    {savedModels.map(m => (
+                      <option key={m.id} value={m.id}>{m.name}</option>
+                    ))}
+                  </select>
+
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleSaveActiveModel}
+                    style={{ padding: "6px 10px", fontSize: "11px", whiteSpace: "nowrap" }}
+                    title="Sauvegarder les modifications apportées au modèle actif"
+                  >
+                    💾 Sauver
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
+                  {!isCreatingModel ? (
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setIsCreatingModel(true)}
+                      style={{ flex: 1, padding: "5px 8px", fontSize: "11px", background: "#EFF6FF", color: "#1D4ED8", borderColor: "#BFDBFE", fontWeight: "600" }}
+                    >
+                      ➕ Créer un autre modèle
+                    </button>
+                  ) : (
+                    <div style={{ display: "flex", width: "100%", gap: "4px" }}>
+                      <input
+                        type="text"
+                        placeholder="Nom ex: Modèle Stage 2026"
+                        value={newModelNameInput}
+                        onChange={(e) => setNewModelNameInput(e.target.value)}
+                        style={{ flex: 1, padding: "4px 8px", fontSize: "11px", borderRadius: "4px", border: "1px solid #3B82F6" }}
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleConfirmCreateNewModel}
+                        style={{ padding: "4px 8px", fontSize: "11px" }}
+                      >
+                        Créer
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => setIsCreatingModel(false)}
+                        style={{ padding: "4px 8px", fontSize: "11px" }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
+                  {savedModels.length > 1 && !isCreatingModel && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleDeleteCurrentModel}
+                      style={{ padding: "5px 8px", fontSize: "11px", color: "#EF4444" }}
+                      title="Supprimer ce modèle"
+                    >
+                      🗑️
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* STYLISH PDF UPLOAD & EDIT BANNER IN STUDIO */}
+              <div
+                style={{
+                  background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
+                  border: "1.5px solid #3b82f6",
+                  borderRadius: "14px",
+                  padding: "14px 16px",
+                  margin: "12px 0 16px 0",
+                  boxShadow: "0 10px 25px rgba(15, 23, 42, 0.3)",
+                  color: "#ffffff"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyBetween: "space-between", gap: "10px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <div style={{ padding: "8px 10px", background: "rgba(59, 130, 246, 0.25)", borderRadius: "12px", color: "#60a5fa", border: "1px solid rgba(59, 130, 246, 0.4)", fontSize: "18px" }}>
+                      📜
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "13px", fontWeight: "800", color: "#f8fafc", display: "flex", alignItems: "center", gap: "6px" }}>
+                        Uploader un PDF à modifier
+                        <span style={{ fontSize: "9px", background: "#d97706", color: "#ffffff", padding: "2px 6px", borderRadius: "10px", fontWeight: "800" }}>PRO PDF</span>
+                      </div>
+                      <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "2px" }}>
+                        Importez un PDF pour modifier les textes ou masquer les anciennes données.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
+                  <button
+                    type="button"
+                    onClick={onOpenPdfEditor}
+                    style={{
+                      flex: 1,
+                      padding: "9px 12px",
+                      background: "linear-gradient(90deg, #2563eb, #4f46e5)",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: "10px",
+                      fontSize: "11.5px",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "6px",
+                      boxShadow: "0 4px 14px rgba(37, 99, 235, 0.35)",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    ✨ Ouvrir l'Édition Visuelle Directe sur PDF
+                  </button>
+                </div>
+              </div>
+
           <div className="tabs">
             <button className={`tab-btn ${activeTab === "content" ? "active" : ""}`} onClick={() => setActiveTab("content")}>
               Contenu
             </button>
+
+            <button className={`tab-btn ${activeTab === "pdf_import" ? "active" : ""}`} onClick={() => setActiveTab("pdf_import")}>
+              📄 Import PDF
+            </button>
+
             <button className={`tab-btn ${activeTab === "style" ? "active" : ""}`} onClick={() => setActiveTab("style")}>
               Format & Thèmes
             </button>
@@ -1825,12 +2338,104 @@ export default function AttestationFormation({ onBack }) {
           </div>
 
           <div className="tab-content">
+            {/* TAB PDF IMPORT */}
+            {activeTab === "pdf_import" && (
+              <div style={{ padding: "8px 0" }}>
+                <div
+                  style={{
+                    background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+                    border: "1.5px dashed #3b82f6",
+                    borderRadius: "14px",
+                    padding: "20px 16px",
+                    textAlign: "center",
+                    color: "#f8fafc",
+                    marginBottom: "16px"
+                  }}
+                >
+                  <div style={{ width: "48px", height: "48px", margin: "0 auto 12px", background: "rgba(59, 130, 246, 0.2)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "#60a5fa" }}>
+                    📥
+                  </div>
+                  <h3 style={{ fontSize: "15px", fontWeight: "800", marginBottom: "6px" }}>Importation & Retouche de PDF</h3>
+                  <p style={{ fontSize: "11.5px", color: "#94a3b8", marginBottom: "16px" }}>
+                    Chargez votre attestation existante au format PDF. Vous pourrez en extraire les textes ou retoucher visuellement le document avec des masques et de nouveaux textes.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={onOpenPdfEditor}
+                    className="btn btn-primary"
+                    style={{
+                      width: "100%",
+                      padding: "11px 16px",
+                      fontSize: "12.5px",
+                      fontWeight: "800",
+                      background: "linear-gradient(90deg, #2563eb, #4f46e5)",
+                      borderRadius: "10px",
+                      boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)"
+                    }}
+                  >
+                    🚀 Lancer l'Éditeur Studio PDF HD
+                  </button>
+                </div>
+
+                <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "14px" }}>
+                  <h4 style={{ fontSize: "12px", fontWeight: "800", color: "#1e293b", marginBottom: "8px" }}>
+                    💡 Que pouvez-vous faire avec cet outil ?
+                  </h4>
+                  <ul style={{ fontSize: "11.5px", color: "#475569", listStyle: "disc", paddingLeft: "16px", lineHeight: "1.6" }}>
+                    <li><b>Modifier n'importe quel texte</b> sur le PDF d'origine.</li>
+                    <li><b>Masquer/Effacer</b> un texte erroné ou obsolète avec un patch.</li>
+                    <li><b>Ajouter des signatures</b>, logos, sceaux et tampons officiels.</li>
+                    <li><b>Pré-remplir automatiquement</b> le studio avec le nom, cours et date.</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
             {/* TAB 1: CONTENT WITH SAVE BUTTON */}
             {activeTab === "content" && (
               <>
                 <button className="btn btn-save-content" onClick={handleSaveContent} style={{ width: "100%", justifyContent: "center", marginBottom: "4px" }}>
                   Enregistrer les modifications
                 </button>
+
+                {/* SLIDER DE ZOOM ET ÉCHELLE DU CONTENU TEXTE ET LARGEUR */}
+                <div className="input-group" style={{ margin: "8px 0 12px 0", padding: "10px", background: "#F0F9FF", border: "1.5px solid #0284C7", borderRadius: "8px" }}>
+                  <label style={{ color: "#0369A1", fontWeight: 800, fontSize: "12.5px" }}>
+                    🔍 Échelle / Zoom du Contenu Texte ({Math.round(contentScale * 100)}%)
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+                    <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "3px 8px" }} onClick={() => setContentScale(s => Math.max(0.7, Number((s - 0.05).toFixed(2))))}>-5%</button>
+                    <input
+                      type="range"
+                      min={0.7}
+                      max={1.5}
+                      step={0.02}
+                      value={contentScale}
+                      onChange={(e) => setContentScale(Number(e.target.value))}
+                      style={{ flex: 1 }}
+                    />
+                    <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "3px 8px" }} onClick={() => setContentScale(s => Math.min(1.5, Number((s + 0.05).toFixed(2))))}>+5%</button>
+                    <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "3px 8px" }} onClick={() => setContentScale(1.0)}>100%</button>
+                  </div>
+
+                  <div style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #BAE6FD" }}>
+                    <label style={{ color: "#0284C7", fontWeight: 700, fontSize: "11.5px" }}>
+                      ↔️ Largeur Maximale du Bloc Texte ({contentWidthPercent}%)
+                    </label>
+                    <input
+                      type="range"
+                      min={65}
+                      max={100}
+                      value={contentWidthPercent}
+                      onChange={(e) => setContentWidthPercent(Number(e.target.value))}
+                      style={{ width: "100%", marginTop: "2px" }}
+                    />
+                  </div>
+
+                  <span style={{ fontSize: "10.5px", color: "#64748B", marginTop: "4px", display: "block" }}>
+                    Ajuste la largeur et le zoom du texte pour empêcher tout débordement sur les bords latéraux.
+                  </span>
+                </div>
 
                 <div className="input-group">
                   <label>Titre du Document</label>
@@ -1870,6 +2475,106 @@ export default function AttestationFormation({ onBack }) {
                   <div className="input-group">
                     <label>Date de délivrance</label>
                     <input type="date" value={data.dateDelivrance} onChange={setField("dateDelivrance")} />
+                  </div>
+                </div>
+
+                <div className="input-group" style={{ marginTop: "10px", background: "#F8FAFC", padding: "10px", borderRadius: "8px", border: "1px solid #CBD5E1" }}>
+                  <label style={{ color: "#0B1F4B", fontWeight: 700 }}>Pied de page Légal / Institutionnel (Tout en bas)</label>
+                  <input 
+                    type="text" 
+                    value={data.legalFooterText || "AFI COLLECTION DU BÉNIN | RCCM RB/ABC/15 A 2297 | IFU 12013190056803"} 
+                    onChange={setField("legalFooterText")} 
+                    placeholder="Texte légal de bas de page"
+                  />
+
+                  {/* AJUSTEMENT POSITION & TAILLE DU PIED DE PAGE LÉGAL */}
+                  <div style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#2563EB", fontWeight: "700" }}>
+                      📍 Position & Taille du Texte Légal (Y: {positions.legalFooter?.y || 0}px | X: {positions.legalFooter?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.legalFooter?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.legalFooter?.y || 0;
+                            setPositions(prev => ({ ...prev, legalFooter: { ...(prev.legalFooter || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-300} max={300}
+                            value={positions.legalFooter?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, legalFooter: { ...(prev.legalFooter || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-300} max={300}
+                            value={positions.legalFooter?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, legalFooter: { ...(prev.legalFooter || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.legalFooter?.y || 0;
+                            setPositions(prev => ({ ...prev, legalFooter: { ...(prev.legalFooter || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.legalFooter?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.legalFooter?.x || 0;
+                            setPositions(prev => ({ ...prev, legalFooter: { ...(prev.legalFooter || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-300} max={300}
+                            value={positions.legalFooter?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, legalFooter: { ...(prev.legalFooter || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-300} max={300}
+                            value={positions.legalFooter?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, legalFooter: { ...(prev.legalFooter || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.legalFooter?.x || 0;
+                            setPositions(prev => ({ ...prev, legalFooter: { ...(prev.legalFooter || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>📏 Taille Police ({legalFooterSize}px)</span>
+                        <input
+                          type="range" min={7} max={24} step={0.5}
+                          value={legalFooterSize}
+                          onChange={(e) => setLegalFooterSize(Number(e.target.value))}
+                          style={{ width: "100%", marginTop: "2px" }}
+                        />
+                      </div>
+                      {(positions.legalFooter?.x !== 0 || positions.legalFooter?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, legalFooter: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position du texte légal
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -1946,6 +2651,31 @@ export default function AttestationFormation({ onBack }) {
                     <option value="qr">Code QR de Vérification</option>
                   </select>
                 </div>
+
+                {/* SÉLECTION DES MOTIFS ET DÉCORS DE BORDURES LATÉRALES (GAUCHE & DROITE) */}
+                <div className="presets-box" style={{ marginTop: "12px" }}>
+                  <label style={{ color: "#2563EB", fontWeight: "700" }}>🖼️ Motifs Latéraux (Bordures Gauche & Droite)</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginTop: "6px" }}>
+                    {[
+                      { id: "none", label: "🚫 Aucun motif" },
+                      { id: "royal-pillars", label: "🏛️ Piliers Royaux" },
+                      { id: "greek-key", label: "🏛️ Frise Grecque" },
+                      { id: "diamonds", label: "💎 Losanges Dorés" },
+                      { id: "laurels", label: "🌿 Lauriers Verticaux" },
+                      { id: "waves", label: "〰️ Vagues Entrelacées" },
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`chip ${sideDesignStyle === item.id ? "active" : ""}`}
+                        onClick={() => setSideDesignStyle(item.id)}
+                        style={{ padding: "6px 8px", fontSize: "11px", textAlign: "left" }}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </>
             )}
 
@@ -1961,33 +2691,59 @@ export default function AttestationFormation({ onBack }) {
 
                   <div className="input-group">
                     <label>Taille du Logo Gauche ({leftLogoSize}px)</label>
-                    <input
-                      type="range"
-                      min={30}
-                      max={380}
-                      value={leftLogoSize}
-                      onChange={(e) => setLeftLogoSize(Number(e.target.value))}
-                    />
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
-                      {[
-                        { label: "Petit", size: 60 },
-                        { label: "Moyen", size: 100 },
-                        { label: "Grand", size: 160 },
-                        { label: "Géant", size: 220 },
-                        { label: "XXL", size: 280 },
-                        { label: "Maxi XL", size: 350 }
-                      ].map((p) => (
-                        <button
-                          key={p.label}
-                          type="button"
-                          className={`chip ${leftLogoSize === p.size ? "active" : ""}`}
-                          onClick={() => setLeftLogoSize(p.size)}
-                          style={{ padding: "3px 8px", fontSize: "10px" }}
-                        >
-                          {p.label}
-                        </button>
-                      ))}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setLeftLogoSize(s => Math.max(20, s - 10))}>-10</button>
+                      <input
+                        type="range"
+                        min={20}
+                        max={600}
+                        value={leftLogoSize}
+                        onChange={(e) => setLeftLogoSize(Number(e.target.value))}
+                        style={{ flex: 1 }}
+                      />
+                      <input
+                        type="number"
+                        min={20}
+                        max={600}
+                        value={leftLogoSize}
+                        onChange={(e) => setLeftLogoSize(Number(e.target.value) || 20)}
+                        style={{ width: "65px", padding: "4px 6px", borderRadius: "6px", border: "1px solid #CBD5E1", fontSize: "12px", textAlign: "center" }}
+                      />
+                      <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setLeftLogoSize(s => Math.min(600, s + 10))}>+10</button>
                     </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION LOGO GAUCHE */}
+                  <div className="input-group" style={{ marginTop: "6px" }}>
+                    <label style={{ fontSize: "11px", color: "#475569" }}>📍 Position (X: {positions.logoLeft?.x || 0}px | Y: {positions.logoLeft?.y || 0}px)</label>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>Horizontal (X)</span>
+                        <input
+                          type="range" min={-200} max={200}
+                          value={positions.logoLeft?.x || 0}
+                          onChange={(e) => setPositions(prev => ({ ...prev, logoLeft: { ...(prev.logoLeft || { y: 0 }), x: Number(e.target.value) } }))}
+                        />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>Vertical (Y)</span>
+                        <input
+                          type="range" min={-150} max={150}
+                          value={positions.logoLeft?.y || 0}
+                          onChange={(e) => setPositions(prev => ({ ...prev, logoLeft: { ...(prev.logoLeft || { x: 0 }), y: Number(e.target.value) } }))}
+                        />
+                      </div>
+                    </div>
+                    {(positions.logoLeft?.x !== 0 || positions.logoLeft?.y !== 0) && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: "2px 8px", fontSize: "10px", marginTop: "4px" }}
+                        onClick={() => setPositions(prev => ({ ...prev, logoLeft: { x: 0, y: 0 } }))}
+                      >
+                        🎯 Réinitialiser position
+                      </button>
+                    )}
                   </div>
 
                   {leftLogoImg && (
@@ -2007,32 +2763,59 @@ export default function AttestationFormation({ onBack }) {
 
                   <div className="input-group">
                     <label>Taille du Logo Centre ({centerLogoSize}px)</label>
-                    <input
-                      type="range"
-                      min={30}
-                      max={380}
-                      value={centerLogoSize}
-                      onChange={(e) => setCenterLogoSize(Number(e.target.value))}
-                    />
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
-                      {[
-                        { label: "Petit", size: 60 },
-                        { label: "Moyen", size: 100 },
-                        { label: "Grand", size: 160 },
-                        { label: "Géant", size: 220 },
-                        { label: "XXL", size: 280 }
-                      ].map((p) => (
-                        <button
-                          key={p.label}
-                          type="button"
-                          className={`chip ${centerLogoSize === p.size ? "active" : ""}`}
-                          onClick={() => setCenterLogoSize(p.size)}
-                          style={{ padding: "3px 8px", fontSize: "10px" }}
-                        >
-                          {p.label}
-                        </button>
-                      ))}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setCenterLogoSize(s => Math.max(20, s - 10))}>-10</button>
+                      <input
+                        type="range"
+                        min={20}
+                        max={600}
+                        value={centerLogoSize}
+                        onChange={(e) => setCenterLogoSize(Number(e.target.value))}
+                        style={{ flex: 1 }}
+                      />
+                      <input
+                        type="number"
+                        min={20}
+                        max={600}
+                        value={centerLogoSize}
+                        onChange={(e) => setCenterLogoSize(Number(e.target.value) || 20)}
+                        style={{ width: "65px", padding: "4px 6px", borderRadius: "6px", border: "1px solid #CBD5E1", fontSize: "12px", textAlign: "center" }}
+                      />
+                      <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setCenterLogoSize(s => Math.min(600, s + 10))}>+10</button>
                     </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION LOGO CENTRE */}
+                  <div className="input-group" style={{ marginTop: "6px" }}>
+                    <label style={{ fontSize: "11px", color: "#475569" }}>📍 Position (X: {positions.logoCenter?.x || 0}px | Y: {positions.logoCenter?.y || 0}px)</label>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>Horizontal (X)</span>
+                        <input
+                          type="range" min={-200} max={200}
+                          value={positions.logoCenter?.x || 0}
+                          onChange={(e) => setPositions(prev => ({ ...prev, logoCenter: { ...(prev.logoCenter || { y: 0 }), x: Number(e.target.value) } }))}
+                        />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>Vertical (Y)</span>
+                        <input
+                          type="range" min={-150} max={150}
+                          value={positions.logoCenter?.y || 0}
+                          onChange={(e) => setPositions(prev => ({ ...prev, logoCenter: { ...(prev.logoCenter || { x: 0 }), y: Number(e.target.value) } }))}
+                        />
+                      </div>
+                    </div>
+                    {(positions.logoCenter?.x !== 0 || positions.logoCenter?.y !== 0) && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: "2px 8px", fontSize: "10px", marginTop: "4px" }}
+                        onClick={() => setPositions(prev => ({ ...prev, logoCenter: { x: 0, y: 0 } }))}
+                      >
+                        🎯 Réinitialiser position
+                      </button>
+                    )}
                   </div>
 
                   {centerLogoImg && (
@@ -2052,32 +2835,59 @@ export default function AttestationFormation({ onBack }) {
 
                   <div className="input-group">
                     <label>Taille du Logo Droit ({rightLogoSize}px)</label>
-                    <input
-                      type="range"
-                      min={30}
-                      max={380}
-                      value={rightLogoSize}
-                      onChange={(e) => setRightLogoSize(Number(e.target.value))}
-                    />
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
-                      {[
-                        { label: "Petit", size: 60 },
-                        { label: "Moyen", size: 100 },
-                        { label: "Grand", size: 160 },
-                        { label: "Géant", size: 220 },
-                        { label: "XXL", size: 280 }
-                      ].map((p) => (
-                        <button
-                          key={p.label}
-                          type="button"
-                          className={`chip ${rightLogoSize === p.size ? "active" : ""}`}
-                          onClick={() => setRightLogoSize(p.size)}
-                          style={{ padding: "3px 8px", fontSize: "10px" }}
-                        >
-                          {p.label}
-                        </button>
-                      ))}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setRightLogoSize(s => Math.max(20, s - 10))}>-10</button>
+                      <input
+                        type="range"
+                        min={20}
+                        max={600}
+                        value={rightLogoSize}
+                        onChange={(e) => setRightLogoSize(Number(e.target.value))}
+                        style={{ flex: 1 }}
+                      />
+                      <input
+                        type="number"
+                        min={20}
+                        max={600}
+                        value={rightLogoSize}
+                        onChange={(e) => setRightLogoSize(Number(e.target.value) || 20)}
+                        style={{ width: "65px", padding: "4px 6px", borderRadius: "6px", border: "1px solid #CBD5E1", fontSize: "12px", textAlign: "center" }}
+                      />
+                      <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setRightLogoSize(s => Math.min(600, s + 10))}>+10</button>
                     </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION LOGO DROIT */}
+                  <div className="input-group" style={{ marginTop: "6px" }}>
+                    <label style={{ fontSize: "11px", color: "#475569" }}>📍 Position (X: {positions.logoRight?.x || 0}px | Y: {positions.logoRight?.y || 0}px)</label>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>Horizontal (X)</span>
+                        <input
+                          type="range" min={-200} max={200}
+                          value={positions.logoRight?.x || 0}
+                          onChange={(e) => setPositions(prev => ({ ...prev, logoRight: { ...(prev.logoRight || { y: 0 }), x: Number(e.target.value) } }))}
+                        />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>Vertical (Y)</span>
+                        <input
+                          type="range" min={-150} max={150}
+                          value={positions.logoRight?.y || 0}
+                          onChange={(e) => setPositions(prev => ({ ...prev, logoRight: { ...(prev.logoRight || { x: 0 }), y: Number(e.target.value) } }))}
+                        />
+                      </div>
+                    </div>
+                    {(positions.logoRight?.x !== 0 || positions.logoRight?.y !== 0) && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: "2px 8px", fontSize: "10px", marginTop: "4px" }}
+                        onClick={() => setPositions(prev => ({ ...prev, logoRight: { x: 0, y: 0 } }))}
+                      >
+                        🎯 Réinitialiser position
+                      </button>
+                    )}
                   </div>
 
                   {rightLogoImg && (
@@ -2085,6 +2895,224 @@ export default function AttestationFormation({ onBack }) {
                       Supprimer logo droit
                     </button>
                   )}
+                </div>
+
+                {/* GALERIE DE MOTIFS & DÉCORS GRAPHILQUES À PLACER */}
+                <div className="presets-box" style={{ marginTop: "12px", background: "#FAF5FF", border: "1px solid #E9D5FF" }}>
+                  <label style={{ color: "#7E22CE", fontWeight: "700" }}>🎨 Motifs Décoratifs & Graphismes (4 Coins & Taille 800px)</label>
+                  <p style={{ fontSize: "11px", color: "#6B21A8", margin: "2px 0 8px 0" }}>
+                    Ancrez dans n'importe quel coin (Haut/Bas - Gauche/Droit), agrandissez sans limite (jusqu'à 800px) et déplacez librement vos motifs.
+                  </p>
+
+                  {customMotifs.map((motif, index) => (
+                    <div key={motif.id} style={{ background: "#FFFFFF", padding: "8px 10px", borderRadius: "8px", border: "1px solid #D8B4FE", marginBottom: "8px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <label style={{ fontSize: "11px", fontWeight: "700", color: "#581C87", display: "flex", alignItems: "center", gap: "6px" }}>
+                          <input
+                            type="checkbox"
+                            checked={motif.enabled}
+                            onChange={(e) => {
+                              const val = e.target.checked;
+                              setCustomMotifs(list => list.map(m => m.id === motif.id ? { ...m, enabled: val } : m));
+                            }}
+                          />
+                          Motif Décoratif #{index + 1}
+                        </label>
+                        <span style={{ fontSize: "10px", color: motif.enabled ? "#15803D" : "#94A3B8", fontWeight: "600" }}>
+                          {motif.enabled ? "● Actif" : "○ Masqué"}
+                        </span>
+                      </div>
+
+                      {motif.enabled && (
+                        <div style={{ marginTop: "6px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                          <div>
+                            <span style={{ fontSize: "10px", color: "#475569" }}>Type de Motif</span>
+                            <select
+                              value={motif.type}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setCustomMotifs(list => list.map(m => m.id === motif.id ? { ...m, type: val } : m));
+                              }}
+                              style={{ width: "100%", padding: "4px 6px", fontSize: "11px", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                            >
+                              <option value="afi-wave">🌿 Vagues Vertes & Rubans Or (Maison AFI)</option>
+                              <option value="afi-gold-ribbon-curved">🎗️ Ruban & Vague Courbée Or Luxe</option>
+                              <option value="luxury-guilloche-filigree">🏛️ Dentelle Guillochée & Filigrane d'Or</option>
+                              <option value="art-deco-corner">🏛️ Coin Géométrique Art Déco Or</option>
+                              <option value="imperial-shield">🛡️ Blason Impérial & Écusson</option>
+                              <option value="sunburst-guilloche">☀️ Soleil Guilloché Sécurité & Médaille</option>
+                              <option value="fleur-de-lys-royal">⚜️ Fleur de Lys Royale Saphir & Or</option>
+                              <option value="wax-ribbon-seal">🏆 Sceau Officiel de Cire & Ruban Rouge</option>
+                            </select>
+                          </div>
+
+                          {/* ANCRAGE DANS LES 4 COINS OU LE CENTRE */}
+                          <div>
+                            <span style={{ fontSize: "10px", color: "#475569", fontWeight: "600" }}>📍 Emplacement Coin / Centre</span>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "4px", marginTop: "2px" }}>
+                              {[
+                                { id: "top-left", label: "↖️ Haut-G" },
+                                { id: "top-right", label: "↗️ Haut-D" },
+                                { id: "bottom-left", label: "↙️ Bas-G" },
+                                { id: "bottom-right", label: "↘️ Bas-D" },
+                                { id: "center", label: "🎯 Centre" },
+                              ].map(c => (
+                                <button
+                                  key={c.id}
+                                  type="button"
+                                  className={`chip ${(motif.corner || "top-right") === c.id ? "active" : ""}`}
+                                  onClick={() => {
+                                    setCustomMotifs(list => list.map(m => m.id === motif.id ? { ...m, corner: c.id } : m));
+                                  }}
+                                  style={{ padding: "3px 6px", fontSize: "10px", textAlign: "center" }}
+                                >
+                                  {c.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* DIMENTIONNEMENT JUSQU'À 800PX */}
+                          <div>
+                            <span style={{ fontSize: "10px", color: "#475569" }}>Taille du Motif ({motif.size}px)</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "2px" }}>
+                              <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                                setCustomMotifs(list => list.map(m => m.id === motif.id ? { ...m, size: Math.max(20, m.size - 10) } : m));
+                              }}>-10</button>
+                              <input
+                                type="range" min={20} max={800}
+                                value={motif.size}
+                                onChange={(e) => {
+                                  const val = Number(e.target.value);
+                                  setCustomMotifs(list => list.map(m => m.id === motif.id ? { ...m, size: val } : m));
+                                }}
+                                style={{ flex: 1 }}
+                              />
+                              <input
+                                type="number" min={20} max={800}
+                                value={motif.size}
+                                onChange={(e) => {
+                                  const val = Number(e.target.value) || 20;
+                                  setCustomMotifs(list => list.map(m => m.id === motif.id ? { ...m, size: val } : m));
+                                }}
+                                style={{ width: "55px", padding: "2px 4px", fontSize: "11px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                              />
+                              <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                                setCustomMotifs(list => list.map(m => m.id === motif.id ? { ...m, size: Math.min(800, m.size + 10) } : m));
+                              }}>+10</button>
+                            </div>
+                          </div>
+
+                          {/* ROTATION */}
+                          <div>
+                            <span style={{ fontSize: "10px", color: "#475569" }}>Rotation ({motif.rotation}°)</span>
+                            <input
+                              type="range" min={0} max={360} step={15}
+                              value={motif.rotation}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setCustomMotifs(list => list.map(m => m.id === motif.id ? { ...m, rotation: val } : m));
+                              }}
+                            />
+                          </div>
+
+                          {/* X / Y Position Sliders */}
+                          <div style={{ background: "#F8FAFC", padding: "6px", borderRadius: "6px", border: "1px solid #E2E8F0" }}>
+                            <span style={{ fontSize: "10px", color: "#334155", fontWeight: "700" }}>📍 Ajustement Décalage Horizontal (X) & Vertical (Y)</span>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                              {/* HORIZONTAL (X) */}
+                              <div>
+                                <span style={{ fontSize: "9px", color: "#475569", fontWeight: "600" }}>↔️ Horizontal X ({positions[`motif_${motif.id}`]?.x || 0}px)</span>
+                                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                                    const k = `motif_${motif.id}`;
+                                    const currX = positions[k]?.x || 0;
+                                    setPositions(prev => ({ ...prev, [k]: { ...(prev[k] || { y: 0 }), x: currX - 10 } }));
+                                  }}>-10</button>
+                                  <input
+                                    type="range" min={-600} max={600}
+                                    value={positions[`motif_${motif.id}`]?.x || 0}
+                                    onChange={(e) => {
+                                      const xVal = Number(e.target.value);
+                                      const k = `motif_${motif.id}`;
+                                      setPositions(prev => ({ ...prev, [k]: { ...(prev[k] || { y: 0 }), x: xVal } }));
+                                    }}
+                                    style={{ flex: 1 }}
+                                  />
+                                  <input
+                                    type="number" min={-600} max={600}
+                                    value={positions[`motif_${motif.id}`]?.x || 0}
+                                    onChange={(e) => {
+                                      const xVal = Number(e.target.value) || 0;
+                                      const k = `motif_${motif.id}`;
+                                      setPositions(prev => ({ ...prev, [k]: { ...(prev[k] || { y: 0 }), x: xVal } }));
+                                    }}
+                                    style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                                  />
+                                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                                    const k = `motif_${motif.id}`;
+                                    const currX = positions[k]?.x || 0;
+                                    setPositions(prev => ({ ...prev, [k]: { ...(prev[k] || { y: 0 }), x: currX + 10 } }));
+                                  }}>+10</button>
+                                </div>
+                              </div>
+
+                              {/* VERTICAL (Y) */}
+                              <div>
+                                <span style={{ fontSize: "9px", color: "#475569", fontWeight: "600" }}>↕️ Vertical Y ({positions[`motif_${motif.id}`]?.y || 0}px)</span>
+                                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                                    const k = `motif_${motif.id}`;
+                                    const currY = positions[k]?.y || 0;
+                                    setPositions(prev => ({ ...prev, [k]: { ...(prev[k] || { x: 0 }), y: currY - 10 } }));
+                                  }}>-10</button>
+                                  <input
+                                    type="range" min={-600} max={600}
+                                    value={positions[`motif_${motif.id}`]?.y || 0}
+                                    onChange={(e) => {
+                                      const yVal = Number(e.target.value);
+                                      const k = `motif_${motif.id}`;
+                                      setPositions(prev => ({ ...prev, [k]: { ...(prev[k] || { x: 0 }), y: yVal } }));
+                                    }}
+                                    style={{ flex: 1 }}
+                                  />
+                                  <input
+                                    type="number" min={-600} max={600}
+                                    value={positions[`motif_${motif.id}`]?.y || 0}
+                                    onChange={(e) => {
+                                      const yVal = Number(e.target.value) || 0;
+                                      const k = `motif_${motif.id}`;
+                                      setPositions(prev => ({ ...prev, [k]: { ...(prev[k] || { x: 0 }), y: yVal } }));
+                                    }}
+                                    style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                                  />
+                                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                                    const k = `motif_${motif.id}`;
+                                    const currY = positions[k]?.y || 0;
+                                    setPositions(prev => ({ ...prev, [k]: { ...(prev[k] || { x: 0 }), y: currY + 10 } }));
+                                  }}>+10</button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {(positions[`motif_${motif.id}`]?.x !== 0 || positions[`motif_${motif.id}`]?.y !== 0) && (
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                                onClick={() => {
+                                  const k = `motif_${motif.id}`;
+                                  setPositions(prev => ({ ...prev, [k]: { x: 0, y: 0 } }));
+                                }}
+                              >
+                                🎯 Réinitialiser offset X/Y
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
 
                 <div className="presets-box" style={{ marginTop: "10px" }}>
@@ -2141,13 +3169,18 @@ export default function AttestationFormation({ onBack }) {
 
                   <div className="grid-2" style={{ marginBottom: "8px" }}>
                     <div className="input-group">
-                      <label>Titre / Fonction</label>
+                      <label>Titre / Fonction (En Haut)</label>
                       <input type="text" value={data.signataire} onChange={setField("signataire")} />
                     </div>
                     <div className="input-group">
-                      <label>Structure</label>
+                      <label>Structure / Sous-titre</label>
                       <input type="text" value={data.fonction} onChange={setField("fonction")} />
                     </div>
+                  </div>
+
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Nom & Prénom du Signataire (En Bas)</label>
+                    <input type="text" value={data.nomSignataire1 || ""} onChange={setField("nomSignataire1")} placeholder="Ex: Mme TOSSA Afavi G. H." />
                   </div>
 
                   <div className="input-group" style={{ marginBottom: "8px" }}>
@@ -2200,6 +3233,330 @@ export default function AttestationFormation({ onBack }) {
                       </div>
                     </>
                   )}
+
+                  {/* AJUSTEMENT POSITION GLOBALE DU SIGNATAIRE 1 */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1.5px dashed #2563EB" }}>
+                    <label style={{ fontSize: "11px", color: "#1D4ED8", fontWeight: "800" }}>
+                      📍 Position Globale du Signataire 1 (Titre + Signature + Nom) (Y: {positions.sig1?.y || 0}px | X: {positions.sig1?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sig1?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig1?.y || 0;
+                            setPositions(prev => ({ ...prev, sig1: { ...(prev.sig1 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sig1?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig1: { ...(prev.sig1 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sig1?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig1: { ...(prev.sig1 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig1?.y || 0;
+                            setPositions(prev => ({ ...prev, sig1: { ...(prev.sig1 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sig1?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig1?.x || 0;
+                            setPositions(prev => ({ ...prev, sig1: { ...(prev.sig1 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sig1?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig1: { ...(prev.sig1 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sig1?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig1: { ...(prev.sig1 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig1?.x || 0;
+                            setPositions(prev => ({ ...prev, sig1: { ...(prev.sig1 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sig1?.x !== 0 || positions.sig1?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sig1: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position Globale Signataire 1
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION DU TITRE & STRUCTURE 1 EN HAUT */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#805AD5", fontWeight: "700" }}>
+                      📍 Position du Titre & Structure 1 En Haut (Y: {positions.sigHeader1?.y || 0}px | X: {positions.sigHeader1?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sigHeader1?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigHeader1?.y || 0;
+                            setPositions(prev => ({ ...prev, sigHeader1: { ...(prev.sigHeader1 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigHeader1?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigHeader1: { ...(prev.sigHeader1 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigHeader1?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigHeader1: { ...(prev.sigHeader1 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigHeader1?.y || 0;
+                            setPositions(prev => ({ ...prev, sigHeader1: { ...(prev.sigHeader1 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sigHeader1?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigHeader1?.x || 0;
+                            setPositions(prev => ({ ...prev, sigHeader1: { ...(prev.sigHeader1 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigHeader1?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigHeader1: { ...(prev.sigHeader1 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigHeader1?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigHeader1: { ...(prev.sigHeader1 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigHeader1?.x || 0;
+                            setPositions(prev => ({ ...prev, sigHeader1: { ...(prev.sigHeader1 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sigHeader1?.x !== 0 || positions.sigHeader1?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sigHeader1: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position Titre 1
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION SIGNATAIRE 1 & SIGNATURE SEULE */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#2563EB", fontWeight: "700" }}>
+                      📍 Position de l'Image de Signature 1 Seule (Y: {positions.sigImg1?.y || 0}px | X: {positions.sigImg1?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sigImg1?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigImg1?.y || 0;
+                            setPositions(prev => ({ ...prev, sigImg1: { ...(prev.sigImg1 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigImg1?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigImg1: { ...(prev.sigImg1 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigImg1?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigImg1: { ...(prev.sigImg1 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigImg1?.y || 0;
+                            setPositions(prev => ({ ...prev, sigImg1: { ...(prev.sigImg1 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sigImg1?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigImg1?.x || 0;
+                            setPositions(prev => ({ ...prev, sigImg1: { ...(prev.sigImg1 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigImg1?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigImg1: { ...(prev.sigImg1 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigImg1?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigImg1: { ...(prev.sigImg1 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigImg1?.x || 0;
+                            setPositions(prev => ({ ...prev, sigImg1: { ...(prev.sigImg1 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sigImg1?.x !== 0 || positions.sigImg1?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sigImg1: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position de la Signature 1
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION DU NOM 1 EN BAS */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#059669", fontWeight: "700" }}>
+                      📍 Position du Nom 1 En Bas (Y: {positions.sigName1?.y || 0}px | X: {positions.sigName1?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sigName1?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigName1?.y || 0;
+                            setPositions(prev => ({ ...prev, sigName1: { ...(prev.sigName1 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigName1?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigName1: { ...(prev.sigName1 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigName1?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigName1: { ...(prev.sigName1 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigName1?.y || 0;
+                            setPositions(prev => ({ ...prev, sigName1: { ...(prev.sigName1 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sigName1?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigName1?.x || 0;
+                            setPositions(prev => ({ ...prev, sigName1: { ...(prev.sigName1 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigName1?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigName1: { ...(prev.sigName1 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigName1?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigName1: { ...(prev.sigName1 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigName1?.x || 0;
+                            setPositions(prev => ({ ...prev, sigName1: { ...(prev.sigName1 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sigName1?.x !== 0 || positions.sigName1?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sigName1: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position du Nom 1
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* SIGNATORY 2 (PRÉSIDENTE ALIMEN-TERRE) */}
@@ -2224,13 +3581,18 @@ export default function AttestationFormation({ onBack }) {
 
                   <div className="grid-2" style={{ marginBottom: "8px" }}>
                     <div className="input-group">
-                      <label>Titre / Fonction</label>
+                      <label>Titre / Fonction (En Haut)</label>
                       <input type="text" value={data.signataire2 || ""} onChange={setField("signataire2")} />
                     </div>
                     <div className="input-group">
-                      <label>Structure</label>
+                      <label>Structure / Sous-titre</label>
                       <input type="text" value={data.fonction2 || ""} onChange={setField("fonction2")} />
                     </div>
+                  </div>
+
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Nom & Prénom du Signataire 2 (En Bas)</label>
+                    <input type="text" value={data.nomSignataire2 || ""} onChange={setField("nomSignataire2")} placeholder="Ex: Dr. KOUADIO Marc" />
                   </div>
 
                   <div className="input-group" style={{ marginBottom: "8px" }}>
@@ -2254,8 +3616,412 @@ export default function AttestationFormation({ onBack }) {
                         value={sig2Size}
                         onChange={(e) => setSig2Size(Number(e.target.value))}
                       />
+                      {/* AJUSTEMENT POSITION DU NOM 2 EN BAS */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#059669", fontWeight: "700" }}>
+                      📍 Position du Nom 2 En Bas (Y: {positions.sigName2?.y || 0}px | X: {positions.sigName2?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sigName2?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigName2?.y || 0;
+                            setPositions(prev => ({ ...prev, sigName2: { ...(prev.sigName2 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigName2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigName2: { ...(prev.sigName2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigName2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigName2: { ...(prev.sigName2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigName2?.y || 0;
+                            setPositions(prev => ({ ...prev, sigName2: { ...(prev.sigName2 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sigName2?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigName2?.x || 0;
+                            setPositions(prev => ({ ...prev, sigName2: { ...(prev.sigName2 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigName2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigName2: { ...(prev.sigName2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigName2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigName2: { ...(prev.sigName2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigName2?.x || 0;
+                            setPositions(prev => ({ ...prev, sigName2: { ...(prev.sigName2 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sigName2?.x !== 0 || positions.sigName2?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sigName2: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position du Nom 2
+                        </button>
+                      )}
                     </div>
+                  </div>
+                </div>
                   )}
+
+                  {/* AJUSTEMENT POSITION GLOBALE DU SIGNATAIRE 2 */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1.5px dashed #805AD5" }}>
+                    <label style={{ fontSize: "11px", color: "#6B21A8", fontWeight: "800" }}>
+                      📍 Position Globale du Signataire 2 (Titre + Signature + Nom) (Y: {positions.sig2?.y || 0}px | X: {positions.sig2?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sig2?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig2?.y || 0;
+                            setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sig2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sig2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig2?.y || 0;
+                            setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sig2?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig2?.x || 0;
+                            setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sig2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sig2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig2?.x || 0;
+                            setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sig2?.x !== 0 || positions.sig2?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sig2: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position Globale Signataire 2
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION SIGNATAIRE 2 & SIGNATURE SEULE */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#805AD5", fontWeight: "700" }}>
+                      📍 Position de l'Image de Signature 2 Seule (Y: {positions.sigImg2?.y || 0}px | X: {positions.sigImg2?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sigImg2?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigImg2?.y || 0;
+                            setPositions(prev => ({ ...prev, sigImg2: { ...(prev.sigImg2 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sigImg2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigImg2: { ...(prev.sigImg2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sigImg2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigImg2: { ...(prev.sigImg2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigImg2?.y || 0;
+                            setPositions(prev => ({ ...prev, sigImg2: { ...(prev.sigImg2 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sigImg2?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigImg2?.x || 0;
+                            setPositions(prev => ({ ...prev, sigImg2: { ...(prev.sigImg2 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sigImg2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigImg2: { ...(prev.sigImg2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sigImg2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigImg2: { ...(prev.sigImg2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigImg2?.x || 0;
+                            setPositions(prev => ({ ...prev, sigImg2: { ...(prev.sigImg2 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sigImg2?.x !== 0 || positions.sigImg2?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sigImg2: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position de la Signature 2
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION DU TITRE & STRUCTURE 2 EN HAUT */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#805AD5", fontWeight: "700" }}>
+                      📍 Position du Titre & Structure 2 En Haut (Y: {positions.sigHeader2?.y || 0}px | X: {positions.sigHeader2?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sigHeader2?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigHeader2?.y || 0;
+                            setPositions(prev => ({ ...prev, sigHeader2: { ...(prev.sigHeader2 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigHeader2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigHeader2: { ...(prev.sigHeader2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigHeader2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigHeader2: { ...(prev.sigHeader2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigHeader2?.y || 0;
+                            setPositions(prev => ({ ...prev, sigHeader2: { ...(prev.sigHeader2 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sigHeader2?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigHeader2?.x || 0;
+                            setPositions(prev => ({ ...prev, sigHeader2: { ...(prev.sigHeader2 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigHeader2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigHeader2: { ...(prev.sigHeader2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigHeader2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigHeader2: { ...(prev.sigHeader2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigHeader2?.x || 0;
+                            setPositions(prev => ({ ...prev, sigHeader2: { ...(prev.sigHeader2 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sigHeader2?.x !== 0 || positions.sigHeader2?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sigHeader2: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position Titre 2
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION SIGNATAIRE 2 */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#475569", fontWeight: "700" }}>
+                      📍 Position du Signataire 2 (X: {positions.sig2?.x || 0}px | Y: {positions.sig2?.y || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sig2?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig2?.y || 0;
+                            setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-300} max={300}
+                            value={positions.sig2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-300} max={300}
+                            value={positions.sig2?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig2?.y || 0;
+                            setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sig2?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig2?.x || 0;
+                            setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-300} max={300}
+                            value={positions.sig2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-300} max={300}
+                            value={positions.sig2?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig2?.x || 0;
+                            setPositions(prev => ({ ...prev, sig2: { ...(prev.sig2 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sig2?.x !== 0 || positions.sig2?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sig2: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* SIGNATORY 3 (REPRÉSENTANT AJEDSAC) */}
@@ -2280,13 +4046,18 @@ export default function AttestationFormation({ onBack }) {
 
                   <div className="grid-2" style={{ marginBottom: "8px" }}>
                     <div className="input-group">
-                      <label>Titre / Fonction</label>
+                      <label>Titre / Fonction (En Haut)</label>
                       <input type="text" value={data.signataire3 || ""} onChange={setField("signataire3")} placeholder="Le Représentant" />
                     </div>
                     <div className="input-group">
-                      <label>Structure</label>
+                      <label>Structure / Sous-titre</label>
                       <input type="text" value={data.fonction3 || ""} onChange={setField("fonction3")} placeholder="(AJeDSAC)" />
                     </div>
+                  </div>
+
+                  <div className="input-group" style={{ marginBottom: "8px" }}>
+                    <label>Nom & Prénom du Signataire 3 (En Bas)</label>
+                    <input type="text" value={data.nomSignataire3 || ""} onChange={setField("nomSignataire3")} placeholder="Ex: M. HOUNKPONOU Jean" />
                   </div>
 
                   <div className="input-group" style={{ marginBottom: "8px" }}>
@@ -2312,6 +4083,411 @@ export default function AttestationFormation({ onBack }) {
                       />
                     </div>
                   )}
+
+                  {/* AJUSTEMENT POSITION GLOBALE DU SIGNATAIRE 3 */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1.5px dashed #2563EB" }}>
+                    <label style={{ fontSize: "11px", color: "#1E40AF", fontWeight: "800" }}>
+                      📍 Position Globale du Signataire 3 (Titre + Signature + Nom) (Y: {positions.sig3?.y || 0}px | X: {positions.sig3?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sig3?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig3?.y || 0;
+                            setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sig3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sig3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig3?.y || 0;
+                            setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sig3?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig3?.x || 0;
+                            setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sig3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sig3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig3?.x || 0;
+                            setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sig3?.x !== 0 || positions.sig3?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sig3: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position Globale Signataire 3
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION SIGNATAIRE 3 & SIGNATURE SEULE */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#2563EB", fontWeight: "700" }}>
+                      📍 Position de l'Image de Signature 3 Seule (Y: {positions.sigImg3?.y || 0}px | X: {positions.sigImg3?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sigImg3?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigImg3?.y || 0;
+                            setPositions(prev => ({ ...prev, sigImg3: { ...(prev.sigImg3 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sigImg3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigImg3: { ...(prev.sigImg3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sigImg3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigImg3: { ...(prev.sigImg3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigImg3?.y || 0;
+                            setPositions(prev => ({ ...prev, sigImg3: { ...(prev.sigImg3 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sigImg3?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigImg3?.x || 0;
+                            setPositions(prev => ({ ...prev, sigImg3: { ...(prev.sigImg3 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-400} max={400}
+                            value={positions.sigImg3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigImg3: { ...(prev.sigImg3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-400} max={400}
+                            value={positions.sigImg3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigImg3: { ...(prev.sigImg3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigImg3?.x || 0;
+                            setPositions(prev => ({ ...prev, sigImg3: { ...(prev.sigImg3 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sigImg3?.x !== 0 || positions.sigImg3?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sigImg3: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position de la Signature 3
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION DU TITRE & STRUCTURE 3 EN HAUT */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#805AD5", fontWeight: "700" }}>
+                      📍 Position du Titre & Structure 3 En Haut (Y: {positions.sigHeader3?.y || 0}px | X: {positions.sigHeader3?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sigHeader3?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigHeader3?.y || 0;
+                            setPositions(prev => ({ ...prev, sigHeader3: { ...(prev.sigHeader3 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigHeader3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigHeader3: { ...(prev.sigHeader3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigHeader3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigHeader3: { ...(prev.sigHeader3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigHeader3?.y || 0;
+                            setPositions(prev => ({ ...prev, sigHeader3: { ...(prev.sigHeader3 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sigHeader3?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigHeader3?.x || 0;
+                            setPositions(prev => ({ ...prev, sigHeader3: { ...(prev.sigHeader3 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigHeader3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigHeader3: { ...(prev.sigHeader3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigHeader3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigHeader3: { ...(prev.sigHeader3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigHeader3?.x || 0;
+                            setPositions(prev => ({ ...prev, sigHeader3: { ...(prev.sigHeader3 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sigHeader3?.x !== 0 || positions.sigHeader3?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sigHeader3: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position Titre 3
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION DU NOM 3 EN BAS */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#059669", fontWeight: "700" }}>
+                      📍 Position du Nom 3 En Bas (Y: {positions.sigName3?.y || 0}px | X: {positions.sigName3?.x || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sigName3?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigName3?.y || 0;
+                            setPositions(prev => ({ ...prev, sigName3: { ...(prev.sigName3 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigName3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigName3: { ...(prev.sigName3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigName3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigName3: { ...(prev.sigName3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sigName3?.y || 0;
+                            setPositions(prev => ({ ...prev, sigName3: { ...(prev.sigName3 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sigName3?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigName3?.x || 0;
+                            setPositions(prev => ({ ...prev, sigName3: { ...(prev.sigName3 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-200} max={200}
+                            value={positions.sigName3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sigName3: { ...(prev.sigName3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-200} max={200}
+                            value={positions.sigName3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sigName3: { ...(prev.sigName3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sigName3?.x || 0;
+                            setPositions(prev => ({ ...prev, sigName3: { ...(prev.sigName3 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sigName3?.x !== 0 || positions.sigName3?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sigName3: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position du Nom 3
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AJUSTEMENT POSITION SIGNATAIRE 3 */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#475569", fontWeight: "700" }}>
+                      📍 Position du Signataire 3 (X: {positions.sig3?.x || 0}px | Y: {positions.sig3?.y || 0}px)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↕️ Vertical Y ({positions.sig3?.y || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig3?.y || 0;
+                            setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-300} max={300}
+                            value={positions.sig3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-300} max={300}
+                            value={positions.sig3?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.sig3?.y || 0;
+                            setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>↔️ Horizontal X ({positions.sig3?.x || 0}px)</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig3?.x || 0;
+                            setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-300} max={300}
+                            value={positions.sig3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-300} max={300}
+                            value={positions.sig3?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.sig3?.x || 0;
+                            setPositions(prev => ({ ...prev, sig3: { ...(prev.sig3 || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+                      {(positions.sig3?.x !== 0 || positions.sig3?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, sig3: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* STAMP / CACHET SIZING CONTROL */}
@@ -2492,6 +4668,29 @@ export default function AttestationFormation({ onBack }) {
             {/* TAB 6: FULL TYPOGRAPHY & SIZE STUDIO FOR ALL ELEMENTS */}
             {activeTab === "typography" && (
               <>
+                {/* SLIDER GLOBAL DE ZOOM DU CONTENU */}
+                <div className="presets-box" style={{ background: "#F0F9FF", border: "1.5px solid #0284C7" }}>
+                  <label style={{ color: "#0369A1", fontWeight: 800, fontSize: "13px" }}>
+                    🔍 Échelle / Zoom Global du Contenu Texte ({Math.round(contentScale * 100)}%)
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px" }}>
+                    <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setContentScale(s => Math.max(0.7, Number((s - 0.05).toFixed(2))))}>-5%</button>
+                    <input
+                      type="range"
+                      min={0.7}
+                      max={1.5}
+                      step={0.02}
+                      value={contentScale}
+                      onChange={(e) => setContentScale(Number(e.target.value))}
+                      style={{ flex: 1 }}
+                    />
+                    <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setContentScale(s => Math.min(1.5, Number((s + 0.05).toFixed(2))))}>+5%</button>
+                    <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setContentScale(1.0)}>100%</button>
+                  </div>
+                  <span style={{ fontSize: "10.5px", color: "#64748B", marginTop: "4px", display: "block" }}>
+                    Protection anti-débordement : adapte le texte sans toucher au bloc des signataires en bas.
+                  </span>
+                </div>
                 {/* 1. TITRE DU DOCUMENT */}
                 <div className="presets-box">
                   <label style={{ color: "#2563EB" }}>📜 1. Titre du Document (ex: Attestation)</label>
@@ -2512,6 +4711,95 @@ export default function AttestationFormation({ onBack }) {
                       value={customTitleSize}
                       onChange={(e) => setCustomTitleSize(Number(e.target.value))}
                     />
+                  </div>
+
+                  {/* POSITIONNEMENT DU TITRE (DÉCALAGE Y / X) */}
+                  <div className="input-group" style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed #CBD5E1" }}>
+                    <label style={{ fontSize: "11px", color: "#475569", fontWeight: "700" }}>
+                      📍 Positionnement & Hauteur du Titre (Y / X)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                      {/* VERTICAL (Y) */}
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>
+                          ↕️ Hauteur / Vertical Y ({positions.title?.y || 0}px)
+                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.title?.y || 0;
+                            setPositions(prev => ({ ...prev, title: { ...(prev.title || { x: 0 }), y: currY - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-250} max={250}
+                            value={positions.title?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, title: { ...(prev.title || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-250} max={250}
+                            value={positions.title?.y || 0}
+                            onChange={(e) => {
+                              const yVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, title: { ...(prev.title || { x: 0 }), y: yVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currY = positions.title?.y || 0;
+                            setPositions(prev => ({ ...prev, title: { ...(prev.title || { x: 0 }), y: currY + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+
+                      {/* HORIZONTAL (X) */}
+                      <div>
+                        <span style={{ fontSize: "10px", color: "#64748B" }}>
+                          ↔️ Horizontal X ({positions.title?.x || 0}px)
+                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.title?.x || 0;
+                            setPositions(prev => ({ ...prev, title: { ...(prev.title || { y: 0 }), x: currX - 10 } }));
+                          }}>-10</button>
+                          <input
+                            type="range" min={-250} max={250}
+                            value={positions.title?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value);
+                              setPositions(prev => ({ ...prev, title: { ...(prev.title || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ flex: 1 }}
+                          />
+                          <input
+                            type="number" min={-250} max={250}
+                            value={positions.title?.x || 0}
+                            onChange={(e) => {
+                              const xVal = Number(e.target.value) || 0;
+                              setPositions(prev => ({ ...prev, title: { ...(prev.title || { y: 0 }), x: xVal } }));
+                            }}
+                            style={{ width: "55px", padding: "2px 4px", fontSize: "10px", textAlign: "center", borderRadius: "4px", border: "1px solid #CBD5E1" }}
+                          />
+                          <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "2px 6px", fontSize: "10px" }} onClick={() => {
+                            const currX = positions.title?.x || 0;
+                            setPositions(prev => ({ ...prev, title: { ...(prev.title || { y: 0 }), x: currX + 10 } }));
+                          }}>+10</button>
+                        </div>
+                      </div>
+
+                      {(positions.title?.x !== 0 || positions.title?.y !== 0) && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "2px 6px", fontSize: "10px", marginTop: "4px" }}
+                          onClick={() => setPositions(prev => ({ ...prev, title: { x: 0, y: 0 } }))}
+                        >
+                          🎯 Réinitialiser position du Titre
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -2816,10 +5104,46 @@ export default function AttestationFormation({ onBack }) {
           <div className="cert-scroll">
             <div className="cert-scale-wrapper">
               <div ref={certRef} className={`certificate-sheet format-${pageFormat}`}>
-                {/* CUSTOM BACKGROUND IMAGE */}
-                {customBgImg && (
-                  <img src={customBgImg} alt="Fond sur-mesure" className="custom-document-bg" />
-                )}
+                {/* STANDALONE TEMPLATE BRANCH 1: CERTIFICATE OF ACHIEVEMENT */}
+                {currentModelId === "model_certificate_achievement" ? (
+                  <CertificateOfAchievement
+                    recipientName={data.destinataire || "Carla Houston"}
+                    title={data.titreAttestation || "CERTIFICATE"}
+                    subtitle="OF ACHIEVEMENT"
+                    presentedToText="Proudly Presented To"
+                    bodyTextLine1={data.bodyText ? data.bodyText.replace(/<[^>]*>?/gm, '') : "Lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+                    bodyTextLine2={data.partnershipText ? data.partnershipText.replace(/<[^>]*>?/gm, '') : "nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."}
+                    bodyTextLine3={data.closingText ? data.closingText.replace(/<[^>]*>?/gm, '') : "enim ad minim veniam, quis nostrud exerci tation ullamcorper"}
+                    dateText={data.dateDelivrance}
+                    locationText={data.villeDelivrance}
+                    signatoryText={data.signataire}
+                    signatorySub={data.fonction}
+                    logoImg={centerLogoImg || leftLogoImg}
+                    customSignatureImg={customSignatureImg}
+                    positions={positions}
+                    selectedElement={selectedElement}
+                    setSelectedElement={setSelectedElement}
+                    handleTouchStart={handleTouchStart}
+                  />
+                ) : currentModelId === "model_afi_participation" ? (
+                  <CertificateAFI
+                    recipientName={data.destinataire || "Mme TOSSA Afavi Gbessito Honorine"}
+                    trainings={["Macramé", "Teinture de pagne"]}
+                    organizer="Maison AFI COLLECTION du Bénin"
+                    partner="Colli-Ganxo et ses structures partenaires"
+                    location={data.villeDelivrance || "Houègbo"}
+                    date={data.dateDelivrance || "15 juillet 2026"}
+                    directorLabel={data.signataire || "La Directrice"}
+                    directorSub={data.fonction || "(Maison AFI COLLECTION)"}
+                    representativeLabel={data.signataire3 || "Le Représentant"}
+                    representativeSub={data.fonction3 || "du Colli-Ganxo et ses structures partenaires"}
+                  />
+                ) : (
+                  <>
+                    {/* CUSTOM BACKGROUND IMAGE */}
+                    {customBgImg && (
+                      <img src={customBgImg} alt="Fond sur-mesure" className="custom-document-bg" />
+                    )}
 
                 {/* ORNAMENTAL FRAMES */}
                 <div className="frame-layer-custom-outer" />
@@ -2886,6 +5210,30 @@ export default function AttestationFormation({ onBack }) {
                     <DiamondCornerSvg className="top-right" color={activeBorderColor} />
                     <DiamondCornerSvg className="bottom-left" color={activeBorderColor} />
                     <DiamondCornerSvg className="bottom-right" color={activeBorderColor} />
+                  </>
+                )}
+
+                {/* SIDE BORDER DESIGNS (LEFT & RIGHT) */}
+                <SideBorders
+                  style={sideDesignStyle}
+                  color={activeTheme.gold || activeTheme.border}
+                  accentColor={activeTheme.primary || activeTheme.sealBg}
+                />
+
+                {/* PLACABLE DECORATIVE DESIGN MOTIFS */}
+                <PlacableMotifs
+                  motifs={customMotifs}
+                  selectedElement={selectedElement}
+                  setSelectedElement={setSelectedElement}
+                  handleTouchStart={handleTouchStart}
+                  positions={positions}
+                />
+
+                {/* MAISON AFI COLLECTION WAVES ORNAMENTS */}
+                {activeTheme.id === "afi-participation-waves" && (
+                  <>
+                    <CertificateCorner className="corner top-right" />
+                    <CertificateCorner className="corner bottom-left" />
                   </>
                 )}
 
@@ -2982,15 +5330,31 @@ export default function AttestationFormation({ onBack }) {
                 {/* INNER CONTENT WITH FULL DYNAMIC TYPOGRAPHY */}
                 <div className="cert-inner-content">
                   {/* TOP 3 PARTNER LOGOS ROW */}
-                  <div className="cert-header-logos-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "0 14px", marginBottom: "18px", minHeight: "80px" }}>
+                  <div className="cert-header-logos-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "0 14px", marginBottom: "0px", height: "44px", minHeight: "44px", maxHeight: "44px", overflow: "visible", position: "relative", zIndex: 20, flexShrink: 0 }}>
                     {/* LOGO 1 (GAUCHE - MAISON AFI) */}
-                    <div className="header-logo-box left" style={{ flex: 1, display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+                    <div 
+                      className={`header-logo-box left interactive-tappable touch-movable ${selectedElement === "logoLeft" ? "active-selected" : ""}`} 
+                      style={{
+                        flex: 1, 
+                        display: "flex", 
+                        justifyContent: "flex-start", 
+                        alignItems: "center", 
+                        position: "relative",
+                        height: "100%",
+                        overflow: "visible",
+                        cursor: "grab",
+                        transform: `translate(${positions.logoLeft?.x || 0}px, ${positions.logoLeft?.y || 0}px)`
+                      }}
+                      onClick={() => setSelectedElement("logoLeft")}
+                      onMouseDown={(e) => handleTouchStart('logoLeft', e)}
+                      onTouchStart={(e) => handleTouchStart('logoLeft', e)}
+                    >
                       {leftLogoImg ? (
                         <img
                           src={leftLogoImg}
                           alt="Logo 1 (Maison AFI)"
                           className="header-logo-img-left"
-                          style={{ maxHeight: `${leftLogoSize}px`, maxWidth: "170px", objectFit: "contain" }}
+                          style={{ position: "absolute", height: `${leftLogoSize}px`, maxHeight: `${leftLogoSize}px`, maxWidth: `${Math.max(leftLogoSize * 3, 350)}px`, width: "auto", objectFit: "contain" }}
                         />
                       ) : (
                         <div style={{ border: "1.5px dashed #CBD5E1", borderRadius: "8px", padding: "6px 12px", fontSize: "11px", color: "#64748B", fontWeight: "600", background: "#F8FAFC", textAlign: "center" }}>
@@ -3000,13 +5364,29 @@ export default function AttestationFormation({ onBack }) {
                     </div>
 
                     {/* LOGO 2 (CENTRE - ONG ALIMEN-TERRE) */}
-                    <div className="header-logo-box center" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <div 
+                      className={`header-logo-box center interactive-tappable touch-movable ${selectedElement === "logoCenter" ? "active-selected" : ""}`} 
+                      style={{ 
+                        flex: 1, 
+                        display: "flex", 
+                        justifyContent: "center", 
+                        alignItems: "center", 
+                        position: "relative",
+                        height: "100%",
+                        overflow: "visible",
+                        cursor: "grab",
+                        transform: `translate(${positions.logoCenter?.x || 0}px, ${positions.logoCenter?.y || 0}px)`
+                      }}
+                      onClick={() => setSelectedElement("logoCenter")}
+                      onMouseDown={(e) => handleTouchStart('logoCenter', e)}
+                      onTouchStart={(e) => handleTouchStart('logoCenter', e)}
+                    >
                       {centerLogoImg ? (
                         <img
                           src={centerLogoImg}
                           alt="Logo 2 (ALIMEN-TERRE)"
                           className="header-logo-img-center"
-                          style={{ maxHeight: `${centerLogoSize}px`, maxWidth: "170px", objectFit: "contain" }}
+                          style={{ position: "absolute", height: `${centerLogoSize}px`, maxHeight: `${centerLogoSize}px`, maxWidth: `${Math.max(centerLogoSize * 3, 350)}px`, width: "auto", objectFit: "contain" }}
                         />
                       ) : (
                         <div style={{ border: "1.5px dashed #805AD5", borderRadius: "8px", padding: "6px 12px", fontSize: "11px", color: "#6B21A8", fontWeight: "600", background: "#FAF5FF", textAlign: "center" }}>
@@ -3016,13 +5396,29 @@ export default function AttestationFormation({ onBack }) {
                     </div>
 
                     {/* LOGO 3 (DROIT - AJEDSAC) */}
-                    <div className="header-logo-box right" style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                    <div 
+                      className={`header-logo-box right interactive-tappable touch-movable ${selectedElement === "logoRight" ? "active-selected" : ""}`} 
+                      style={{ 
+                        flex: 1, 
+                        display: "flex", 
+                        justifyContent: "flex-end", 
+                        alignItems: "center", 
+                        position: "relative",
+                        height: "100%",
+                        overflow: "visible",
+                        cursor: "grab",
+                        transform: `translate(${positions.logoRight?.x || 0}px, ${positions.logoRight?.y || 0}px)`
+                      }}
+                      onClick={() => setSelectedElement("logoRight")}
+                      onMouseDown={(e) => handleTouchStart('logoRight', e)}
+                      onTouchStart={(e) => handleTouchStart('logoRight', e)}
+                    >
                       {rightLogoImg ? (
                         <img
                           src={rightLogoImg}
                           alt="Logo 3 (AJeDSAC)"
                           className="header-logo-img-right"
-                          style={{ maxHeight: `${rightLogoSize}px`, maxWidth: "170px", objectFit: "contain" }}
+                          style={{ position: "absolute", height: `${rightLogoSize}px`, maxHeight: `${rightLogoSize}px`, maxWidth: `${Math.max(rightLogoSize * 3, 350)}px`, width: "auto", objectFit: "contain" }}
                         />
                       ) : (
                         <div style={{ border: "1.5px dashed #2563EB", borderRadius: "8px", padding: "6px 12px", fontSize: "11px", color: "#1E40AF", fontWeight: "600", background: "#EFF6FF", textAlign: "center" }}>
@@ -3032,12 +5428,23 @@ export default function AttestationFormation({ onBack }) {
                     </div>
                   </div>
 
-                  {/* MAIN TITLE ATTESTATION (PERFECTLY CENTERED) */}
-                  <header className="cert-header-layout" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginTop: "16px", marginBottom: "20px" }}>
+                  {/* MAIN TITLE ATTESTATION */}
+                  <header className="cert-header-layout" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginTop: "12px", marginBottom: "8px" }}>
                     <div 
-                      className={`cert-header-center interactive-tappable ${selectedElement === "title" ? "active-selected" : ""}`}
+                      className={`cert-header-center interactive-tappable touch-movable ${selectedElement === "title" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("title")}
-                      style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", width: "100%" }}
+                      onMouseDown={(e) => handleTouchStart('title', e)}
+                      onTouchStart={(e) => handleTouchStart('title', e)}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        textAlign: "center",
+                        width: "100%",
+                        cursor: "grab",
+                        transform: `translate(${positions.title?.x || 0}px, ${positions.title?.y || 0}px)`
+                      }}
                     >
                       <h1 
                         className="main-title"
@@ -3141,16 +5548,40 @@ export default function AttestationFormation({ onBack }) {
                   <footer className="cert-footer">
                     {/* SIGNATORY 1 (LEFT) */}
                     <div 
-                      className={`signature-corner-left interactive-tappable touch-movable ${selectedElement === "signataire" ? "active-selected" : ""}`}
+                      className={`signature-corner-left interactive-tappable ${selectedElement === "signataire" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("signataire")}
-                      onTouchStart={(e) => handleTouchStart('sig1', e)}
-                      onTouchMove={handleTouchMove}
-                      onTouchEnd={handleTouchEnd}
                       style={{
                         transform: `translate(${positions.sig1?.x || 0}px, ${positions.sig1?.y || 0}px)`
                       }}
                     >
-                      <div className="signature-display" style={{ height: "48px" }}>
+                      {/* 1. TITRE ET STRUCTURE EN HAUT - DÉPLAÇABLE SEUL */}
+                      <div 
+                        className={`signatory-header-block interactive-tappable touch-movable ${selectedElement === "sigHeader1" ? "active-selected" : ""}`}
+                        onClick={(e) => { e.stopPropagation(); setSelectedElement("sigHeader1"); }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleTouchStart('sigHeader1', e); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleTouchStart('sigHeader1', e); }}
+                        style={{
+                          cursor: "grab",
+                          transform: `translate(${positions.sigHeader1?.x || 0}px, ${positions.sigHeader1?.y || 0}px)`
+                        }}
+                      >
+                        <div className="signatory-name">{data.signataire || "La Directrice"}</div>
+                        <div className="signatory-title">{data.fonction || "(Maison AFI COLLECTION du Bénin)"}</div>
+                      </div>
+
+                      {/* 2. SIGNATURE AU MILIEU - DÉPLAÇABLE SEULE */}
+                      <div 
+                        className={`signature-display interactive-tappable touch-movable ${selectedElement === "sigImg1" ? "active-selected" : ""}`}
+                        onClick={(e) => { e.stopPropagation(); setSelectedElement("sigImg1"); }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleTouchStart('sigImg1', e); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleTouchStart('sigImg1', e); }}
+                        style={{
+                          height: `${Math.max(40, sig1Size)}px`,
+                          margin: "2px 0",
+                          cursor: "grab",
+                          transform: `translate(${positions.sigImg1?.x || 0}px, ${positions.sigImg1?.y || 0}px)`
+                        }}
+                      >
                         {showSig1 ? (
                           customSignatureImg ? (
                             <img src={customSignatureImg} alt="Signature 1" className="signature-img" style={{ maxHeight: `${sig1Size}px` }} />
@@ -3164,23 +5595,63 @@ export default function AttestationFormation({ onBack }) {
                         ) : null}
                       </div>
 
-                      <div className="signature-line-corner" />
-                      <div className="signatory-name">{data.signataire || "La Directrice"}</div>
-                      <div className="signatory-title">{data.fonction || "(Maison AFI COLLECTION du Bénin)"}</div>
+                      {/* 3. NOM ET PRÉNOM EN BAS - DÉPLAÇABLE SEUL */}
+                      <div 
+                        className={`signatory-person-name interactive-tappable touch-movable ${selectedElement === "sigName1" ? "active-selected" : ""}`}
+                        onClick={(e) => { e.stopPropagation(); setSelectedElement("sigName1"); }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleTouchStart('sigName1', e); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleTouchStart('sigName1', e); }}
+                        style={{
+                          fontWeight: 700,
+                          marginTop: "2px",
+                          color: activeTheme.primary,
+                          fontSize: `${signatorySize}px`,
+                          cursor: "grab",
+                          display: "inline-block",
+                          transform: `translate(${positions.sigName1?.x || 0}px, ${positions.sigName1?.y || 0}px)`
+                        }}
+                      >
+                        {data.nomSignataire1 || "Mme TOSSA Afiavi G. H."}
+                      </div>
                     </div>
 
                     {/* SIGNATORY 2 (CENTER) */}
                     <div 
-                      className={`signature-corner-center interactive-tappable touch-movable ${selectedElement === "signataire" ? "active-selected" : ""}`}
+                      className={`signature-corner-center interactive-tappable ${selectedElement === "signataire" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("signataire")}
-                      onTouchStart={(e) => handleTouchStart('sig2', e)}
-                      onTouchMove={handleTouchMove}
-                      onTouchEnd={handleTouchEnd}
                       style={{
                         transform: `translate(${positions.sig2?.x || 0}px, ${positions.sig2?.y || 0}px)`
                       }}
                     >
-                      <div className="signature-display" style={{ height: "48px", justifyContent: "center" }}>
+                      {/* 1. TITRE ET STRUCTURE EN HAUT - DÉPLAÇABLE SEUL */}
+                      <div 
+                        className={`signatory-header-block interactive-tappable touch-movable ${selectedElement === "sigHeader2" ? "active-selected" : ""}`}
+                        onClick={(e) => { e.stopPropagation(); setSelectedElement("sigHeader2"); }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleTouchStart('sigHeader2', e); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleTouchStart('sigHeader2', e); }}
+                        style={{
+                          cursor: "grab",
+                          transform: `translate(${positions.sigHeader2?.x || 0}px, ${positions.sigHeader2?.y || 0}px)`
+                        }}
+                      >
+                        <div className="signatory-name">{data.signataire2 || "La Présidente"}</div>
+                        <div className="signatory-title">{data.fonction2 || "(ONG ALIMEN-Terre)"}</div>
+                      </div>
+
+                      {/* 2. SIGNATURE AU MILIEU - DÉPLAÇABLE SEULE */}
+                      <div 
+                        className={`signature-display interactive-tappable touch-movable ${selectedElement === "sigImg2" ? "active-selected" : ""}`}
+                        onClick={(e) => { e.stopPropagation(); setSelectedElement("sigImg2"); }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleTouchStart('sigImg2', e); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleTouchStart('sigImg2', e); }}
+                        style={{
+                          height: `${Math.max(40, sig2Size)}px`,
+                          justifyContent: "center",
+                          margin: "2px 0",
+                          cursor: "grab",
+                          transform: `translate(${positions.sigImg2?.x || 0}px, ${positions.sigImg2?.y || 0}px)`
+                        }}
+                      >
                         {showSig2 ? (
                           customSignatureImg2 ? (
                             <img src={customSignatureImg2} alt="Signature 2" className="signature-img" style={{ maxHeight: `${sig2Size}px` }} />
@@ -3192,23 +5663,62 @@ export default function AttestationFormation({ onBack }) {
                         ) : null}
                       </div>
 
-                      <div className="signature-line-corner" style={{ margin: "0 auto" }} />
-                      <div className="signatory-name">{data.signataire2 || "La Présidente"}</div>
-                      <div className="signatory-title">{data.fonction2 || "(ONG ALIMEN-Terre)"}</div>
+                      {/* 3. NOM ET PRÉNOM EN BAS - DÉPLAÇABLE SEUL */}
+                      <div 
+                        className={`signatory-person-name interactive-tappable touch-movable ${selectedElement === "sigName2" ? "active-selected" : ""}`}
+                        onClick={(e) => { e.stopPropagation(); setSelectedElement("sigName2"); }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleTouchStart('sigName2', e); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleTouchStart('sigName2', e); }}
+                        style={{
+                          fontWeight: 700,
+                          marginTop: "2px",
+                          color: activeTheme.primary,
+                          fontSize: `${signatorySize}px`,
+                          cursor: "grab",
+                          display: "inline-block",
+                          transform: `translate(${positions.sigName2?.x || 0}px, ${positions.sigName2?.y || 0}px)`
+                        }}
+                      >
+                        {data.nomSignataire2 || "Mme la Présidente ALIMEN-TERRE"}
+                      </div>
                     </div>
 
                     {/* SIGNATORY 3 (RIGHT) */}
                     <div 
-                      className={`signature-corner-right interactive-tappable touch-movable ${selectedElement === "signataire" ? "active-selected" : ""}`}
+                      className={`signature-corner-right interactive-tappable ${selectedElement === "signataire" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("signataire")}
-                      onTouchStart={(e) => handleTouchStart('sig3', e)}
-                      onTouchMove={handleTouchMove}
-                      onTouchEnd={handleTouchEnd}
                       style={{
                         transform: `translate(${positions.sig3?.x || 0}px, ${positions.sig3?.y || 0}px)`
                       }}
                     >
-                      <div className="signature-display" style={{ height: "48px" }}>
+                      {/* 1. TITRE ET STRUCTURE EN HAUT - DÉPLAÇABLE SEUL */}
+                      <div 
+                        className={`signatory-header-block interactive-tappable touch-movable ${selectedElement === "sigHeader3" ? "active-selected" : ""}`}
+                        onClick={(e) => { e.stopPropagation(); setSelectedElement("sigHeader3"); }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleTouchStart('sigHeader3', e); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleTouchStart('sigHeader3', e); }}
+                        style={{
+                          cursor: "grab",
+                          transform: `translate(${positions.sigHeader3?.x || 0}px, ${positions.sigHeader3?.y || 0}px)`
+                        }}
+                      >
+                        <div className="signatory-name">{data.signataire3 || "Le Représentant"}</div>
+                        <div className="signatory-title">{data.fonction3 || "(AJeDSAC)"}</div>
+                      </div>
+
+                      {/* 2. SIGNATURE AU MILIEU - DÉPLAÇABLE SEULE */}
+                      <div 
+                        className={`signature-display interactive-tappable touch-movable ${selectedElement === "sigImg3" ? "active-selected" : ""}`}
+                        onClick={(e) => { e.stopPropagation(); setSelectedElement("sigImg3"); }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleTouchStart('sigImg3', e); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleTouchStart('sigImg3', e); }}
+                        style={{
+                          height: `${Math.max(40, sig3Size)}px`,
+                          margin: "2px 0",
+                          cursor: "grab",
+                          transform: `translate(${positions.sigImg3?.x || 0}px, ${positions.sigImg3?.y || 0}px)`
+                        }}
+                      >
                         {showSig3 ? (
                           customSignatureImg3 ? (
                             <img src={customSignatureImg3} alt="Signature 3" className="signature-img" style={{ maxHeight: `${sig3Size}px` }} />
@@ -3220,12 +5730,56 @@ export default function AttestationFormation({ onBack }) {
                         ) : null}
                       </div>
 
-                      <div className="signature-line-corner" />
-                      <div className="signatory-name">{data.signataire3 || "Le Représentant"}</div>
-                      <div className="signatory-title">{data.fonction3 || "(AJeDSAC)"}</div>
+                      {/* 3. NOM ET PRÉNOM EN BAS - DÉPLAÇABLE SEUL */}
+                      <div 
+                        className={`signatory-person-name interactive-tappable touch-movable ${selectedElement === "sigName3" ? "active-selected" : ""}`}
+                        onClick={(e) => { e.stopPropagation(); setSelectedElement("sigName3"); }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleTouchStart('sigName3', e); }}
+                        onTouchStart={(e) => { e.stopPropagation(); handleTouchStart('sigName3', e); }}
+                        style={{
+                          fontWeight: 700,
+                          marginTop: "2px",
+                          color: activeTheme.primary,
+                          fontSize: `${signatorySize}px`,
+                          cursor: "grab",
+                          display: "inline-block",
+                          transform: `translate(${positions.sigName3?.x || 0}px, ${positions.sigName3?.y || 0}px)`
+                        }}
+                      >
+                        {data.nomSignataire3 || "M. le Représentant AJeDSAC"}
+                      </div>
                     </div>
                   </footer>
+
+                  {/* PIED DE PAGE LÉGAL COMPLÈTEMENT EN BAS DU DOCUMENT */}
+                  <div 
+                    className={`cert-legal-footer interactive-tappable touch-movable ${selectedElement === "legalFooter" ? "active-selected" : ""}`}
+                    onClick={() => setSelectedElement("legalFooter")}
+                    onMouseDown={(e) => handleTouchStart('legalFooter', e)}
+                    onTouchStart={(e) => handleTouchStart('legalFooter', e)}
+                    style={{
+                      position: "absolute",
+                      bottom: "12px",
+                      left: 0,
+                      right: 0,
+                      textAlign: "center",
+                      fontSize: `${legalFooterSize}px`,
+                      fontFamily: legalFooterFont,
+                      fontWeight: 600,
+                      letterSpacing: "0.04em",
+                      color: activeTheme.primary,
+                      opacity: 0.85,
+                      cursor: "grab",
+                      zIndex: 10,
+                      padding: "0 20px",
+                      transform: `translate(${positions.legalFooter?.x || 0}px, ${positions.legalFooter?.y || 0}px)`
+                    }}
+                  >
+                    {data.legalFooterText || "AFI COLLECTION DU BÉNIN | RCCM RB/ABC/15 A 2297 | IFU 12013190056803"}
+                  </div>
                 </div>
+                </>
+                )}
               </div>
             </div>
           </div>
@@ -3237,12 +5791,186 @@ export default function AttestationFormation({ onBack }) {
         <div className="mobile-quick-sheet no-print">
           <div className="quick-sheet-header">
             <span className="quick-sheet-title">
-              Éditer {selectedElement === "destinataire" ? "le Bénéficiaire" : selectedElement === "title" ? "le Titre" : selectedElement === "datePlace" ? "Lieu & Date" : selectedElement === "signataire" ? "le Signataire" : "Sceau & Tampon"}
+              Éditer {selectedElement === "destinataire" ? "le Bénéficiaire" : selectedElement === "title" ? "le Titre" : selectedElement === "datePlace" ? "Lieu & Date" : selectedElement === "signataire" ? "le Signataire" : selectedElement === "logoLeft" ? "Logo Gauche" : selectedElement === "logoCenter" ? "Logo Centre" : selectedElement === "logoRight" ? "Logo Droit" : "Sceau & Tampon"}
             </span>
             <button className="quick-sheet-close" onClick={() => setSelectedElement(null)}>✕</button>
           </div>
 
           <div className="quick-sheet-content">
+            {selectedElement === "logoLeft" && (
+              <div className="input-group">
+                <label>Taille du Logo Gauche ({leftLogoSize}px)</label>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setLeftLogoSize(s => Math.max(20, s - 10))}>-10</button>
+                  <input 
+                    type="range"
+                    min="20"
+                    max="600"
+                    value={leftLogoSize}
+                    onChange={(e) => setLeftLogoSize(parseInt(e.target.value))}
+                    style={{ flex: 1 }}
+                  />
+                  <input 
+                    type="number"
+                    min="20"
+                    max="600"
+                    value={leftLogoSize}
+                    onChange={(e) => setLeftLogoSize(parseInt(e.target.value) || 20)}
+                    style={{ width: "65px", padding: "4px 6px", textAlign: "center", border: "1px solid #CBD5E1", borderRadius: "6px" }}
+                  />
+                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setLeftLogoSize(s => Math.min(600, s + 10))}>+10</button>
+                </div>
+
+                <div style={{ marginTop: "8px" }}>
+                  <label style={{ fontSize: "11px", color: "#475569" }}>📍 Position (X: {positions.logoLeft?.x || 0}px | Y: {positions.logoLeft?.y || 0}px)</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                    <div>
+                      <span style={{ fontSize: "10px", color: "#64748B" }}>Horizontal (X)</span>
+                      <input
+                        type="range" min={-200} max={200}
+                        value={positions.logoLeft?.x || 0}
+                        onChange={(e) => setPositions(prev => ({ ...prev, logoLeft: { ...(prev.logoLeft || { y: 0 }), x: Number(e.target.value) } }))}
+                      />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "10px", color: "#64748B" }}>Vertical (Y)</span>
+                      <input
+                        type="range" min={-150} max={150}
+                        value={positions.logoLeft?.y || 0}
+                        onChange={(e) => setPositions(prev => ({ ...prev, logoLeft: { ...(prev.logoLeft || { x: 0 }), y: Number(e.target.value) } }))}
+                      />
+                    </div>
+                  </div>
+                  {(positions.logoLeft?.x !== 0 || positions.logoLeft?.y !== 0) && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: "2px 8px", fontSize: "10px", marginTop: "4px" }}
+                      onClick={() => setPositions(prev => ({ ...prev, logoLeft: { x: 0, y: 0 } }))}
+                    >
+                      🎯 Réinitialiser position
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {selectedElement === "logoCenter" && (
+              <div className="input-group">
+                <label>Taille du Logo Centre ({centerLogoSize}px)</label>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setCenterLogoSize(s => Math.max(20, s - 10))}>-10</button>
+                  <input 
+                    type="range"
+                    min="20"
+                    max="600"
+                    value={centerLogoSize}
+                    onChange={(e) => setCenterLogoSize(parseInt(e.target.value))}
+                    style={{ flex: 1 }}
+                  />
+                  <input 
+                    type="number"
+                    min="20"
+                    max="600"
+                    value={centerLogoSize}
+                    onChange={(e) => setCenterLogoSize(parseInt(e.target.value) || 20)}
+                    style={{ width: "65px", padding: "4px 6px", textAlign: "center", border: "1px solid #CBD5E1", borderRadius: "6px" }}
+                  />
+                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setCenterLogoSize(s => Math.min(600, s + 10))}>+10</button>
+                </div>
+
+                <div style={{ marginTop: "8px" }}>
+                  <label style={{ fontSize: "11px", color: "#475569" }}>📍 Position (X: {positions.logoCenter?.x || 0}px | Y: {positions.logoCenter?.y || 0}px)</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                    <div>
+                      <span style={{ fontSize: "10px", color: "#64748B" }}>Horizontal (X)</span>
+                      <input
+                        type="range" min={-200} max={200}
+                        value={positions.logoCenter?.x || 0}
+                        onChange={(e) => setPositions(prev => ({ ...prev, logoCenter: { ...(prev.logoCenter || { y: 0 }), x: Number(e.target.value) } }))}
+                      />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "10px", color: "#64748B" }}>Vertical (Y)</span>
+                      <input
+                        type="range" min={-150} max={150}
+                        value={positions.logoCenter?.y || 0}
+                        onChange={(e) => setPositions(prev => ({ ...prev, logoCenter: { ...(prev.logoCenter || { x: 0 }), y: Number(e.target.value) } }))}
+                      />
+                    </div>
+                  </div>
+                  {(positions.logoCenter?.x !== 0 || positions.logoCenter?.y !== 0) && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: "2px 8px", fontSize: "10px", marginTop: "4px" }}
+                      onClick={() => setPositions(prev => ({ ...prev, logoCenter: { x: 0, y: 0 } }))}
+                    >
+                      🎯 Réinitialiser position
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {selectedElement === "logoRight" && (
+              <div className="input-group">
+                <label>Taille du Logo Droit ({rightLogoSize}px)</label>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setRightLogoSize(s => Math.max(20, s - 10))}>-10</button>
+                  <input 
+                    type="range"
+                    min="20"
+                    max="600"
+                    value={rightLogoSize}
+                    onChange={(e) => setRightLogoSize(parseInt(e.target.value))}
+                    style={{ flex: 1 }}
+                  />
+                  <input 
+                    type="number"
+                    min="20"
+                    max="600"
+                    value={rightLogoSize}
+                    onChange={(e) => setRightLogoSize(parseInt(e.target.value) || 20)}
+                    style={{ width: "65px", padding: "4px 6px", textAlign: "center", border: "1px solid #CBD5E1", borderRadius: "6px" }}
+                  />
+                  <button type="button" className="btn btn-secondary btn-sm" style={{ padding: "4px 8px" }} onClick={() => setRightLogoSize(s => Math.min(600, s + 10))}>+10</button>
+                </div>
+
+                <div style={{ marginTop: "8px" }}>
+                  <label style={{ fontSize: "11px", color: "#475569" }}>📍 Position (X: {positions.logoRight?.x || 0}px | Y: {positions.logoRight?.y || 0}px)</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                    <div>
+                      <span style={{ fontSize: "10px", color: "#64748B" }}>Horizontal (X)</span>
+                      <input
+                        type="range" min={-200} max={200}
+                        value={positions.logoRight?.x || 0}
+                        onChange={(e) => setPositions(prev => ({ ...prev, logoRight: { ...(prev.logoRight || { y: 0 }), x: Number(e.target.value) } }))}
+                      />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "10px", color: "#64748B" }}>Vertical (Y)</span>
+                      <input
+                        type="range" min={-150} max={150}
+                        value={positions.logoRight?.y || 0}
+                        onChange={(e) => setPositions(prev => ({ ...prev, logoRight: { ...(prev.logoRight || { x: 0 }), y: Number(e.target.value) } }))}
+                      />
+                    </div>
+                  </div>
+                  {(positions.logoRight?.x !== 0 || positions.logoRight?.y !== 0) && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: "2px 8px", fontSize: "10px", marginTop: "4px" }}
+                      onClick={() => setPositions(prev => ({ ...prev, logoRight: { x: 0, y: 0 } }))}
+                    >
+                      🎯 Réinitialiser position
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
             {selectedElement === "destinataire" && (
               <div className="input-group">
                 <label>Nom du Bénéficiaire</label>

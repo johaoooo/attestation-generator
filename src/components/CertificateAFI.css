@@ -1,0 +1,319 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap");
+
+:root {
+  --forest-green: #1a6b3c;
+  --deep-green: #0a2f1a;
+  --gold: #d4a017;
+  --gold-light: #f0c95a;
+  --cream: #fdfaf3;
+  --text-dark: #1c1c1c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.certificate-outer {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  border-radius: 6px;
+  font-family: "Poppins", sans-serif;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.certificate {
+  position: relative;
+  background: var(--cream);
+  border: 1.5px solid var(--gold);
+  border-radius: 4px;
+  overflow: hidden;
+  padding: 40px 56px;
+  min-height: 720px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+/* ---------- CORNER DECORATION (FLUSH TOP-RIGHT & BOTTOM-LEFT) ---------- */
+.corner {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.corner.top-right {
+  top: 0;
+  right: 0;
+}
+
+.corner.bottom-left {
+  bottom: 0;
+  left: 0;
+  transform: rotate(180deg);
+}
+
+/* ---------- HEADER WITH COMFORTABLE TOP SPACING ---------- */
+.cert-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 24px;
+  margin-top: 10px;
+  margin-bottom: 16px;
+}
+
+.cert-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: 110px;
+}
+
+.cert-logo-letters {
+  font-family: "Playfair Display", serif;
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 1;
+  display: flex;
+}
+
+.cert-logo-letters span:nth-child(1) { color: var(--forest-green); }
+.cert-logo-letters span:nth-child(2) { color: var(--forest-green); }
+.cert-logo-letters span:nth-child(3) { color: var(--gold); }
+
+.cert-logo-sub {
+  letter-spacing: 3px;
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--forest-green);
+  margin-top: 3px;
+}
+
+.cert-title-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.cert-title {
+  text-align: center;
+  font-family: "Playfair Display", serif;
+  font-weight: 800;
+  color: var(--deep-green);
+  font-size: clamp(22px, 3.2vw, 36px);
+  line-height: 1.25;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.cert-seal-container {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 110px;
+}
+
+.cert-seal {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 9px;
+  color: var(--forest-green);
+  font-weight: 600;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 2px var(--cream);
+}
+
+/* ---------- DIVIDER ---------- */
+.cert-divider {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  margin: 12px 0 24px 0;
+}
+
+.cert-divider-line {
+  height: 1px;
+  width: 180px;
+  background: var(--gold);
+}
+
+.cert-divider-diamond {
+  width: 10px;
+  height: 10px;
+  background: var(--gold);
+  transform: rotate(45deg);
+}
+
+/* ---------- BODY PERFECTLY CENTERED WITH BREATHING ROOM ---------- */
+.cert-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-dark);
+  font-size: 16px;
+  line-height: 1.85;
+  width: 100%;
+  max-width: 840px;
+  margin: 16px auto;
+  flex: 1;
+}
+
+.cert-body-intro {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.cert-body-intro strong {
+  font-size: 22px;
+  color: var(--deep-green);
+}
+
+.cert-recipient-line {
+  border-bottom: 1.5px solid var(--gold);
+  width: 50%;
+  margin: 10px auto 16px auto;
+}
+
+.cert-body-subtitle {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* ---------- TRAININGS LIST CENTERED ---------- */
+.cert-trainings {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.cert-trainings li {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--deep-green);
+  background: rgba(212, 160, 23, 0.08);
+  padding: 6px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 160, 23, 0.3);
+}
+
+.cert-trainings li::before {
+  content: "♦";
+  color: var(--gold);
+  font-size: 12px;
+}
+
+.cert-body-org {
+  font-size: 15px;
+  margin: 10px 0;
+  color: #222;
+}
+
+.cert-body-closing {
+  font-size: 15px;
+  margin: 10px 0;
+  font-style: italic;
+  color: #444;
+}
+
+.cert-date {
+  margin-top: 16px;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--deep-green);
+}
+
+/* ---------- FOOTER / SIGNATURES ---------- */
+.cert-footer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 28px;
+  gap: 20px;
+  padding-top: 10px;
+}
+
+.cert-signature {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: center;
+}
+
+.cert-signature-line {
+  display: none;
+}
+
+.sig-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--deep-green);
+}
+
+.sig-sub {
+  display: block;
+  font-size: 11px;
+  color: #555;
+}
+
+.cert-stamp-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cert-stamp {
+  width: 85px;
+  height: 85px;
+  border: 1.5px dashed var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212, 160, 23, 0.04);
+}
