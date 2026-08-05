@@ -1819,13 +1819,11 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
         }
 
         .recipient-name-block {
-          width: 100%;
-          max-width: 100%;
-          display: flex;
+          display: inline-flex;
           flex-direction: column;
-          justify-content: center;
           align-items: center;
-          margin: 4px 0 8px 0;
+          margin: 6px auto;
+          max-width: 95%;
           box-sizing: border-box;
         }
 
@@ -1836,9 +1834,10 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
           font-style: ${isNameItalic ? "italic" : "normal"};
           color: ${customNameColor || activeTheme.primary};
           line-height: 1.35;
-          padding: 4px 18px 6px 18px;
-          min-width: min(440px, 90%);
-          max-width: 95%;
+          padding: 2px 10px 4px 10px;
+          display: inline-block;
+          width: auto;
+          max-width: 100%;
           word-break: break-word;
           overflow-wrap: break-word;
           text-align: center;
@@ -1846,7 +1845,8 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
         }
 
         .recipient-name-line {
-          width: min(480px, 80%);
+          width: 100%;
+          min-width: 160px;
           height: 2px;
           background-color: ${customNameColor || activeTheme.primary};
           margin-top: 4px;
@@ -5488,9 +5488,9 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
                     <div 
                       className={`recipient-name-block interactive-tappable ${selectedElement === "destinataire" ? "active-selected" : ""}`}
                       onClick={() => setSelectedElement("destinataire")}
-                      style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "6px 0", width: "100%" }}
+                      style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", margin: "6px auto", maxWidth: "95%" }}
                     >
-                      <div className="recipient-name" style={{ minWidth: "480px", textAlign: "center", minHeight: "36px" }}>
+                      <div className="recipient-name" style={{ textAlign: "center", minHeight: "36px" }}>
                         {data.destinataire || ""}
                       </div>
                       <div className="recipient-name-line" />
