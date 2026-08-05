@@ -1764,7 +1764,7 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
           color: ${customTitleColor || activeTheme.primary};
           line-height: 1.1;
           margin-top: -18px;
-          margin-bottom: 2px;
+          margin-bottom: 8px;
           max-width: 95%;
           word-break: break-word;
           overflow-wrap: break-word;
@@ -5469,7 +5469,7 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
                         {data.title || "ATTESTATION"}
                       </h1>
                       
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "10px auto 0 auto", justifyContent: "center" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "18px auto 0 auto", justifyContent: "center" }}>
                         <span style={{ width: "45px", height: "1.5px", background: "#d4af37" }} />
                         <span style={{ width: "6px", height: "6px", transform: "rotate(45deg)", backgroundColor: "#0b1f4b", display: "inline-block" }} />
                         <span style={{ width: "8px", height: "8px", transform: "rotate(45deg)", backgroundColor: "#d4af37", display: "inline-block" }} />
