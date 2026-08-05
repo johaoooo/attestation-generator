@@ -789,24 +789,24 @@ export default function PdfAttestationEditor({ onBack, onApplyToForm }) {
                 onClick={() => setActiveTab("editor")}
                 className={`pdf-tab-btn ${activeTab === "editor" ? "active" : ""}`}
               >
-                <Sliders className="w-4 h-4" />
-                Outils & Retouche
+                <Sliders className="w-4 h-4 shrink-0 text-blue-400" />
+                <span>Outils & Retouche</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("layers")}
                 className={`pdf-tab-btn ${activeTab === "layers" ? "active" : ""}`}
               >
-                <Layers className="w-4 h-4" />
-                Tous les Éléments ({elements.length})
+                <Layers className="w-4 h-4 shrink-0 text-purple-400" />
+                <span>Éléments ({elements.length})</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("fields")}
                 className={`pdf-tab-btn ${activeTab === "fields" ? "active" : ""}`}
               >
-                <Sparkles className="w-4 h-4" />
-                Données IA
+                <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />
+                <span>Données IA</span>
               </button>
             </div>
 
