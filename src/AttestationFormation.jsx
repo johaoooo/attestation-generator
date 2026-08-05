@@ -1822,9 +1822,10 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
           width: 100%;
           max-width: 100%;
           display: flex;
+          flex-direction: column;
           justify-content: center;
           align-items: center;
-          margin: 2px 0;
+          margin: 4px 0 8px 0;
           box-sizing: border-box;
         }
 
@@ -1834,15 +1835,22 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
           font-weight: ${isNameBold ? "700" : "400"};
           font-style: ${isNameItalic ? "italic" : "normal"};
           color: ${customNameColor || activeTheme.primary};
-          line-height: 1.2;
-          padding: 2px 18px;
-          border-bottom: 2px solid ${activeTheme.primary};
+          line-height: 1.35;
+          padding: 4px 18px 6px 18px;
           min-width: min(440px, 90%);
           max-width: 95%;
           word-break: break-word;
           overflow-wrap: break-word;
           text-align: center;
           letter-spacing: 0.03em;
+        }
+
+        .recipient-name-line {
+          width: min(480px, 80%);
+          height: 2px;
+          background-color: ${customNameColor || activeTheme.primary};
+          margin-top: 4px;
+          border-radius: 2px;
         }
 
         .body-phrase {
@@ -5485,6 +5493,7 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
                       <div className="recipient-name" style={{ minWidth: "480px", textAlign: "center", minHeight: "36px" }}>
                         {data.destinataire || ""}
                       </div>
+                      <div className="recipient-name-line" />
                     </div>
 
                     <p className="body-phrase">
