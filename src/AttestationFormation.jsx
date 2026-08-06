@@ -1625,6 +1625,9 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
           transform: scale(${zoomScale});
           transform-origin: top center;
           transition: transform 0.2s ease;
+          width: ${pageFormat === "portrait" ? 678 : pageFormat === "square" ? 780 : 960}px;
+          height: ${pageFormat === "portrait" ? 960 : pageFormat === "square" ? 780 : 678}px;
+          margin-bottom: -${(1 - zoomScale) * (pageFormat === "portrait" ? 960 : pageFormat === "square" ? 780 : 678)}px;
         }
 
         /* LUXURY PRESTIGE FORMAT DYNAMICS */
