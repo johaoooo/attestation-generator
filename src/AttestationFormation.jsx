@@ -655,6 +655,85 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
   const [newModelNameInput, setNewModelNameInput] = useState("");
   const [isCreatingModel, setIsCreatingModel] = useState(false);
 
+  // Saved Completed Certificates Library State
+  const [savedCertificates, setSavedCertificates] = useState(() => {
+    try {
+      const stored = localStorage.getItem("attestation_saved_certificates_library");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isSaveCertModalOpen, setIsSaveCertModalOpen] = useState(false);
+  const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
+  const [saveCertNameInput, setSaveCertNameInput] = useState("");
+
+  const handleOpenSaveCertModal = () => {
+    const defaultName = data.destinataire 
+      ? `Attestation - ${data.destinataire}` 
+      : `Attestation ${new Date().toLocaleDateString('fr-FR')}`;
+    setSaveCertNameInput(defaultName);
+    setIsSaveCertModalOpen(true);
+  };
+
+  const handleSaveCertificateToLibrary = () => {
+    const certName = saveCertNameInput.trim() || `Attestation - ${data.destinataire || "Bénéficiaire"}`;
+    const newCert = {
+      id: "cert_saved_" + Date.now(),
+      name: certName,
+      recipientName: data.destinataire || "Bénéficiaire Non Spécifié",
+      dateSaved: new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+      snapshot: buildCurrentSnapshot()
+    };
+
+    const updated = [newCert, ...savedCertificates];
+    setSavedCertificates(updated);
+    try {
+      localStorage.setItem("attestation_saved_certificates_library", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+
+    setIsSaveCertModalOpen(false);
+    setShowSaveToast(true);
+    setTimeout(() => setShowSaveToast(false), 3000);
+  };
+
+  const handleLoadSavedCertificate = (cert) => {
+    if (cert && cert.snapshot) {
+      applySnapshot(cert.snapshot);
+      setSelectedElement("destinataire");
+      setIsLibraryModalOpen(false);
+      setShowSaveToast(true);
+      setTimeout(() => setShowSaveToast(false), 2500);
+    }
+  };
+
+  const handleDeleteSavedCertificate = (id) => {
+    const updated = savedCertificates.filter(c => c.id !== id);
+    setSavedCertificates(updated);
+    try {
+      localStorage.setItem("attestation_saved_certificates_library", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDuplicateSavedCertificate = (cert) => {
+    const dup = {
+      ...cert,
+      id: "cert_saved_" + Date.now(),
+      name: `${cert.name} (Copie)`
+    };
+    const updated = [dup, ...savedCertificates];
+    setSavedCertificates(updated);
+    try {
+      localStorage.setItem("attestation_saved_certificates_library", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const buildCurrentSnapshot = () => ({
     data,
     activeTheme,
@@ -5085,6 +5164,26 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
             </div>
 
             <div className="btn-group">
+              {/* SAVE TO APP LIBRARY BUTTON */}
+              <button 
+                className="btn btn-secondary" 
+                onClick={handleOpenSaveCertModal}
+                style={{ background: "#059669", color: "#ffffff", borderColor: "#059669", fontWeight: "700" }}
+                title="Sauvegarder cette attestation dans l'application pour pouvoir la réouvrir et modifier le nom plus tard"
+              >
+                💾 Sauvegarder dans l'App
+              </button>
+
+              {/* MY SAVED CERTIFICATES LIBRARY BUTTON */}
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setIsLibraryModalOpen(true)}
+                style={{ background: "#4f46e5", color: "#ffffff", borderColor: "#4f46e5", fontWeight: "700" }}
+                title="Consulter et modifier mes attestations enregistrées"
+              >
+                📁 Mes Attestations ({savedCertificates.length})
+              </button>
+
               <button className="btn btn-secondary" onClick={handleCopyText}>
                 {copied ? "Copie !" : "Copier"}
               </button>
@@ -6113,6 +6212,120 @@ export default function AttestationFormation({ onBack, initialData, onOpenPdfEdi
           <span>Export PDF</span>
         </button>
       </div>
+
+      {/* MODAL 1 : SAUVEGARDER L'ATTESTATION DANS L'APPLICATION */}
+      {isSaveCertModalOpen && (
+        <div className="fixed-modal-backdrop" onClick={() => setIsSaveCertModalOpen(false)}>
+          <div className="custom-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>💾 Sauvegarder cette Attestation</h3>
+              <button onClick={() => setIsSaveCertModalOpen(false)}>✕</button>
+            </div>
+
+            <div className="modal-body">
+              <p style={{ fontSize: "13px", color: "#475569", marginBottom: "12px", lineHeight: 1.5 }}>
+                Donnez un nom à votre attestation pour la retrouver dans votre bibliothèque, la réouvrir et modifier le nom du bénéficiaire à tout moment.
+              </p>
+
+              <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#334155", marginBottom: "4px" }}>
+                Intitulé / Nom de l'attestation enregistrée :
+              </label>
+              <input
+                type="text"
+                value={saveCertNameInput}
+                onChange={(e) => setSaveCertNameInput(e.target.value)}
+                placeholder="ex: Attestation Macramé - Promo Juillet 2026"
+                className="modal-input-field"
+                autoFocus
+              />
+
+              <div style={{ background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: "12px", padding: "12px", marginTop: "16px", fontSize: "12px", color: "#1E40AF", lineHeight: 1.4 }}>
+                💡 <b>Astuce :</b> Tous les réglages (bénéficiaire, thème, signatures, logos, polices) sont enregistrés sur votre appareil. Vous pourrez réouvrir ce document plus tard et changer le nom en 5 secondes !
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setIsSaveCertModalOpen(false)}>
+                Annuler
+              </button>
+              <button className="btn btn-primary" onClick={handleSaveCertificateToLibrary} style={{ background: "#059669", borderColor: "#059669" }}>
+                💾 Confirmer la Sauvegarde
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2 : BIBLIOTHÈQUE DES ATTESTATIONS ENREGISTRÉES */}
+      {isLibraryModalOpen && (
+        <div className="fixed-modal-backdrop" onClick={() => setIsLibraryModalOpen(false)}>
+          <div className="custom-modal-card" style={{ maxWidth: "680px" }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>📁 Mes Attestations Enregistrées ({savedCertificates.length})</h3>
+              <button onClick={() => setIsLibraryModalOpen(false)}>✕</button>
+            </div>
+
+            <div className="modal-body" style={{ maxHeight: "60vh", overflowY: "auto" }}>
+              {savedCertificates.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "30px 10px", color: "#94A3B8" }}>
+                  <p style={{ fontSize: "36px", margin: "0 0 8px 0" }}>📁</p>
+                  <p style={{ fontWeight: "700", color: "#334155", fontSize: "14px", margin: "0 0 4px 0" }}>Aucune attestation enregistrée</p>
+                  <p style={{ fontSize: "12px", margin: 0 }}>
+                    Lorsque vous finalisez une attestation, cliquez sur <b>💾 Sauvegarder dans l'App</b> pour la retrouver ici et la réutiliser.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {savedCertificates.map((cert) => (
+                    <div key={cert.id} className="saved-cert-item-card">
+                      <div style={{ flex: 1, paddingRight: "12px" }}>
+                        <h4 style={{ margin: "0 0 4px 0", fontSize: "14px", fontWeight: "800", color: "#0F172A" }}>{cert.name}</h4>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", color: "#64748B" }}>
+                          <span>👤 <b>{cert.recipientName}</b></span>
+                          <span>•</span>
+                          <span>🕒 {cert.dateSaved}</span>
+                        </div>
+                      </div>
+
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <button
+                          onClick={() => handleLoadSavedCertificate(cert)}
+                          className="btn-action-emerald"
+                          title="Charger dans l'éditeur pour modifier le nom du bénéficiaire"
+                        >
+                          ✏️ Charger & Modifier
+                        </button>
+
+                        <button
+                          onClick={() => handleDuplicateSavedCertificate(cert)}
+                          className="btn-action-blue"
+                          title="Dupliquer"
+                        >
+                          📋
+                        </button>
+
+                        <button
+                          onClick={() => handleDeleteSavedCertificate(cert.id)}
+                          className="btn-action-red"
+                          title="Supprimer"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setIsLibraryModalOpen(false)}>
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
